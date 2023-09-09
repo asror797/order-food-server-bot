@@ -5,21 +5,26 @@ import { Routes } from "./interfaces/route.interface";
 import { connect } from "mongoose";
 import { dbConnection } from "./database/database";
 import botService from "./bot/bot";
+import swaggerUi from "swagger-ui-express"
+import swaggerJSDoc from "swagger-jsdoc";
 
 
 
 class App {
   public app: express.Application
   public port: number
+  public bot: any
 
   constructor(routes:Routes[]) {
     this.app = express()
     this.port = 9000
+    this.bot = botService
 
     this.connectToDatabase()
     this.initializeMiddlewares()
     this.initializeRoutes(routes)
     this.initialieErrorHandling()
+    this.initializeSwagger()
     this.initializeBot()
 
   }
@@ -27,6 +32,7 @@ class App {
   private async connectToDatabase() {
     try {
       await connect(dbConnection.url,dbConnection.options)
+      console.log('Connected to database')
     } catch (error) {
       console.log(error)
     }
@@ -57,6 +63,22 @@ class App {
 
   private initializeBot() {
     botService.initialize()
+  }
+
+  private initializeSwagger() {
+    const options = {
+      swaggerDefinition: {
+        info: {
+          title: 'REST API',
+          version: '1.0.0',
+          description: 'Woodline Kitchen Bot REST Api',
+        },
+      },
+      apis: ['swagger.yaml'],
+    }
+
+    const specs = swaggerJSDoc(options)
+    this.app.use('/docs',swaggerUi.serve,swaggerUi.setup(specs))
   }
 }
 

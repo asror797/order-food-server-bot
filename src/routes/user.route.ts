@@ -5,7 +5,7 @@ import UserController from "../controllers/user.controller";
 
 class UserRoute {
 
-  public path = '/'
+  public path = '/user'
   public router = Router();
   public userController = new UserController();
 
@@ -14,7 +14,7 @@ class UserRoute {
   }
 
   private initializeRoutes() {
-    this.router.get('/:telegramid',this.userController.findUser)
+    this.router.get(`${this.path}/:telegramid`,this.userController.findUser)
   }
 }
 

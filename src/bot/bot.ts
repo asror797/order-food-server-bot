@@ -9,6 +9,7 @@ class BotService {
 
   constructor(private token: string) {
     this.bot = new TelegramBot(token, { polling: true });
+    // this.initialize()
   }
 
   public initialize() {
@@ -17,6 +18,7 @@ class BotService {
     this.bot.on('inline_query', this.handleInlineQuery.bind(this));
     this.bot.on('polling_error', this.handlePollingError.bind(this));
     this.bot.on('contact', this.registerUser.bind(this));
+    console.log('Bot initialized')
   }
 
   private async registerUser(msg:Message) {
@@ -89,6 +91,8 @@ class BotService {
       } else {
         this.bot.sendMessage(chatId,'Foydalanuvchi topilmadi')
       }
+    } else if( messageText == '🛒 Savat') {
+      this.bot.sendMessage(chatId,"Bo'sh",{ reply_markup: FoodMenu })
     } else {
       // Handle other messages
       this.bot.sendMessage(chatId, 'I do not understand that command. Type /help for a list of available commands.');
