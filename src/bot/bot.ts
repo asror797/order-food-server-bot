@@ -18,6 +18,9 @@ class BotService {
     this.bot.on('inline_query', this.handleInlineQuery.bind(this));
     this.bot.on('polling_error', this.handlePollingError.bind(this));
     this.bot.on('contact', this.registerUser.bind(this));
+    this.bot.on('polling_error', (error) => {
+      console.error(`Polling error: ${error.message}`);
+  });
     console.log('Bot initialized')
   }
 
@@ -52,51 +55,58 @@ class BotService {
     const chatId = msg.chat.id;
     const messageText = msg.text || '';
 
-    if (messageText.startsWith('/start')) {
-      // Handle the /start command
-      interface IisExist {
-        message: string
-        data: IUser | null | any
-      }
-      const isExist: IisExist = await this.users.isExist(chatId);
 
-      console.log(isExist)
-
-      if(isExist.data) {
-        this.bot.sendMessage(chatId,'Xush kelibsiz',{ reply_markup: MainMenu})
+    try {
+      
+      if (messageText.startsWith('/start')) {
+        // Handle the /start command
+        interface IisExist {
+          message: string
+          data: IUser | null | any
+        }
+        const isExist: IisExist = await this.users.isExist(chatId);
+  
+        console.log(isExist)
+  
+        if(isExist.data) {
+          this.bot.sendMessage(chatId,'Xush kelibsiz',{ reply_markup: MainMenu})
+        } else {
+          console.log(msg)
+          this.bot.sendMessage(chatId,"Siz ro‘yxatdan o‘tmagansiz",{ reply_markup: ShareContact })
+        }
+      } else if (messageText.startsWith('/help')) {
+        // Handle the /help command
+        this.bot.sendMessage(chatId, 'Available commands:\n/help - Show this help message\n/echo [text] - Echo your message');
+      } else if (messageText.startsWith('/echo')) {
+        // Handle the /echo command
+        const echoMessage = messageText.split('/echo')[1]?.trim();
+        if (echoMessage) {
+          this.bot.sendMessage(chatId, `You said: ${echoMessage}`);
+        } else {
+          this.bot.sendMessage(chatId, 'Please provide text to echo.');
+        }
+      } else if( messageText == '🍽 Menu') {
+        this.bot.sendMessage(chatId,'Buyurma bering',{ reply_markup: FoodMenu })
+      }  else if( messageText == 'Asosiy menu') {
+        this.bot.sendMessage(chatId,'Buyurma bering',{ reply_markup: MainMenu })
+      } else if( messageText == '💰 Balans') {
+  
+        const userBalance: IUser | null = await this.users.getBalance(chatId);
+        if(userBalance) {
+          this.bot.sendMessage(chatId,`<b>Ism</b>: ${userBalance.first_name} ${userBalance.last_name}\n<b>Balans</b>: ${userBalance.balance} So'm\n<b>Status</b>: ${userBalance.is_active ? "tasdiqlangan" : "tasdiqlanmagan"}`,{ parse_mode:"HTML"});
+        } else {
+          this.bot.sendMessage(chatId,'Foydalanuvchi topilmadi')
+        }
+      } else if( messageText == '🛒 Savat') {
+        this.bot.sendMessage(chatId,"Bo'sh",{ reply_markup: FoodMenu })
       } else {
-        console.log(msg)
-        this.bot.sendMessage(chatId,"Siz ro‘yxatdan o‘tmagansiz",{ reply_markup: ShareContact })
+        // Handle other messages
+        this.bot.sendMessage(chatId, 'I do not understand that command. Type /help for a list of available commands.');
       }
-    } else if (messageText.startsWith('/help')) {
-      // Handle the /help command
-      this.bot.sendMessage(chatId, 'Available commands:\n/help - Show this help message\n/echo [text] - Echo your message');
-    } else if (messageText.startsWith('/echo')) {
-      // Handle the /echo command
-      const echoMessage = messageText.split('/echo')[1]?.trim();
-      if (echoMessage) {
-        this.bot.sendMessage(chatId, `You said: ${echoMessage}`);
-      } else {
-        this.bot.sendMessage(chatId, 'Please provide text to echo.');
-      }
-    } else if( messageText == '🍽 Menu') {
-      this.bot.sendMessage(chatId,'Buyurma bering',{ reply_markup: FoodMenu })
-    }  else if( messageText == 'Asosiy menu') {
-      this.bot.sendMessage(chatId,'Buyurma bering',{ reply_markup: MainMenu })
-    } else if( messageText == '💰 Balans') {
-
-      const userBalance: IUser | null = await this.users.getBalance(chatId);
-      if(userBalance) {
-        this.bot.sendMessage(chatId,`<b>Ism</b>: ${userBalance.first_name} ${userBalance.last_name}\n<b>Balans</b>: ${userBalance.balance} So'm\n<b>Status</b>: ${userBalance.is_active ? "tasdiqlangan" : "tasdiqlanmagan"}`,{ parse_mode:"HTML"});
-      } else {
-        this.bot.sendMessage(chatId,'Foydalanuvchi topilmadi')
-      }
-    } else if( messageText == '🛒 Savat') {
-      this.bot.sendMessage(chatId,"Bo'sh",{ reply_markup: FoodMenu })
-    } else {
-      // Handle other messages
-      this.bot.sendMessage(chatId, 'I do not understand that command. Type /help for a list of available commands.');
+    } catch (error) {
+      console.log(error)
     }
+
   }
 
   private handleCallbackQuery(callbackQuery: CallbackQuery) {
@@ -122,7 +132,7 @@ class BotService {
   }
 }
 
-const token = '5617632676:AAHSSTgKmdvAJux5BsxHEYAV6RM2e0GlYis';
+const token = '5398672106:AAF_zgtGfTYwu9_F-uTg1S1LrbhLzR2VKkk';
 
 const botService = new BotService(token);
 

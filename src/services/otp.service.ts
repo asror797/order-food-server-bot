@@ -1,8 +1,6 @@
 import redisService from "./redis.service";
 
 
-
-
 class OtpService {
 
   private redisService = redisService;

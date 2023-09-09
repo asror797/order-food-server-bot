@@ -31,10 +31,16 @@ class UserService {
     return newUser;
   }
 
-  public async getAll() {
-    const allUsers = await this.users.find().exec();
+  public async getUsers(page:number,size:number) {
+    const skip = (page - 1) * size
 
-    return allUsers;
+    const users = await this.users.find()
+                .select('-updatedAt')
+               .skip(skip)
+               .limit(size)
+               .populate('org')
+               .exec();
+    return users;
   }
 
   public async getBalance(telegramID: number):Promise<IUser | null> {
@@ -42,6 +48,10 @@ class UserService {
       telegram_id: telegramID
     }) 
     return user
+  }
+
+  public updateUser(userData:string) {
+
   }
 
 }

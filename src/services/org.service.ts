@@ -6,12 +6,16 @@ class OrgService {
 
   private orgs = orgModel;
 
-  public async get():Promise<IOrg[]> {
+  public async get() {
     return await this.orgs.find().exec();
   }
 
-  public createOrg(orgData:string) {
+  public async createOrg(name: string) {
+    const newOrg = await this.orgs.create({
+      name_org: name
+    });
 
+    return newOrg;
   }
 
   public update() {

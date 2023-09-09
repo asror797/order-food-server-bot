@@ -5,12 +5,16 @@ class RedisService {
   private client: redis.RedisClientType;
 
   private constructor() {
+    // this.client = redis.createClient({
+    //     socket: {
+    //       host: 'redis-15527.c13.us-east-1-3.ec2.cloud.redislabs.com',
+    //       port: 15527
+    //   },
+    //   password:'ov92x5xCUzpDhFEngoBS64euVfIHZUhY'
+    // });
+
     this.client = redis.createClient({
-        socket: {
-          host: 'redis-15527.c13.us-east-1-3.ec2.cloud.redislabs.com',
-          port: 15527
-      },
-      password:'ov92x5xCUzpDhFEngoBS64euVfIHZUhY'
+      url:'redis://localhost:6379',
     });
 
     this.client.connect()

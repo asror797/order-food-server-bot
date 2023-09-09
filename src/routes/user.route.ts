@@ -15,6 +15,7 @@ class UserRoute {
 
   private initializeRoutes() {
     this.router.get(`${this.path}/:telegramid`,this.userController.findUser)
+    this.router.get(`${this.path}`,this.userController.getUsers)
   }
 }
 

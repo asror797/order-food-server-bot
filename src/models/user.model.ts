@@ -31,7 +31,6 @@ const userSchema: Schema = new Schema(
     org: {
       type: Schema.Types.ObjectId,
       ref:'Org',
-      default: null
     },
     roles: {
       type: [
