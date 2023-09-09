@@ -12,6 +12,14 @@ const productSchema: Schema = new Schema(
     name: {
       type: String,
       required: true
+    },
+    min_amount: {
+      type: Number,
+      default:0
+    },
+    unit: {
+      type: String,
+
     }
   },
   {
@@ -20,7 +28,6 @@ const productSchema: Schema = new Schema(
   }
 );
 
-
-const productModel = model<IProduct & Document >('Product',productSchema);
+const productModel = model<IProduct & Document>('Product',productSchema);
 
 export default productModel;

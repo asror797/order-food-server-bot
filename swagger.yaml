@@ -3,3 +3,123 @@ info:
   title: Woodline Kitchen Bot
   description: Woodline kitchen server api 
   version: 1.0.0
+
+tags:
+  - name: User
+    descriptions: Api for users
+  - name: Product
+    descriptions: Api for products
+  - name: Food
+    description: Api for Foods
+  - name: Order
+    description: Api for Orders
+
+paths:
+  /books:
+    get:
+      summary: Retrieve a list of books
+      tags:
+        - User
+      parameters:
+        - name: page
+          in: query
+          description: ''
+          type: integer
+          minimum: 1
+          default: 1
+        - name: perPage
+          in: query
+          description: ''
+          type: integer
+          minimum: 1
+          default: 10
+      responses:
+        200:
+          description: Successfully retrieved the list of books
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Book'
+  #   post:
+  #     summary: Create a new book
+  #     parameters:
+  #       - name: book
+  #         in: body
+  #         required: true
+  #         schema:
+  #           $ref: '#/definitions/Book'
+  #     responses:
+  #       201:
+  #         description: Successfully created a new book
+  #       400:
+  #         description: Bad request. Invalid input data.
+
+  /books/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: integer
+        format: int64
+    get:
+      summary: Retrieve a book by ID
+      tags:
+        - Book
+      responses:
+        200:
+          description: Successfully retrieved the book
+          schema:
+            $ref: '#/definitions/Book'
+        404:
+          description: Book not found
+  #   put:
+  #     summary: Update a book by ID
+  #     parameters:
+  #       - name: book
+  #         in: body
+  #         required: true
+  #         schema:
+  #           $ref: '#/definitions/Book'
+  #     responses:
+  #       200:
+  #         description: Successfully updated the book
+  #       404:
+  #         description: Book not found
+  #       400:
+  #         description: Bad request. Invalid input data.
+  #   delete:
+  #     summary: Delete a book by ID
+  #     responses:
+  #       204:
+  #         description: Successfully deleted the book
+  #       404:
+  #         description: Book not found
+
+definitions:
+  Book:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      title:
+        type: string
+        example: "The Great Gatsby"
+      author:
+        type: string
+        example: "F. Scott Fitzgerald"
+  User:
+    type: object
+    properties:
+      id:
+        type: string
+      first_name:
+        type: string
+        example: "Javohir"
+      last_name: 
+        type: string
+        example: "Abdumalikov"
+      phone_number:
+        type: string
+        example: "998909336272"
