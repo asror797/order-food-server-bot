@@ -1,4 +1,5 @@
-import { CreateUserDto } from "../dtos/user.dto";
+import { ChangeStatus, CreateUserDto } from "../dtos/user.dto";
+import { httException } from "../exceptions/httpException";
 import { IUser } from "../interfaces/user.interface";
 import userModel from "../models/user.model";
 
@@ -52,6 +53,27 @@ class UserService {
 
   public updateUser(userData:string) {
 
+  }
+
+
+  public async changeStatus(userData:ChangeStatus) {
+    const { user , type } = userData;
+    const isExist = await this.users.findById(user);
+
+    if(!isExist) throw new httException(400,'user not exist');
+    if( type == 'verify' ) {  
+      return await this.users.findOneAndUpdate(
+        {
+          _id: user
+        },
+        {
+          is_active: true,
+          is_verified: true
+        }
+      )
+    } else {
+      return {}
+    }
   }
 
 }

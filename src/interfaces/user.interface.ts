@@ -13,7 +13,6 @@ export interface IUser extends Document {
   last_name: string
   phone_number: string
   is_active: boolean
-  is_deleted: boolean
   is_verified: boolean
   telegram_id: number
   language_code: string

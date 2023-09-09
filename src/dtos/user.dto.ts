@@ -14,3 +14,11 @@ export class CreateUserDto {
   @IsString()
   public phone_number: string;
 }
+
+export class ChangeStatus {
+  @IsString()
+  user: string;
+
+  @IsString()
+  type: string;
+}

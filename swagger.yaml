@@ -5,6 +5,8 @@ info:
   version: 1.0.0
 
 tags:
+  - name: Auth
+    description: Api for Auth
   - name: User
     descriptions: Api for users
   - name: Product
@@ -15,7 +17,7 @@ tags:
     description: Api for Orders
 
 paths:
-  /books:
+  /user:
     get:
       summary: Retrieve a list of books
       tags:
@@ -39,7 +41,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Book'
+              $ref: '#/definitions/User'
   #   post:
   #     summary: Create a new book
   #     parameters:
@@ -53,6 +55,16 @@ paths:
   #         description: Successfully created a new book
   #       400:
   #         description: Bad request. Invalid input data.
+  /user/status:
+    put:
+      summary: Change status of user
+      tags:
+        - User
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/book'
 
   /books/{id}:
     parameters:
@@ -94,6 +106,16 @@ paths:
   #         description: Successfully deleted the book
   #       404:
   #         description: Book not found
+  /auth:
+    get:
+      summary: get info
+      tags:
+        - Auth
+
+    post:
+      summary: login user
+      tags:
+        - Auth
 
 definitions:
   Book:
@@ -123,3 +145,22 @@ definitions:
       phone_number:
         type: string
         example: "998909336272"
+      balance:
+        type: number
+        example: 0
+      telegram_id:
+        type: number 
+        example: 458985665
+      is_active: 
+        type: boolean
+      is_verified:
+        type: boolean
+      roles:
+        type: array
+        example: ["user"]
+      language_code: 
+        type: string
+        example: "uz"
+      createdAt:
+        type: string
+        example: "2023-09-09T07:12:45.784Z"

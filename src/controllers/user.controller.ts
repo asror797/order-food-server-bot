@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import UserService from "../services/user.service";
-import { CreateUserDto } from "../dtos/user.dto";
+import { ChangeStatus, CreateUserDto } from "../dtos/user.dto";
 import { ParsedQs } from "qs";
 
 
@@ -35,6 +35,16 @@ class UserController {
       res.json(newUser)
     } catch (error) {
       console.log(error)
+      next(error)
+    }
+  }
+
+  public updateStatus = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const userData:ChangeStatus = req.body.data
+      res.json(await this.userService.changeStatus(userData));
+    } catch (error) {
+      next(error)
     }
   }
 

@@ -10,10 +10,10 @@ class ProductService {
     const skip = (page - 1) * size
 
     const products = await this.products.find()
-                .select('-updatedAt')
-               .skip(skip)
-               .limit(size)
-               .exec();
+              .select('-updatedAt')
+              .skip(skip)
+              .limit(size)
+              .exec();
     return products;
   }
 
@@ -29,7 +29,6 @@ class ProductService {
   public async increaseAmount() {
     
   }
-
 }
 
 
