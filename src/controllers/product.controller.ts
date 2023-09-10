@@ -23,7 +23,7 @@ class ProductController {
     try {
       const name: string  = req.body.name;
 
-      res.json(await this.productService.createNew(name))
+      // res.json(await this.productService.createNew(name))
     } catch (error) {
       next(error)
     }

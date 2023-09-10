@@ -1,3 +1,4 @@
+import { CreateProduct } from "../dtos/product.dto";
 import productModel from "../models/product.model";
 
 
@@ -15,12 +16,10 @@ class ProductService {
     return products;
   }
 
-  public async createNew(productData: string) {
-    const newProduct = await this.products.create({
-      name: productData
-    });
+  public async createNew(productData:CreateProduct) {
+    const newProduct = await this.products.create(productData);
 
-    return newProduct
+    return newProduct;
   }
 
 

@@ -94,9 +94,7 @@ class RedisService {
         });
 
         if(response) {
-          
           await this.setValue('otp-token',`${response}`)
-
         }
 
         console.log('token',response)
@@ -108,7 +106,7 @@ class RedisService {
     }
   }
 
-  public async saveLoginInfo(phone_number: string) {
+  public async saveLoginInfo(phone_number: string , code: string) {
 
   }
 }

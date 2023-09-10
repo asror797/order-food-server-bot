@@ -1,5 +1,5 @@
 import { Document, Schema, model } from "mongoose";
-import { IProduct } from "../interfaces/product.interface";
+import { IProduct, Units } from "../interfaces/product.interface";
 
 
 
@@ -19,7 +19,8 @@ const productSchema: Schema = new Schema(
     },
     unit: {
       type: String,
-
+      enum: Object.values(Units),
+      required: true
     }
   },
   {
