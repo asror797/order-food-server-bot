@@ -1,10 +1,8 @@
 import productModel from "../models/product.model";
 
 
-
 class ProductService {
   public products = productModel;
-
 
   public async getProducts(page:number,size:number) {
     const skip = (page - 1) * size

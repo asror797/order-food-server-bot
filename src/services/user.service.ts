@@ -2,6 +2,7 @@ import { ChangeStatus, CreateUserDto } from "../dtos/user.dto";
 import { httException } from "../exceptions/httpException";
 import { IUser } from "../interfaces/user.interface";
 import userModel from "../models/user.model";
+import { formatPhoneNumber } from "../utils/phoneNumberFormatter";
 
 
 
@@ -28,7 +29,11 @@ class UserService {
   }
 
   public async registirNewUser(userData: CreateUserDto ) {
-    const newUser = await this.users.create(userData);
+    const phone_number = formatPhoneNumber(userData.phone_number);
+    const newUser = await this.users.create({
+      ...userData,
+      phone_number
+    });
     return newUser;
   }
 
@@ -37,10 +42,10 @@ class UserService {
 
     const users = await this.users.find()
                 .select('-updatedAt')
-               .skip(skip)
-               .limit(size)
-               .populate('org')
-               .exec();
+                .skip(skip)
+                .limit(size)
+                .populate('org')
+                .exec();
     return users;
   }
 
