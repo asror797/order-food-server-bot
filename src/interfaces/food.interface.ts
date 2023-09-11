@@ -10,7 +10,7 @@ export enum Category {
 
 export interface IFood extends Document {
   is_active: boolean;
-  products: IProduct[];
+  products: [];
   name: string;
   cost: number;
   org: IOrg['_id'];

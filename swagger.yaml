@@ -42,19 +42,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/User'
-  #   post:
-  #     summary: Create a new book
-  #     parameters:
-  #       - name: book
-  #         in: body
-  #         required: true
-  #         schema:
-  #           $ref: '#/definitions/Book'
-  #     responses:
-  #       201:
-  #         description: Successfully created a new book
-  #       400:
-  #         description: Bad request. Invalid input data.
+
   /user/status:
     put:
       summary: Change status of user
@@ -66,46 +54,6 @@ paths:
           schema:
             $ref: '#/definitions/book'
 
-  /books/{id}:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        type: integer
-        format: int64
-    get:
-      summary: Retrieve a book by ID
-      tags:
-        - Book
-      responses:
-        200:
-          description: Successfully retrieved the book
-          schema:
-            $ref: '#/definitions/Book'
-        404:
-          description: Book not found
-  #   put:
-  #     summary: Update a book by ID
-  #     parameters:
-  #       - name: book
-  #         in: body
-  #         required: true
-  #         schema:
-  #           $ref: '#/definitions/Book'
-  #     responses:
-  #       200:
-  #         description: Successfully updated the book
-  #       404:
-  #         description: Book not found
-  #       400:
-  #         description: Bad request. Invalid input data.
-  #   delete:
-  #     summary: Delete a book by ID
-  #     responses:
-  #       204:
-  #         description: Successfully deleted the book
-  #       404:
-  #         description: Book not found
   /auth:
     get:
       summary: get info
@@ -120,7 +68,7 @@ paths:
 
   /product:
     get:
-      summary: Get Products
+      summary: Retrieve a list of products
       tags:
         - Product 
       parametrs:
@@ -143,6 +91,31 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Product'
+  /food:
+    get:
+      summary: Retrieve a list of foods
+      tags:
+        - Food
+      parameters:
+        - name: page
+          in: query
+          description: ''
+          type: integer
+          minimum: 1
+          default: 1
+        - name: size
+          in: query
+          description: ''
+          type: integer
+          minimum: 1
+          default: 10
+      responses:
+        200:
+          description: Successfully retrieved the list of books
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Food'
       
 
 definitions:
@@ -208,4 +181,22 @@ definitions:
       min_amount:
         type: number
         example: 5
+  Food:
+    type: object
+    properties: 
+      name:
+        type: string
+        example: "Shaftoli"
+      cost:
+        type: number
+        example: 5000
+      products:
+        type: array
+        example: []
+      org:
+        type: string
+        example: 'a878as8as18as187s'
+      category:
+        type: string
+        example: 'drinks'
 

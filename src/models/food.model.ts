@@ -12,7 +12,18 @@ const foodSchema: Schema = new Schema(
       default: 0
     },
     products: {
-      type: [],
+      type: [
+        {
+          amount: {
+            type: Number,
+            required: true
+          },
+          product: {
+            type: Schema.Types.ObjectId,
+            ref: 'product'
+          }
+        }
+      ],
       default:[]
     },
     org: {

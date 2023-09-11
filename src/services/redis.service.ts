@@ -90,7 +90,7 @@ class RedisService {
 
         let response = await nodefetch('https://notify.eskiz.uz/api/auth/login',{
           method:"POST",
-          body: formData
+          body: JSON.stringify(formData)
         });
 
         if(response) {
