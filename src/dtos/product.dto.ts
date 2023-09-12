@@ -2,6 +2,15 @@ import { IsString } from "class-validator";
 
 
 
+export class CreateProductBody {
+  @IsString()
+  name: string;
+
+  @IsString()
+  unit: string;
+}
+
+
 
 export class CreateProduct {
   @IsString()
@@ -9,4 +18,7 @@ export class CreateProduct {
 
   @IsString()
   unit: string;
+
+  @IsString()
+  org: string;
 }

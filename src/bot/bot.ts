@@ -2,10 +2,13 @@ import TelegramBot, { Message, CallbackQuery, InlineQueryResultArticle } from 'n
 import UserService from '../services/user.service';
 import { IUser } from '../interfaces/user.interface';
 import { FoodMenu, MainMenu, ShareContact } from './keyboards';
+import FoodService from '../services/food.service';
+import orgModel from '../models/org.model';
 
 class BotService {
   private bot: TelegramBot;
   private users = new UserService()
+  private foods = new FoodService()
 
   constructor(private token: string) {
     this.bot = new TelegramBot(token, { polling: true });
@@ -97,8 +100,38 @@ class BotService {
         } else {
           this.bot.sendMessage(chatId,'Foydalanuvchi topilmadi')
         }
+      } else if( messageText == '🥤Ichimlik') {
+        const user = await this.users.isExist(chatId)
+
+        console.log(user)
+
+        if(user.data) {
+          const foods = await this.foods.getFoodsForBot({
+            org: user.data.org,
+            category: 'drinks'
+          })
+          console.log(foods)
+          this.bot.sendMessage(chatId,`Ichimliklar: \n ${foods.map((e,i) => `\n${i+1}. ${e.name} - ${e.cost} so'm`)}`)
+        } else {
+          this.bot.sendMessage(chatId,'Siz Tasdiqlanmagansiz')
+        }
       } else if( messageText == '🛒 Savat') {
         this.bot.sendMessage(chatId,"Bo'sh",{ reply_markup: FoodMenu })
+      } else if( messageText == '🌮 Gazaklar') {
+        const user = await this.users.isExist(chatId)
+
+        console.log(user)
+
+        if(user.data) {
+          const foods = await this.foods.getFoodsForBot({
+            org: user.data.org,
+            category: 'snacks'
+          })
+          console.log(foods)
+          this.bot.sendMessage(chatId,`Gazaklar: \n ${foods.map((e,i) => `\n${i+1}. ${e.name} - ${e.cost} so'm`)}`)
+        } else {
+          this.bot.sendMessage(chatId,'Siz Tasdiqlanmagansiz')
+        }
       } else {
         // Handle other messages
         this.bot.sendMessage(chatId, 'I do not understand that command. Type /help for a list of available commands.');

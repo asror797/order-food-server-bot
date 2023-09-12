@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import FoodService from "../services/food.service";
 import { ParsedQs } from "qs";
+import { CreateFood } from "../dtos/food.dto";
 
 
 
@@ -15,6 +16,15 @@ class FoodController {
 
       const foods = await this.foodService.getFoods(page,size)
       res.json(foods)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public createFood = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const foodData:CreateFood = req.body
+      res.json(await this.foodService.creatNew(foodData))
     } catch (error) {
       next(error)
     }

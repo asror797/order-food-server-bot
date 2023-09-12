@@ -2,7 +2,6 @@ import { Router } from "express";
 import FoodController from "../controllers/food.controller";
 
 
-
 class FoodRoute {
   public path = '/food'
   public router = Router()
@@ -14,6 +13,7 @@ class FoodRoute {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`,this.foodController.getFoods)
+    this.router.post(`${this.path}`,this.foodController.createFood)
   }
 }
 

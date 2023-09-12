@@ -17,9 +17,18 @@ const productSchema: Schema = new Schema(
       type: Number,
       default:0
     },
+    cost: {
+      type: Number,
+      default: 0
+    },
     unit: {
       type: String,
       enum: Object.values(Units),
+      required: true
+    },
+    org: {
+      type: Schema.Types.ObjectId,
+      ref: 'Org',
       required: true
     }
   },

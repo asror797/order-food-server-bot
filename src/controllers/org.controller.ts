@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import OrgService from "../services/org.service";
+import { ParsedQs } from "qs";
 
 
 
@@ -7,9 +8,11 @@ class OrgController {
   public orgService = new OrgService();
 
 
-  public get = async(req:Request,res:Response,next:NextFunction) => {
+  public get = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
     try {
-      res.json(await this.orgService.get())
+      const page = parseInt(req.query.page as string) || 1;
+      const size = parseInt(req.query.size as string) || 10;
+      res.json(await this.orgService.get(page,size))
     } catch (error) {
       console.log(error)
       next(error)
@@ -19,7 +22,10 @@ class OrgController {
   public createOrg = async(req:Request,res:Response,next:NextFunction) => {
     try {
       const newOrg = await this.orgService.createOrg(req.body.name_org);
-      res.json(newOrg)
+      res.json({
+        _id: newOrg['_id'],
+        name_org: newOrg.name_org
+      })
     } catch (error) {
       console.log(error)
       next(error)

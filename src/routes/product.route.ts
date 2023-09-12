@@ -15,6 +15,7 @@ class ProductRoute {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`,this.productController.getProducts)
+    this.router.post(`${this.path}`,this.productController.createProduct)
   }
 }
 

@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import ProductService from "../services/product.service";
 import { ParsedQs } from "qs";
+import { CreateProduct, CreateProductBody } from "../dtos/product.dto";
+import { RequestWithUser } from "../interfaces/auth.interface";
 
 
 
@@ -19,11 +21,14 @@ class ProductController {
     }
   }
 
-  public createProduct = async(req:Request,res:Response,next:NextFunction) => {
+  public createProduct = async(req:RequestWithUser,res:Response,next:NextFunction) => {
     try {
-      const name: string  = req.body.name;
-
-      // res.json(await this.productService.createNew(name))
+      const bodyData: CreateProductBody  = req.body;
+      const productData: CreateProduct = {
+        ...bodyData,
+        org: req.user?.org || req.body.org
+      }
+      res.json(await this.productService.createNew(productData))
     } catch (error) {
       next(error)
     }

@@ -22,3 +22,18 @@ export class ChangeStatus {
   @IsString()
   type: string;
 }
+
+
+export class UpdateUserDto {
+  @IsString()
+  _id: string;
+
+  @IsString()
+  org: string;
+
+  @IsString()
+  first_name: string
+
+  @IsString()
+  last_name: string
+}

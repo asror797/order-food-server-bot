@@ -14,13 +14,14 @@ const foodSchema: Schema = new Schema(
     products: {
       type: [
         {
+          product: {
+            type: Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true
+          },
           amount: {
             type: Number,
             required: true
-          },
-          product: {
-            type: Schema.Types.ObjectId,
-            ref: 'product'
           }
         }
       ],

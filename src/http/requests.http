@@ -9,6 +9,26 @@ Content-Type: application/json
 
 
 
+### update user
+PUT http://localhost:9000/user 
+Content-Type: application/json 
+
+{
+  "_id":"64ff00bb49490c972a59020c",
+  "org":"650001df0394e11e1233e3cb"
+}
+
+
+### GET User
+GET http://localhost:9000/user 
+Content-Type: application/json
+
+
+### GET Org
+GET http://localhost:9000/product 
+Content-Type: application/json
+
+
 ### POST
 POST http://localhost:9000/settings/otp-info
 Content-Type: application/json
@@ -16,4 +36,65 @@ Content-Type: application/json
 {
   "email":"asrorshahobiddinov509@gmail.com",
   "password":"gF5rDbmX8YLP7fcpU6RRZdDeSJzkq3feb8RAwEIV"
+}
+
+
+
+### Create Product
+POST http://localhost:9000/product 
+Content-Type: application/json
+
+{
+  "name":"",
+  "unit":""
+}
+
+
+
+### Login
+POST http://localhost:9000/auth 
+Content-Type: application/json
+
+{
+  "phone_number":"913650221",
+  "password":"12345678"
+}
+
+
+
+
+
+### get product
+GET http://localhost:9000/food 
+Content-Type: application/json
+
+
+### Create Prouct
+POST http://localhost:9000/product
+Content-Type: application/json
+
+{
+  "name":"Sneackers",
+  "unit":"dona",
+  "org":"650001df0394e11e1233e3cb",
+  "cost":9000
+}
+
+
+
+### Create Food
+POST http://localhost:9000/food 
+Content-Type: application/json 
+
+{
+  "name":"Snackers",
+  "org":"650001df0394e11e1233e3cb",
+  "cost":9000,
+  "products": [
+    {
+      "product":"6500470eaf2c08b6c4628a2b",
+      "amount":1
+    }
+  ],
+  "category":"snacks"
 }

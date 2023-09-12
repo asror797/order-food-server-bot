@@ -12,6 +12,7 @@ export enum Units {
 export interface IProduct extends Document {
   name: string;
   amount: number;
+  cost: number;
   org: IOrg['_id'];
   unit: Units
 }

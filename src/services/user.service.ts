@@ -1,7 +1,7 @@
-import { ChangeStatus, CreateUserDto } from "../dtos/user.dto";
+import userModel from "../models/user.model";
+import { ChangeStatus, CreateUserDto, UpdateUserDto } from "../dtos/user.dto";
 import { httException } from "../exceptions/httpException";
 import { IUser } from "../interfaces/user.interface";
-import userModel from "../models/user.model";
 import { formatPhoneNumber } from "../utils/phoneNumberFormatter";
 
 
@@ -44,7 +44,7 @@ class UserService {
                 .select('-updatedAt')
                 .skip(skip)
                 .limit(size)
-                .populate('org')
+                .populate('org','name_org')
                 .exec();
     return users;
   }
@@ -56,8 +56,10 @@ class UserService {
     return user
   }
 
-  public updateUser(userData:string) {
+  public async updateUser(userData:UpdateUserDto) {
+    const updatedUser = await this.users.findByIdAndUpdate(userData['_id'],userData)
 
+    return updatedUser;
   }
 
 
