@@ -3,6 +3,14 @@ import { IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
 
 
 
+export class GetOrderDto {
+  @IsNumber()
+  page: number
+  @IsNumber()
+  size: number
+}
+
+
 class FoodWithAmount {
   @IsString()
   food: string;

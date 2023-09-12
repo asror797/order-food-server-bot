@@ -9,12 +9,17 @@ class OrderService {
   public orders = orderModel;
   public foods = foodModel;
 
-  public async getOrders() {
-    return await this.orders.find().exec()
+  public async getOrders(page: number , size: number) {
+    const skip = (page - 1) * size
+    return await this.orders.find()
+              .limit(size)
+              .skip(skip)
+              .exec()
+    
   }
 
   public async getOrderForBot() {
-    
+
   }
 
   public async createOrder(orderData:CreateOrderDto) {
