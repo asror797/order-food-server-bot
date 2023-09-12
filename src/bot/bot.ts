@@ -132,6 +132,21 @@ class BotService {
         } else {
           this.bot.sendMessage(chatId,'Siz Tasdiqlanmagansiz')
         }
+      } else if( messageText == '🍰 Desert') {
+        const user = await this.users.isExist(chatId)
+
+        console.log(user)
+
+        if(user.data) {
+          const foods = await this.foods.getFoodsForBot({
+            org: user.data.org,
+            category: 'dessert'
+          })
+          console.log(foods)
+          this.bot.sendMessage(chatId,`Dessertlar: \n ${foods.map((e,i) => `\n${i+1}. ${e.name} - ${e.cost} so'm`)}`)
+        } else {
+          this.bot.sendMessage(chatId,'Siz Tasdiqlanmagansiz')
+        }
       } else {
         // Handle other messages
         this.bot.sendMessage(chatId, 'I do not understand that command. Type /help for a list of available commands.');
