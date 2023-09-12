@@ -9,17 +9,16 @@ class OrderService {
   public orders = orderModel;
   public foods = foodModel;
 
-  public async getOrders(page: number , size: number) {
+  public async getOrders(page:number , size:number) {
     const skip = (page - 1) * size
     return await this.orders.find()
               .limit(size)
               .skip(skip)
               .exec()
-    
   }
 
-  public async getOrderForBot() {
-
+  public async getOrderForBot(orderData:any) {
+    const { client , page , size } = orderData;
   }
 
   public async createOrder(orderData:CreateOrderDto) {
@@ -29,7 +28,7 @@ class OrderService {
     let total_cost: number = 0
 
     for (const { food , amount } of foods) {
-      const isExist = await this.foods.findById(food)
+      const isExist = await this.foods.findById(food);
 
       if(!isExist) throw new httException(400,`This food ${food} not found`);
 

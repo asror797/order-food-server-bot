@@ -1,12 +1,12 @@
 
-import redisService from "../services/redis.service"
+// import redisService from "../services/redis.service"
 
-export const sendotp = async() => {
-  const token = await redisService.getOtpToken();
+// export const sendotp = async() => {
+//   const token = await redisService.getOtpToken();
 
   
-} 
+// } 
 
-const refreshToken = async() => {
+// const refreshToken = async() => {
 
-}
+// }

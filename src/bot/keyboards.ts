@@ -69,3 +69,9 @@ export const FoodMenu: ReplyKeyboardMarkup = {
   ],
   resize_keyboard: true,
 }
+
+
+
+export function PaginationInlineKeyboard(current:number,maxPage: number,data: string[]) {
+  const keys = []
+}

@@ -62,7 +62,6 @@ class BotService {
     try {
       
       if (messageText.startsWith('/start')) {
-        // Handle the /start command
         interface IisExist {
           message: string
           data: IUser | null | any
@@ -128,7 +127,62 @@ class BotService {
             category: 'snacks'
           })
           console.log(foods)
-          this.bot.sendMessage(chatId,`Gazaklar: \n ${foods.map((e,i) => `\n${i+1}. ${e.name} - ${e.cost} so'm`)}`)
+          this.bot.sendMessage(chatId,`Gazaklar: \n ${foods.map((e,i) => `\n${i+1}. ${e.name} - <b>${e.cost}</b> so'm`)}`,{ reply_markup: { inline_keyboard: [
+            [
+              { 
+                text:"1",
+                callback_data:'1'
+              },
+              { 
+                text:"2",
+                callback_data:'1'
+              },
+              { 
+                text:"3",
+                callback_data:'1'
+              },
+              { 
+                text:"4",
+                callback_data:'1'
+              },
+              { 
+                text:"5",
+                callback_data:'1'
+              },
+            ],
+            [
+              { 
+                text:"6",
+                callback_data:'1'
+              },
+              { 
+                text:"7",
+                callback_data:'1'
+              },
+              { 
+                text:"8",
+                callback_data:'1'
+              },
+              { 
+                text:"9",
+                callback_data:'1'
+              },
+              { 
+                text:"10",
+                callback_data:'1'
+              },
+            ],
+            [
+              {
+                text:"back",
+                callback_data:'back'
+              },
+              {
+                text:"next",
+                callback_data:"next"
+              }
+            ]
+          ]},parse_mode:'HTML'})
         } else {
           this.bot.sendMessage(chatId,'Siz Tasdiqlanmagansiz')
         }
@@ -143,7 +197,26 @@ class BotService {
             category: 'dessert'
           })
           console.log(foods)
-          this.bot.sendMessage(chatId,`Dessertlar: \n ${foods.map((e,i) => `\n${i+1}. ${e.name} - ${e.cost} so'm`)}`)
+          this.bot.sendMessage(chatId,`Dessertlar: \n ${foods.map((e,i) => `\n${i+1}. ${e.name} - ${e.cost} so'm`)}`,{ reply_markup: { inline_keyboard: [
+            [
+              { 
+                text:"1",
+                callback_data:'1'
+              },
+              { 
+                text:"2",
+                callback_data:'1'
+              },
+              { 
+                text:"3",
+                callback_data:'1'
+              },
+              { 
+                text:"4",
+                callback_data:'1'
+              },
+            ]
+          ]}})
         } else {
           this.bot.sendMessage(chatId,'Siz Tasdiqlanmagansiz')
         }

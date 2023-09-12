@@ -3,6 +3,7 @@ import { ChangeStatus, CreateUserDto, UpdateUserDto } from "../dtos/user.dto";
 import { httException } from "../exceptions/httpException";
 import { IUser } from "../interfaces/user.interface";
 import { formatPhoneNumber } from "../utils/phoneNumberFormatter";
+import botService from "../bot/bot";
 
 
 
@@ -57,6 +58,7 @@ class UserService {
   }
 
   public async updateUser(userData:UpdateUserDto) {
+    botService.sendText(5104936606,"Updayted")
     const updatedUser = await this.users.findByIdAndUpdate(userData['_id'],userData)
 
     return updatedUser;
