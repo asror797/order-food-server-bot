@@ -9,12 +9,20 @@ class OrgService {
   public async get(page:number,size:number) {
     const skip = (page - 1) * size
 
-    const products = await this.orgs.find()
+    const org = await this.orgs.find()
               .select('-updatedAt')
               .skip(skip)
               .limit(size)
               .exec();
-    return products;
+    const totalOrgs = await this.orgs.countDocuments().exec()
+    const totalPages = Math.ceil(totalOrgs / size)
+    return {
+      data: org,
+      currentPage: page,
+      totalPages,
+      totalOrgs,
+      orgsOnPage: org.length
+    };
   }
 
   public async createOrg(name: string) {

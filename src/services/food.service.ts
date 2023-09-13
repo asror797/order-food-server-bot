@@ -12,12 +12,12 @@ class FoodService {
     const skip = (page - 1) * size
 
     const foods = await this.foods.find()
-                .select('-updatedAt')
-                .skip(skip)
-                .limit(size)
-                .populate('products.product','name cost')
-                .exec();
-
+              .select('-updatedAt')
+              .skip(skip)
+              .limit(size)
+              .exec();
+    const totalFoods = await this.foods.countDocuments().exec()
+    const totalPages = Math.ceil(totalFoods / size)
     const formattedFoods = foods.map(food => ({
       ...food.toObject(), 
       products: food.products.map(productItem => ({
@@ -25,8 +25,14 @@ class FoodService {
         amount: productItem.amount,
       })),
     }));
-    
-    return formattedFoods;
+
+    return {
+      data: formattedFoods,
+      currentPage: page,
+      totalPages,
+      totalFoods,
+      foodsOnPage: formattedFoods.length
+    };
   }
 
   public async getFoodsForBot(getFood:GetFoods) {

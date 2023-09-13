@@ -11,10 +11,17 @@ class ProductService {
     const products = await this.products.find()
               .select('-updatedAt')
               .skip(skip)
-              .populate('org','name_org')
               .limit(size)
               .exec();
-    return products;
+    const totalProducts = await this.products.countDocuments().exec()
+    const totalPages = Math.ceil(totalProducts / size)
+    return {
+      data: products,
+      currentPage: page,
+      totalPages,
+      totalProducts,
+      productsOnPage: products.length
+    };
   }
 
   public async createNew(productData:CreateProduct) {

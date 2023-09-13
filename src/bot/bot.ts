@@ -173,71 +173,72 @@ class BotService {
     const chatId = callbackQuery.message?.chat.id;
     const data = callbackQuery.data
 
-    const inlineKeyboard = {
-      inline_keyboard: [
-        [{ text: 'Press Me', callback_data: 'button_pressed' }],
-      ],
-    };
+    try {
+      const inlineKeyboard = {
+        inline_keyboard: [
+          [{ text: 'Press Me', callback_data: 'count' }],
+        ],
+      };
+    
   
-
-    if((data == 'decrease' || data == 'increase' || data == 'count') && callbackQuery.message ) {
-      console.log('Callback',callbackQuery)
-      console.log('a',callbackQuery.message.reply_markup?.inline_keyboard[0])
-      
-      const message = callbackQuery.message
-      this.bot.editMessageReplyMarkup(inlineKeyboard, {
-        chat_id: message.chat.id,
-        message_id: message.message_id,
-      });
-
-    } else {
-      if(data && chatId && callbackQuery.message) {
-        await this.bot.deleteMessage(chatId, callbackQuery.message.message_id - 1);
-        this.bot.answerCallbackQuery(callbackQuery.id,{ text:"Pressed"});
-        const food = await this.foods.getById(data)
-        this.bot.sendPhoto(chatId, food.img ? food.img :'https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg',{
-          caption: `Nomi: <b>${food.name}</b>\nNarxi: <b>${food.cost}</b> so'm\nMavjud: <b>0</b> dona`,
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text:'-',
-                  callback_data: 'decrease'
-                },
-                {
-                  text:'0',
-                  callback_data: 'count'
-                },
-                {
-                  text:'+',
-                  callback_data: 'increase'
-                }
-              ],
-              [
-                {
-                  text:'Savatga Saqlash',
-                  callback_data:'store'
-                }
-              ]
-            ]
-          },
-          parse_mode:'HTML'
+      if((data == 'decrease' || data == 'increase' || data == 'count') && callbackQuery.message ) {
+        console.log('Callback',callbackQuery)
+        console.log('a',callbackQuery.message.reply_markup?.inline_keyboard[0])
+        
+        const message = callbackQuery.message
+        this.bot.editMessageReplyMarkup(inlineKeyboard, {
+          chat_id: message.chat.id,
+          message_id: message.message_id,
         });
+  
+      } else {
+        if(data && chatId && callbackQuery.message) {
+          await this.bot.deleteMessage(chatId, callbackQuery.message.message_id - 1);
+          this.bot.answerCallbackQuery(callbackQuery.id,{ text:"Pressed"});
+          const food = await this.foods.getById(data)
+          this.bot.sendPhoto(chatId, food.img ? food.img :'https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg',{
+            caption: `Nomi: <b>${food.name}</b>\nNarxi: <b>${food.cost}</b> so'm\nMavjud: <b>0</b> dona`,
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text:'-',
+                    callback_data: 'decrease'
+                  },
+                  {
+                    text:'0',
+                    callback_data: 'count'
+                  },
+                  {
+                    text:'+',
+                    callback_data: 'increase'
+                  }
+                ],
+                [
+                  {
+                    text:"Savatga Qo'shish ✅",
+                    callback_data:'store'
+                  }
+                ]
+              ]
+            },
+            parse_mode:'HTML'
+          });
+        }
       }
+    } catch (error) {
+      console.log(error)
+      if(chatId) {
+        this.bot.sendMessage(chatId,'simple dimple')
+      }
+        
     }
-
-    // console.log(callbackQuery.message)
-    // console.log(chatId,data)
-
-    // Handle callback queries if needed
   }
 
   private handleInlineQuery(query: TelegramBot.InlineQuery) {
     const inlineQueryId = query.id;
     const queryText = query.query;
     console.log(inlineQueryId)
-
-    // Handle inline queries if needed
   }
 
   private handlePollingError(error: Error) {

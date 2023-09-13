@@ -42,12 +42,19 @@ class UserService {
     const skip = (page - 1) * size
 
     const users = await this.users.find()
-                .select('-updatedAt')
-                .skip(skip)
-                .limit(size)
-                .populate('org','name_org')
-                .exec();
-    return users;
+              .select('-updatedAt')
+              .skip(skip)
+              .limit(size)
+              .exec();
+    const totalUsers = await this.users.countDocuments().exec()
+    const totalPages = Math.ceil(totalUsers / size)
+    return {
+      data: users,
+      currentPage: page,
+      totalPages,
+      totalUsers,
+      usersOnPage: users.length
+    };
   }
 
   public async getBalance(telegramID: number):Promise<IUser | null> {

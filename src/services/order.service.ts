@@ -11,10 +11,21 @@ class OrderService {
 
   public async getOrders(page:number , size:number) {
     const skip = (page - 1) * size
-    return await this.orders.find()
-              .limit(size)
+
+    const orders = await this.orders.find()
+              .select('-updatedAt')
               .skip(skip)
-              .exec()
+              .limit(size)
+              .exec();
+    const totalorders = await this.orders.countDocuments().exec()
+    const totalPages = Math.ceil(totalorders / size)
+    return {
+      data: orders,
+      currentPage: page,
+      totalPages,
+      totalorders,
+      productsOnPage: orders.length
+    };
   }
 
   public async getOrderForBot(orderData:any) {
