@@ -142,6 +142,21 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Product'
+    post:
+      summary: Create Product
+      tags:
+        - Product
+      parameters:
+        - name: body
+          in: body
+          description: create Product
+          required: true
+          schema:
+            $ref: '#/definitions/CreateProduct'
+      responses:
+        200:
+          description: Org created
+      
   /food:
     get:
       summary: Retrieve a list of foods
@@ -167,7 +182,17 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Food'
-      
+    post:
+      summary: Create Food
+      tags:
+        - Food
+      parameters:
+        - name: body
+          in: body
+          description: Create Food
+          required: true
+          schema: 
+            $ref: '#/definitions/CreateFood'  
 
 definitions:
   User:
@@ -218,7 +243,16 @@ definitions:
         example: 0
       min_amount:
         type: number
-        example: 5
+        example: 5 
+  CreateProduct:
+    type: object
+    properties:
+      name:
+        type: string
+      org:
+        type: string
+      unit:
+        type: string
   Food:
     type: object
     properties: 
@@ -237,6 +271,27 @@ definitions:
       category:
         type: string
         example: 'drinks'
+  CreateFood:
+    type: object
+    properties:
+      name:
+        type: string
+      cost:
+        type: number
+      products:
+        type: array
+        items:
+          type: object
+          properties:
+            product:
+              type: string
+            amount:
+              type: number
+      org: 
+        type: string
+      category:
+        type: string
+
   UserInput:
     type: object
     properties:

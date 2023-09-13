@@ -81,6 +81,14 @@ class FoodService {
     return foods;
   }
 
+  public async getById(id: string) {
+    const food = await this.foods.findById(id).exec();
+
+    if(!food) throw new httException(400,`${id} id  food not found`)
+
+    return food;
+  }
+
 }
 
 

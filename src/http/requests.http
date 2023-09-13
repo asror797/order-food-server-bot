@@ -14,8 +14,9 @@ PUT http://localhost:9000/user
 Content-Type: application/json 
 
 {
-  "_id":"64ff00a049490c972a590207",
-  "org":"650001df0394e11e1233e3cb"
+  "_id":"65016bcbe7a058d7ff8488b7",
+  "is_active": true,
+  "is_verified": true
 }
 
 
@@ -97,6 +98,15 @@ Content-Type: application/json
     }
   ],
   "category":"snacks"
+}
+
+
+### Send MEsas
+POST  http://localhost:9000/user/send-message 
+Content-Type: application/json 
+
+{
+  "message":"nima gap Rasul oka"
 }
 
 

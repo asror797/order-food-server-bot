@@ -17,6 +17,7 @@ export interface IFood extends Document {
   products: ProductWithAmount[];
   name: string;
   cost: number;
+  img: string;
   org: IOrg['_id'];
   category: Category;
 }

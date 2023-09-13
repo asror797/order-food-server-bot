@@ -57,6 +57,14 @@ class UserController {
     }
   }
 
+  public sendMessage = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      res.json(await this.userService.sendMessageToUsers(req.body.message));
+    } catch (error) {
+      next(error)
+    }
+  }
+
 }
 
 

@@ -71,7 +71,69 @@ export const FoodMenu: ReplyKeyboardMarkup = {
 }
 
 
+export const SendNote: ReplyKeyboardMarkup = {
+  keyboard: [
+    [
+      {
+        text:'Yuborish'
+      }
+    ]
+  ]
+}
 
-export function PaginationInlineKeyboard(current:number,maxPage: number,data: string[]) {
-  const keys = []
+
+
+// export function PaginationInlineKeyboard(current:number,maxPage: number,data: string[]) {
+//   const keys = []
+// }
+
+
+
+interface TextCallBack {
+  text: string;
+  callback_data: string
+}
+
+
+function isLastElement(array:string[], index:number) {
+  return index === array.length - 1;
+}
+
+export function KeyboardFormatter(current: number, pageData: string[]) {
+  const keys:any = []
+  const countData = pageData.length;
+  console.log(countData)
+
+  if(countData <= 5) {
+    const row:TextCallBack[] = []
+    pageData.map((e,i) => {
+      row.push({
+        text:`${i+1}`,
+        callback_data:e
+      })
+    });
+    keys.push(row)
+    return keys
+  }
+  
+  if(countData > 5 && countData <= 10) {
+    let row:TextCallBack[] = []
+    pageData.map((e,i) => {
+      row.push({
+        text: `${i+1}`,
+        callback_data:e
+      });
+      if(row.length == 5) {
+        keys.push(row)
+        row = []
+      }
+
+      if(pageData.indexOf(e) == pageData.length - 1) {
+        keys.push(row)
+      }
+    })
+
+    return keys
+  }
+  
 }

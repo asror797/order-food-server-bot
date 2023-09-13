@@ -64,6 +64,19 @@ class UserService {
     return updatedUser;
   }
 
+  public async sendMessageToUsers(text: string) {
+    const users = await this.users.find({
+      is_active: true,
+      is_verified: true
+    })
+    // botService.sendText()
+    users.map((e) => {
+      botService.sendText(e.telegram_id,text)
+    });
+
+    return "ok"
+  }
+
 
   public async changeStatus(userData:ChangeStatus) {
     const { user , type } = userData;
