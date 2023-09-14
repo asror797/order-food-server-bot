@@ -110,3 +110,25 @@ Content-Type: application/json
 }
 
 
+
+###
+POST https://notify.eskiz.uz/api/auth/login
+
+@formData
+Content-Disposition: form-data; name="email"
+
+asrorshahobiddinov509@gmail.com
+
+@formData
+Content-Disposition: form-data; name="password"
+aaa13579A# 
+
+
+
+###
+POST http://localhost:9000/auth/send-sms
+Content-Type: application/json 
+
+{
+  "phone_number":"+998913650221"
+}

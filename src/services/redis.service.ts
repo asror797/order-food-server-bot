@@ -57,6 +57,20 @@ class RedisService {
     }
   }
 
+  public async saveFoodToStore(user: number , food: string , amount: string) {
+    try {
+      // await this.setValue(user,)
+      const store = await this.getValue(`${user}`);
+      if(!store) {
+        
+      } else {
+
+      }
+    } catch (error) {
+      
+    }
+  }
+
   public async getOtpServiceInfo() {
     try {
       return await this.client.get('sms-info')

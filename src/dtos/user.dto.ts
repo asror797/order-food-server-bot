@@ -1,4 +1,4 @@
-import { IsString } from "class-validator"
+import { IsBoolean, IsString } from "class-validator"
 
 export class CreateUserDto {
 
@@ -36,4 +36,27 @@ export class UpdateUserDto {
 
   @IsString()
   last_name: string
+
+  @IsBoolean()
+  is_active?: boolean
+
+  @IsBoolean()
+  is_verified?: boolean
+
+  @IsString()
+  type: string
+}
+
+export class VerifyUser {
+  @IsString()
+  _id: string
+}
+
+
+export class SendMessae {
+  @IsString()
+  org: string
+
+  @IsString()
+  message: string
 }

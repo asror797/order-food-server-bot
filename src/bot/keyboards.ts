@@ -94,9 +94,32 @@ interface TextCallBack {
   callback_data: string
 }
 
+interface CallBack {
+  id: string;
+  name: string
+  cost: number
+}
+
 
 function isLastElement(array:string[], index:number) {
   return index === array.length - 1;
+}
+
+
+export function formatter(data:CallBack[]) {
+  const keys:any = []
+
+  data.map((e,i) => {
+    keys.push([
+      {
+        text: `${i+1}. ${e.name} - ${e.cost} so'm`,
+        callback_data: `food-${e.id}`
+      }
+    ])
+  });
+
+
+  return keys;
 }
 
 export function KeyboardFormatter(current: number, pageData: string[]) {
@@ -105,12 +128,14 @@ export function KeyboardFormatter(current: number, pageData: string[]) {
   console.log(countData)
 
   if(countData <= 5) {
-    const row:TextCallBack[] = []
+    const row:any[] = []
     pageData.map((e,i) => {
-      row.push({
-        text:`${i+1}`,
-        callback_data:e
-      })
+      row.push([
+        {
+          text:`${i+1}`,
+          callback_data:`food-${e}`
+        }
+      ])
     });
     keys.push(row)
     return keys
@@ -121,7 +146,7 @@ export function KeyboardFormatter(current: number, pageData: string[]) {
     pageData.map((e,i) => {
       row.push({
         text: `${i+1}`,
-        callback_data:e
+        callback_data:`food-${e}` 
       });
       if(row.length == 5) {
         keys.push(row)

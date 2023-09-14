@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import UserService from "../services/user.service";
-import { ChangeStatus, CreateUserDto, UpdateUserDto } from "../dtos/user.dto";
+import { ChangeStatus, CreateUserDto, SendMessae, UpdateUserDto, VerifyUser } from "../dtos/user.dto";
 import { ParsedQs } from "qs";
 
 
@@ -39,10 +39,19 @@ class UserController {
     }
   }
 
+  public verifyUser = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const userData:string = req.params.user;
+      res.json(await this.userService.updateUser({_id: userData , first_name: '',last_name:'',type:'verify',is_active: true,is_verified: true , org:''}))
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public updateStatus = async(req:Request,res:Response,next:NextFunction) => {
     try {
-      const userData:ChangeStatus = req.body.data
-      res.json(await this.userService.changeStatus(userData));
+      const userData:string = req.params.user
+      res.json(await this.userService.updateUser({ _id: userData , first_name: '',last_name:'',type:'status',org:''}));
     } catch (error) {
       next(error)
     }
@@ -59,7 +68,8 @@ class UserController {
 
   public sendMessage = async(req:Request,res:Response,next:NextFunction) => {
     try {
-      res.json(await this.userService.sendMessageToUsers(req.body.message));
+      const msgData:SendMessae = req.body
+      res.json(await this.userService.sendMessageToUsers(msgData));
     } catch (error) {
       next(error)
     }

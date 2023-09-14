@@ -15,6 +15,8 @@ tags:
     description: Api for Foods
   - name: Order
     description: Api for Orders
+  - name: Settings
+    description: Settings 
 
 paths:
   /user:
@@ -42,17 +44,50 @@ paths:
             type: array
             items:
               $ref: '#/definitions/User'
-
-  /user/status:
-    put:
-      summary: Change status of user
+  /user/send-message:
+    post:
+      summary: Send messages
       tags:
         - User
+      parameters:
+        - name: body
+          in: body
+          description: User data
+          required: true
+          schema:
+            $ref: '#/definitions/SendMessage'
       responses:
         200:
           description: ok
-          schema:
-            $ref: '#/definitions/book'
+
+  /user/status/{user}:
+    put:
+      summary: Verify User
+      tags:
+        - User
+      parameters:
+        - name: user
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: ok
+
+  /user/verify/{user}:
+    put:
+      summary: Verify User
+      tags:
+        - User
+      parameters:
+        - name: user
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: ok
+
 
   /auth:
     get:
@@ -122,7 +157,7 @@ paths:
       summary: Retrieve a list of products
       tags:
         - Product 
-      parametrs:
+      parameters:
         - name: page
           in: query
           description: ''
@@ -319,4 +354,11 @@ definitions:
         type: boolean
       is_deleted:
         type: boolean
+  SendMessage: 
+    type: object
+    properties:
+      message:
+        type: string
+      org:
+        type: string
     

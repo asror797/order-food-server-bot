@@ -1,10 +1,9 @@
 import TelegramBot, { Message, CallbackQuery, InlineQueryResultArticle } from 'node-telegram-bot-api';
 import UserService from '../services/user.service';
 import { IUser } from '../interfaces/user.interface';
-import { FoodMenu, KeyboardFormatter, MainMenu, ShareContact } from './keyboards';
+import { FoodMenu, KeyboardFormatter, MainMenu, ShareContact, formatter } from './keyboards';
 import FoodService from '../services/food.service';
 import orgModel from '../models/org.model';
-
 class BotService {
   private bot: TelegramBot;
   private users = new UserService()
@@ -58,7 +57,6 @@ class BotService {
     const chatId = msg.chat.id;
     const messageText = msg.text || '';
 
-
     try {
       
       if (messageText.startsWith('/start')) {
@@ -101,7 +99,7 @@ class BotService {
         }
       } else if( messageText == '🥤Ichimlik') {
         const user = await this.users.isExist(chatId)
-
+        
         console.log(user)
 
         if(user.data) {
@@ -110,11 +108,18 @@ class BotService {
             category: 'drinks'
           })
           console.log(foods)
-          const data:string[] = []
+          const data:any[] = []
           foods.map((e) => {
-            data.push(e['_id'])
+            data.push({
+              id: e['_id'],
+              name: e.name,
+              cost:e.cost
+            })
           })
-          this.bot.sendMessage(chatId,`Ichimliklar: \n ${foods.map((e,i) => `\n${i+1}. ${e.name} - ${e.cost} so'm\n\n`)}`,{ reply_markup: { inline_keyboard: KeyboardFormatter(1,data)}})
+          console.log(formatter(data))
+          this.bot.sendMessage(chatId,`Ichimliklar: `,{ reply_markup: { inline_keyboard: [
+            ...formatter(data)
+          ]}})
         } else {
           this.bot.sendMessage(chatId,'Siz Tasdiqlanmagansiz')
         }
@@ -131,11 +136,17 @@ class BotService {
             category: 'snacks'
           })
           console.log(foods)
-          const data:string[] = []
+          const data:any[] = []
           foods.map((e) => {
-            data.push(e['_id'])
+            data.push({
+              id: e['_id'],
+              name: e.name,
+              cost:e.cost
+            })
           })
-          this.bot.sendMessage(chatId,`Gazaklar: \n ${foods.map((e,i) => `\n${i+1}. ${e.name} - <b>${e.cost}</b> so'm\n`)}`,{ reply_markup: { inline_keyboard: KeyboardFormatter(1,data)},parse_mode:'HTML'})
+          this.bot.sendMessage(chatId,`Gazaklar: `,{ reply_markup: { inline_keyboard: [
+            ...formatter(data)
+          ]},parse_mode:'HTML'})
         } else {
           this.bot.sendMessage(chatId,'Siz Tasdiqlanmagansiz')
         }
@@ -150,12 +161,18 @@ class BotService {
             category: 'dessert'
           })
           console.log(foods)
-          const data: string[] = [];
+          const data: any[] = [];
 
           foods.map((e) => {
-            data.push(e['_id'])
+            data.push({
+              id: e['_id'],
+              name: e.name,
+              cost:e.cost
+            })
           })
-          this.bot.sendMessage(chatId,`Dessertlar: \n ${foods.map((e,i) => `\n${i+1}. ${e.name} - ${e.cost} so'm\n`)}`,{ reply_markup: { inline_keyboard: KeyboardFormatter(1,data) }})
+          this.bot.sendMessage(chatId,`Dessertlar: `,{ reply_markup: { inline_keyboard: [
+            ...formatter(data)
+          ]}})
         } else {
           this.bot.sendMessage(chatId,'Siz Tasdiqlanmagansiz')
         }
@@ -173,31 +190,99 @@ class BotService {
     const chatId = callbackQuery.message?.chat.id;
     const data = callbackQuery.data
 
+    const splited = data?.split('-')[0]
+
     try {
-      const inlineKeyboard = {
-        inline_keyboard: [
-          [{ text: 'Press Me', callback_data: 'count' }],
-        ],
-      };
+     
+
+      if(splited == 'store') {
+        console.log(callbackQuery)
+        if(callbackQuery.message)
+        await this.bot.deleteMessage(callbackQuery.from.id,callbackQuery.message?.message_id);
+        this.bot.sendMessage(callbackQuery.from.id,"Savatga qo'shildi");
+      }
+
+
     
   
       if((data == 'decrease' || data == 'increase' || data == 'count') && callbackQuery.message ) {
         console.log('Callback',callbackQuery)
-        console.log('a',callbackQuery.message.reply_markup?.inline_keyboard[0])
+        console.log('bfirfkwjnjrfn',callbackQuery.message.reply_markup?.inline_keyboard)
+        console.log(data);
         
-        const message = callbackQuery.message
-        this.bot.editMessageReplyMarkup(inlineKeyboard, {
-          chat_id: message.chat.id,
-          message_id: message.message_id,
-        });
+        console.log();
+       
+
+        if(callbackQuery.message.reply_markup && data == 'increase') {
+          const message = callbackQuery.message
+          const count = message.reply_markup?.inline_keyboard[0].find((e) => e.callback_data == 'count')?.text || 0
+          this.bot.editMessageReplyMarkup({
+            inline_keyboard: [
+              [
+                {
+                  text:'-',
+                  callback_data:'decrease'
+                },
+                {
+                  text:`${Number(count) + 1}`,
+                  callback_data:'count'
+                },
+                {
+                  text:'+',
+                  callback_data:'increase'
+                }
+              ],
+              [
+                ...callbackQuery.message.reply_markup?.inline_keyboard[1]
+              ]
+            ]
+          }, {
+            chat_id: message.chat.id,
+            message_id: message.message_id,
+          });
+
+        } else if(callbackQuery.message.reply_markup && data == 'decrease') {
+          const message = callbackQuery.message
+          const count = message.reply_markup?.inline_keyboard[0].find((e) => e.callback_data == 'count')?.text || 0
+
+          if(Number(count) > 1) {
+            this.bot.editMessageReplyMarkup({
+              inline_keyboard: [
+                [
+                  {
+                    text:'-',
+                    callback_data:'decrease'
+                  },
+                  {
+                    text:`${Number(count) - 1}`,
+                    callback_data:'count'
+                  },
+                  {
+                    text:'+',
+                    callback_data:'increase'
+                  }
+                ],
+                [
+                  ...callbackQuery.message.reply_markup?.inline_keyboard[1]
+                ]
+              ]
+            }, {
+              chat_id: message.chat.id,
+              message_id: message.message_id,
+            });
+          } else {
+              this.bot.answerCallbackQuery(callbackQuery.id, { text: 'Soni kam' , show_alert: true })
+          }
+          
+        }
   
-      } else {
+      } else if( splited == 'food') {
         if(data && chatId && callbackQuery.message) {
-          await this.bot.deleteMessage(chatId, callbackQuery.message.message_id - 1);
+          await this.bot.deleteMessage(chatId, callbackQuery.message.message_id);
           this.bot.answerCallbackQuery(callbackQuery.id,{ text:"Pressed"});
-          const food = await this.foods.getById(data)
+          const food = await this.foods.getById(data.split('-')[1])
           this.bot.sendPhoto(chatId, food.img ? food.img :'https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg',{
-            caption: `Nomi: <b>${food.name}</b>\nNarxi: <b>${food.cost}</b> so'm\nMavjud: <b>0</b> dona`,
+            caption: `Nomi: <b>${food.name}</b>\nNarxi: <b>${food.cost}</b> so'm\n`,
             reply_markup: {
               inline_keyboard: [
                 [
@@ -206,7 +291,7 @@ class BotService {
                     callback_data: 'decrease'
                   },
                   {
-                    text:'0',
+                    text:'1',
                     callback_data: 'count'
                   },
                   {
@@ -217,7 +302,7 @@ class BotService {
                 [
                   {
                     text:"Savatga Qo'shish ✅",
-                    callback_data:'store'
+                    callback_data:`store-${data.split('-')[1]}`
                   }
                 ]
               ]
@@ -246,7 +331,7 @@ class BotService {
   }
 
   public sendText(id: number,message:string) {
-    this.bot.sendMessage(id,message)
+    this.bot.sendMessage(id,message,{ parse_mode:'HTML'})
   }
 }
 

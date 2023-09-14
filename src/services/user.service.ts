@@ -1,15 +1,17 @@
 import userModel from "../models/user.model";
-import { ChangeStatus, CreateUserDto, UpdateUserDto } from "../dtos/user.dto";
+import { ChangeStatus, CreateUserDto, SendMessae, UpdateUserDto } from "../dtos/user.dto";
 import { httException } from "../exceptions/httpException";
 import { IUser } from "../interfaces/user.interface";
 import { formatPhoneNumber } from "../utils/phoneNumberFormatter";
 import botService from "../bot/bot";
+import orgModel from "../models/org.model";
 
 
 
 class UserService {
 
   private users = userModel;
+  private orgs = orgModel;
 
   public async isExist(telegramID: number) {
     const isExist = await this.users.findOne({
@@ -45,6 +47,7 @@ class UserService {
               .select('-updatedAt')
               .skip(skip)
               .limit(size)
+              .populate('org','name_org')
               .exec();
     const totalUsers = await this.users.countDocuments().exec()
     const totalPages = Math.ceil(totalUsers / size)
@@ -66,22 +69,51 @@ class UserService {
 
   public async updateUser(userData:UpdateUserDto) {
     botService.sendText(5104936606,"Updayted")
-    const updatedUser = await this.users.findByIdAndUpdate(userData['_id'],userData)
+    const { _id , last_name , first_name , org , is_active , is_verified , type } = userData;
 
-    return updatedUser;
+    if(type == 'verify') {
+      const updatedUser = await this.users.findByIdAndUpdate(userData['_id'],{ is_verified: true , is_active: true }, { new: true });
+
+      return updatedUser;
+    } else if (type == 'status') {
+      const updateUser =  await this.users.findByIdAndUpdate(_id,{is_active: true} , { new: true});
+      return updateUser;
+    }
   }
 
-  public async sendMessageToUsers(text: string) {
-    const users = await this.users.find({
-      is_active: true,
-      is_verified: true
-    })
-    // botService.sendText()
-    users.map((e) => {
-      botService.sendText(e.telegram_id,text)
-    });
+  public async sendMessageToUsers(msgData: SendMessae) {
 
-    return "ok"
+    const { org , message } = msgData
+
+    if(org == 'all' || org == null) {
+      const users = await this.users.find({
+        is_active: true,
+        is_verified: true
+      })
+      users.map((e) => {
+        botService.sendText(e.telegram_id,message)
+      });
+  
+      return {
+        message:"sent",
+        status:200
+      }
+    } else {
+      const Org = await this.orgs.findById(org)
+      if(Org) throw new httException(400,'org not found')
+      const users = await this.users.find({
+        is_active: true,
+        is_verified: true,
+        org: org
+      })
+      users.map((e) => {
+        botService.sendText(e.telegram_id,message)
+      });
+      return {
+        message:"ok",
+        status:"ok"
+      }
+    }
   }
 
 

@@ -11,6 +11,7 @@ class ProductService {
     const products = await this.products.find()
               .select('-updatedAt')
               .skip(skip)
+              .populate('org','name_org')
               .limit(size)
               .exec();
     const totalProducts = await this.products.countDocuments().exec()
