@@ -15,6 +15,7 @@ class FoodService {
               .select('-updatedAt')
               .skip(skip)
               .limit(size)
+              .populate('org','name_org')
               .exec();
     const totalFoods = await this.foods.countDocuments().exec()
     const totalPages = Math.ceil(totalFoods / size)
@@ -62,7 +63,7 @@ class FoodService {
 
       if(!Product) throw new httException(400,`Product with ID ${product} not found`);
 
-      productObjects.push({ product: Product['_id'] , amount: amount})
+      productObjects.push({ product: Product['_id'] , amount: amount});
       
     }
 

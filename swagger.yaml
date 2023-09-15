@@ -70,6 +70,11 @@ paths:
           in: path
           type: string
           required: true
+        - name: is_active
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserStatus'
       responses:
         200:
           description: ok
@@ -86,7 +91,22 @@ paths:
           required: true
       responses:
         200:
-          description: ok
+          description: ok 
+  /user/org/{user}:
+    put:
+      summary: change org
+      tags:
+        - User
+      parameters:
+        - name: user
+          in: path
+          required: true
+          type: string
+        - name: org
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChangeOrg'
 
 
   /auth:
@@ -151,6 +171,29 @@ paths:
       responses:
         200:
           description: Org created
+  /order:
+    get:
+      summary: Get orders
+      tags:
+        - Order
+      parameters:
+        - name: page
+          in: query
+          description: ''
+          type: integer
+          minimum: 1
+          default: 1
+        - name: size
+          in: query
+          description: ''
+          type: integer
+          minimum: 10
+          default: 10 
+      responses:
+        200:
+          description: get order
+
+
 
   /product:
     get:
@@ -334,6 +377,11 @@ definitions:
         type: string
       password:
         type: string
+  UserStatus:
+    type: object
+    properties:
+      is_active:
+        type: boolean
   Login:
     type: object
     properties:
@@ -360,5 +408,11 @@ definitions:
       message:
         type: string
       org:
+        type: string 
+
+  ChangeOrg: 
+    type: object
+    properties:
+      org: 
         type: string
     

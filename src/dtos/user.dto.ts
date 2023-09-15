@@ -1,4 +1,4 @@
-import { IsBoolean, IsString } from "class-validator"
+import { IsBoolean, IsNumber, IsString } from "class-validator"
 
 export class CreateUserDto {
 
@@ -59,4 +59,22 @@ export class SendMessae {
 
   @IsString()
   message: string
+}
+
+
+export class ChangeOrg {
+  @IsString()
+  user: string
+
+  @IsString()
+  org: string;
+}
+
+
+export class Payment {
+  @IsString()
+  type: string;
+
+  @IsNumber()
+  amount: number;
 }

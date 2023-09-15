@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import UserService from "../services/user.service";
-import { ChangeStatus, CreateUserDto, SendMessae, UpdateUserDto, VerifyUser } from "../dtos/user.dto";
+import { ChangeStatus, CreateUserDto, Payment, SendMessae, UpdateUserDto, VerifyUser } from "../dtos/user.dto";
 import { ParsedQs } from "qs";
 
 
@@ -50,8 +50,24 @@ class UserController {
 
   public updateStatus = async(req:Request,res:Response,next:NextFunction) => {
     try {
+
+      interface Status {
+        is_active: boolean
+      }
       const userData:string = req.params.user
-      res.json(await this.userService.updateUser({ _id: userData , first_name: '',last_name:'',type:'status',org:''}));
+      const userStatus: Status = req.body;
+
+      res.json(await this.userService.updateUser({ _id: userData , first_name: '',last_name:'',type:'status',org:'' , is_active: userStatus.is_active}));
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public updateOrg = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
+    try {
+      const user:string = req.params.user as string
+      const org: string = req.body.org ;
+      res.json(await this.userService.ChangeOrg({ user: user , org: org}));
     } catch (error) {
       next(error)
     }
@@ -72,6 +88,19 @@ class UserController {
       res.json(await this.userService.sendMessageToUsers(msgData));
     } catch (error) {
       next(error)
+    }
+  }
+
+  public transitPayment = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
+    try {
+      const user = req.params.user as string;
+      const paymentData:Payment  = req.body;
+      res.json(await this.userService.transitPayment({
+        ...paymentData,
+        user
+      }));
+    } catch (error) {
+      next(error);
     }
   }
 

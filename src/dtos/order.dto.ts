@@ -33,3 +33,4 @@ export class CreateOrderDto {
   @Type(() => FoodWithAmount)
   foods: FoodWithAmount[]
 }
+

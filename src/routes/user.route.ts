@@ -20,6 +20,8 @@ class UserRoute {
     this.router.put(`${this.path}/`,this.userController.updateInfoUser)
     this.router.put(`${this.path}/verify/:user`,this.userController.verifyUser)
     this.router.post(`${this.path}/send-message`,this.userController.sendMessage)
+    this.router.put(`${this.path}/org/:user`,this.userController.updateOrg)
+    this.router.put(`${this.path}/payment`,this.userController.transitPayment)
   }
 }
 

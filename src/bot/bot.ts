@@ -4,10 +4,14 @@ import { IUser } from '../interfaces/user.interface';
 import { FoodMenu, KeyboardFormatter, MainMenu, ShareContact, formatter } from './keyboards';
 import FoodService from '../services/food.service';
 import orgModel from '../models/org.model';
+import StoreService from '../services/store.service';
+import OrderService from '../services/order.service';
 class BotService {
   private bot: TelegramBot;
   private users = new UserService()
   private foods = new FoodService()
+  private store = new StoreService()
+  private orderService = new OrderService()
 
   constructor(private token: string) {
     this.bot = new TelegramBot(token, { polling: true });
@@ -86,11 +90,12 @@ class BotService {
           this.bot.sendMessage(chatId, 'Please provide text to echo.');
         }
       } else if( messageText == '🍽 Menu') {
+        // await this.bot.deleteMessage(chatId,msg.message_id)
         this.bot.sendMessage(chatId,'Buyurma bering',{ reply_markup: FoodMenu })
       }  else if( messageText == 'Asosiy menu') {
         this.bot.sendMessage(chatId,'Buyurma bering',{ reply_markup: MainMenu })
       } else if( messageText == '💰 Balans') {
-  
+        await this.bot.deleteMessage(chatId,msg.message_id)
         const userBalance: IUser | null = await this.users.getBalance(chatId);
         if(userBalance) {
           this.bot.sendMessage(chatId,`<b>Ism</b>: ${userBalance.first_name} ${userBalance.last_name}\n<b>Balans</b>: ${userBalance.balance} So'm\n<b>Status</b>: ${userBalance.is_active ? "tasdiqlangan" : "tasdiqlanmagan"}`,{ parse_mode:"HTML"});
@@ -98,6 +103,7 @@ class BotService {
           this.bot.sendMessage(chatId,'Foydalanuvchi topilmadi')
         }
       } else if( messageText == '🥤Ichimlik') {
+        // await this.bot.deleteMessage(chatId,msg.message_id)
         const user = await this.users.isExist(chatId)
         
         console.log(user)
@@ -124,7 +130,29 @@ class BotService {
           this.bot.sendMessage(chatId,'Siz Tasdiqlanmagansiz')
         }
       } else if( messageText == '🛒 Savat') {
-        this.bot.sendMessage(chatId,"Bo'sh",{ reply_markup: FoodMenu })
+        // await this.bot.deleteMessage(chatId,msg.message_id-2)
+        const store = await this.store.getStore(`${chatId}`)
+        if(store.length == 0) {
+          this.bot.sendMessage(chatId,"Bo'sh",{ reply_markup: FoodMenu })
+        } else {
+          this.bot.sendMessage(chatId,`${ store.map((e:any,i:number) => `${i+1}.${e.food.food} - ${e.food.cost} so'm - ${e.amount} ta,\n`)}`,{
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text:"Bo'shatish",
+                    callback_data:'clear-store'
+                  },
+                  {
+                    text:'Sotib olish',
+                    callback_data:'buy-order'
+                  }
+                ]
+              ],
+            },
+            parse_mode:'HTML'
+          })
+        }
       } else if( messageText == '🌮 Gazaklar') {
         const user = await this.users.isExist(chatId)
 
@@ -176,7 +204,10 @@ class BotService {
         } else {
           this.bot.sendMessage(chatId,'Siz Tasdiqlanmagansiz')
         }
-      } else {
+      } else if(messageText == 'Buyurtmalarim') {
+        
+      }
+       else {
         // Handle other messages
         this.bot.sendMessage(chatId, 'I do not understand that command. Type /help for a list of available commands.');
       }
@@ -191,17 +222,67 @@ class BotService {
     const data = callbackQuery.data
 
     const splited = data?.split('-')[0]
+    console.log(splited)
 
     try {
      
 
-      if(splited == 'store') {
-        console.log(callbackQuery)
-        if(callbackQuery.message)
-        await this.bot.deleteMessage(callbackQuery.from.id,callbackQuery.message?.message_id);
-        this.bot.sendMessage(callbackQuery.from.id,"Savatga qo'shildi");
+      if(splited == 'store' && chatId) {
+        if(callbackQuery.message) {
+          // console.log({
+           const  amount = Number(callbackQuery.message.reply_markup?.inline_keyboard[0].find((e) => e.callback_data == 'count')?.text)
+           const food = data?.split('-')[1]
+          // })
+
+          if(food && amount ) {
+            const isStored = await this.store.saveToStore(`${chatId}`,food,`${amount}`)
+            console.log(isStored)
+            await this.bot.deleteMessage(callbackQuery.from.id,callbackQuery.message?.message_id);
+            this.bot.sendMessage(callbackQuery.from.id,"Savatga qo'shildi");
+
+          } else {
+            this.bot.sendMessage(chatId,'something went wrong')
+          }
+        }
       }
 
+      if(splited == 'clear' && chatId && callbackQuery.message) {
+        console.log(chatId,callbackQuery);
+        this.bot.answerCallbackQuery(callbackQuery.id, { text: "Savat Bo'shatildi" , show_alert: true })
+        await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
+        const isCleared = await this.store.clear(chatId);
+        console.log('cleared',isCleared)
+      } else if(splited == 'buy' && chatId) {
+        const user = await this.users.isExist(chatId)
+        if(user.data) {
+          const store = await this.store.getStore(`${chatId}`);
+          console.log(store)
+
+          if(store.length > 0) {
+            const foodArray:any = [] 
+            store.map((e:any) =>{
+              foodArray.push( { food: e.food.id , amount: e.amount })
+            })
+            console.log(foodArray);
+            const Order = await this.orderService.createOrder({
+              org: user.data.org,
+              client: user.data['_id'],
+              foods: foodArray
+            });
+
+            console.log(Order)
+
+            if(Order && callbackQuery.message) {
+              await this.store.clear(chatId)
+              await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
+              this.bot.sendMessage(chatId,` ${Order.foods.map((e:any,i) => `${i+1}. ${e.food.name} - ${e.food.cost} so'm ${e.amount} ta \n`)}`);
+            }
+          }
+
+        } else {
+
+        }
+      } 
 
     
   
@@ -310,7 +391,7 @@ class BotService {
             parse_mode:'HTML'
           });
         }
-      }
+      } 
     } catch (error) {
       console.log(error)
       if(chatId) {

@@ -14,9 +14,8 @@ PUT http://localhost:9000/user
 Content-Type: application/json 
 
 {
-  "_id":"65016bcbe7a058d7ff8488b7",
-  "is_active": true,
-  "is_verified": true
+  "_id":"650195272597308d1d039540",
+  "org":"650001df0394e11e1233e3cb"
 }
 
 
@@ -126,9 +125,26 @@ aaa13579A#
 
 
 ###
-POST http://localhost:9000/auth/send-sms
+POST http://localhost:7000/auth/passanger/send-sms
 Content-Type: application/json 
 
 {
-  "phone_number":"+998913650221"
+  "phone_number":"913650221"
+}
+
+
+
+### 
+POST http://localhost:9000/order
+Content-Type: application/json
+
+{
+  "client":"64ff00a049490c972a59020",
+  "org":"650164a582143bd5e27849eb",
+  "foods": [
+    {
+      "food":"65004729af2c08b6c4628a2e",
+      "amount":2
+    }
+  ]
 }
