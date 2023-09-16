@@ -1,6 +1,7 @@
 import App from "./app";
 import AuthRoute from "./routes/auth.route";
 import FoodRoute from "./routes/food.route";
+import LunchRoute from "./routes/lunch.route";
 import OrderRoute from "./routes/order.route";
 import OrgRoute from "./routes/org.route";
 import ProductRoute from "./routes/product.route";
@@ -15,7 +16,9 @@ const app = new App([
   new FoodRoute(),
   new SettingsRoute(),
   new ProductRoute(),
-  new OrderRoute()
+  new OrderRoute(),
+  new LunchRoute(),
 ]);
 
 app.listen()
+

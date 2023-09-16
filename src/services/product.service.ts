@@ -33,8 +33,12 @@ class ProductService {
   }
 
 
-  public async increaseAmount() {
+  public async increaseAmount(productData) {
     
+  }
+
+  public async decreaseAmount() {
+
   }
 }
 

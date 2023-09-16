@@ -10,7 +10,7 @@ export const ShareContact: ReplyKeyboardMarkup = {
   keyboard: [
     [
       {
-        text: "Sahare contact",
+        text: "Telefon raqam yuborish 📞",
         request_contact: true
       }
     ]

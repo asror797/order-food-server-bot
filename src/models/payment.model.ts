@@ -13,6 +13,14 @@ const paymentSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref:'Org',
       required: true
+    },
+    amount: {
+      type: Number,
+      defaul: 0,
+    },
+    type: {
+      type: Boolean,
+      default: false
     }
   },
   {

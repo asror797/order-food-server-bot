@@ -62,8 +62,13 @@ class BotService {
     const messageText = msg.text || '';
 
     try {
+
+      if(msg.chat.type == 'group') {
+        console.log(msg)
+        this.bot.sendMessage(chatId,'Buyurtma ')
+      }
       
-      if (messageText.startsWith('/start')) {
+      if (messageText.startsWith('/start') && msg.chat.type != 'group') {
         interface IisExist {
           message: string
           data: IUser | null | any
@@ -100,7 +105,7 @@ class BotService {
         if(userBalance) {
           this.bot.sendMessage(chatId,`<b>Ism</b>: ${userBalance.first_name} ${userBalance.last_name}\n<b>Balans</b>: ${userBalance.balance} So'm\n<b>Status</b>: ${userBalance.is_active ? "tasdiqlangan" : "tasdiqlanmagan"}`,{ parse_mode:"HTML"});
         } else {
-          this.bot.sendMessage(chatId,'Foydalanuvchi topilmadi')
+          this.bot.sendMessage(chatId,'Foydalanuvchi topilmadi');
         }
       } else if( messageText == '🥤Ichimlik') {
         // await this.bot.deleteMessage(chatId,msg.message_id)
@@ -135,7 +140,16 @@ class BotService {
         if(store.length == 0) {
           this.bot.sendMessage(chatId,"Bo'sh",{ reply_markup: FoodMenu })
         } else {
-          this.bot.sendMessage(chatId,`${ store.map((e:any,i:number) => `${i+1}.${e.food.food} - ${e.food.cost} so'm - ${e.amount} ta,\n`)}`,{
+
+          const textStore: string[] = []
+          let total_cost:number = 0
+          store.map((e:any,i:number) => {
+            textStore.push(`\n${i+1}. ${e.food.food} -- ${e.food.cost} so'm -- ${e.amount} ta`);
+            total_cost = total_cost + (e.food.cost * e.amount);
+          })
+
+          textStore.push(`\n\n Jami: ${total_cost} so'm`)
+          this.bot.sendMessage(chatId,textStore.join(''),{
             reply_markup: {
               inline_keyboard: [
                 [
@@ -225,6 +239,18 @@ class BotService {
     console.log(splited)
 
     try {
+
+      if(splited == 'order' && data) {
+        const type = data?.split('-')[2];
+        if(type == 'done') {
+          const updatedOrder = await this.orderService.acceptOrder({order: data?.split('-')[1],type:true})
+          
+          console.log(updatedOrder)
+        } else if(type == 'cancel') {
+          const updatedOrder = await this.orderService.cancelOrder({order: data?.split('-')[1],type:false})
+          console.log(updatedOrder)
+        }
+      }
      
 
       if(splited == 'store' && chatId) {
@@ -254,7 +280,7 @@ class BotService {
         console.log('cleared',isCleared)
       } else if(splited == 'buy' && chatId) {
         const user = await this.users.isExist(chatId)
-        if(user.data) {
+        if(user.data && user.data.is_active == true && user.data.is_verified == true) {
           const store = await this.store.getStore(`${chatId}`);
           console.log(store)
 
@@ -265,7 +291,7 @@ class BotService {
             })
             console.log(foodArray);
             const Order = await this.orderService.createOrder({
-              org: user.data.org,
+              org: user.data.org['_id'],
               client: user.data['_id'],
               foods: foodArray
             });
@@ -273,14 +299,45 @@ class BotService {
             console.log(Order)
 
             if(Order && callbackQuery.message) {
-              await this.store.clear(chatId)
-              await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
-              this.bot.sendMessage(chatId,` ${Order.foods.map((e:any,i) => `${i+1}. ${e.food.name} - ${e.food.cost} so'm ${e.amount} ta \n`)}`);
+              const foods:string[] = [] 
+              foods.push(`Kimga:\n👤: ${user.data.first_name} ${user.data.last_name ? `${user.data.last_name}` : ''} \n📞: +998${user.data.phone_number}\n`);
+              Order.foods.map((e:any,i) => {
+                foods.push(`\n${i+1}. ${e.food.name} - <b>${e.food.cost}</b> s*m \n - Soni: ${e.amount} ta\n`)
+              })
+              foods.push(`\n------------------\nJami: <code> ${Order.total_cost}</code> s*m \n`)
+              foods.push(`\nBuyurtma Holati: 🕓 <code>Kutilmoqda...</code>`)
+              // this.bot.sendMessage()
+              if(user.data.org.group_a_id && (user.data.balance >=Order.total_cost)) {
+                await this.store.clear(chatId)
+                await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id);
+                this.bot.sendMessage(chatId,`Buyurtma:\n  ${foods.join(' ')}`,{ parse_mode: 'HTML'});
+                this.bot.sendMessage(user.data.org.group_a_id,foods.join(''),{ parse_mode: 'HTML', reply_markup: {
+                  inline_keyboard: [
+                    [
+                      {
+                        text:'Bajarildi ✅',
+                        callback_data:`order-${Order['_id']}-done`
+                      }
+                    ],
+                    [
+                      {
+                        text:'Bekor Qilish ❌',
+                        callback_data:`order-${Order['_id']}-cancel`
+                      }
+                    ]
+                  ]
+                }});
+              } else if(user.data.balance < Order.total_cost) {
+                console.log('Something')
+                this.bot.answerCallbackQuery(callbackQuery.id, { text: 'Hisobda pul yetarli emas' , show_alert: true })
+              }
+            } else {
+              this.bot.sendMessage(chatId,'something went wrong at 302 line')
             }
           }
 
         } else {
-
+          this.bot.sendMessage(chatId,'Foydalanuvchi tasdiqlanmagan yoki aktiv emassiz!');
         }
       } 
 

@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsNumber, IsString, ValidateNested } from "class-validator";
 
 
 
@@ -34,3 +34,10 @@ export class CreateOrderDto {
   foods: FoodWithAmount[]
 }
 
+export class UpdateOrder {
+  @IsString()
+  order: string
+
+  @IsBoolean()
+  type: boolean
+}

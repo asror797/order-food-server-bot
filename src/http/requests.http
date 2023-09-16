@@ -14,8 +14,8 @@ PUT http://localhost:9000/user
 Content-Type: application/json 
 
 {
-  "_id":"650195272597308d1d039540",
-  "org":"650001df0394e11e1233e3cb"
+  "_id":"6505851a044812f315a7e8fe",
+  "org":"650012d462949f8744859129"
 }
 
 
@@ -129,7 +129,7 @@ POST http://localhost:7000/auth/passanger/send-sms
 Content-Type: application/json 
 
 {
-  "phone_number":"913650221"
+  "phone_number":"331145004"
 }
 
 

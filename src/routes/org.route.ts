@@ -15,6 +15,7 @@ class OrgRoute {
   private initializeRoutes() {
     this.router.get(`${this.path}`,this.orgController.get)
     this.router.post(`${this.path}`,this.orgController.createOrg)
+    this.router.patch(`${this.path}/group`,this.orgController.updateOrg)
   }
 }
 

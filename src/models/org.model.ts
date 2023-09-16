@@ -14,6 +14,14 @@ const orgSchema: Schema = new Schema(
     is_deleted: {
       type: Boolean,
       default: false
+    },
+    group_a_id: {
+      type: Number,
+      default: null
+    },
+    group_b_id: {
+      type: Number,
+      default: null
     }
   },
   {

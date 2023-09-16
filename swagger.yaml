@@ -108,6 +108,58 @@ paths:
           schema:
             $ref: '#/definitions/ChangeOrg'
 
+  /lunch:
+    get:
+      summary: get lunches
+      tags:
+        - Lunch
+      parameters:
+        - name: page
+          in: query
+          description: ''
+          type: integer
+          minimum: 1
+          default: 1
+        - name: size
+          in: query
+          description: ''
+          type: integer
+          minimum: 1
+          default: 10
+      responses:
+        200:
+          description: ok
+    post:
+      summary: create lunch
+      tags:
+        - Lunch
+      parameters:
+        - name: lunch
+          in: body
+          description: create lunch 
+          required: true
+          schema:
+            $ref: '#/definitions/CreateLunch'
+      responses:
+        200:
+          description: "ok"
+
+  /user/payment:  
+    patch:
+      summary: payment
+      tags:
+        - Payment
+      parameters: 
+        - name: Payment
+          in: body
+          description: payment
+          required: true
+          schema:
+            $ref: '#/definitions/Payment'
+      response:
+        200:
+          description: "ok"
+
 
   /auth:
     get:
@@ -170,7 +222,23 @@ paths:
             $ref: '#/definitions/CreateOrg'
       responses:
         200:
-          description: Org created
+          description: Org created 
+  /org/group:
+    patch:
+      summary: update orders
+      tags:
+        - Org
+      parameters:
+        - name: body
+          in: body
+          description: update group id
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateGroupId'
+      responses:
+        200:
+          description: "ok"
+
   /order:
     get:
       summary: Get orders
@@ -393,6 +461,15 @@ definitions:
     properties:
       name_org:
         type: string
+  Payment:
+    type: object
+    properties:
+      amount:
+        type: number
+      user:
+        type: string
+      type:
+        type: boolean
   Org:
     type: object
     properties:
@@ -415,4 +492,24 @@ definitions:
     properties:
       org: 
         type: string
+
+  CreateLunch:
+    type: object
+    properties:
+      name:
+        type: string
+      org: 
+        type: string
+      cost:
+        type: number
+  UpdateGroupId:
+    type: object
+    properties:
+      org:
+        type: string
+      group_a_id: 
+        type: string
+      group_b_id: 
+        type: string
+      
     

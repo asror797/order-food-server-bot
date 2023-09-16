@@ -16,7 +16,7 @@ class UserService {
   public async isExist(telegramID: number) {
     const isExist = await this.users.findOne({
       telegram_id: telegramID
-    });
+    }).populate('org','name_org group_a_id group_b_id')
 
     if(isExist) {
       return {
@@ -194,22 +194,14 @@ class UserService {
 
   public async transaction(userData:any) {
     const { telegram_id , type , amount } = userData
-
     const user = await this.users.findOne({
       telegram_id: telegram_id
     });
-
     if(!user) throw new Error('user not found');
     if(user.balance < amount && type == false ) throw new Error('');
-
-
     if(type == true) {
-
     } else if(type == false) {
-      
     }
-
-  
   }
 
 }

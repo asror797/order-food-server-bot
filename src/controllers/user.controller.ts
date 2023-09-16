@@ -2,10 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import UserService from "../services/user.service";
 import { ChangeStatus, CreateUserDto, Payment, SendMessae, UpdateUserDto, VerifyUser } from "../dtos/user.dto";
 import { ParsedQs } from "qs";
+import PaymentService from "../services/payment.service";
 
 
 class UserController {
   public userService = new UserService();
+  public paymentService = new PaymentService();
 
   public getUsers = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
     try {
@@ -101,6 +103,24 @@ class UserController {
       }));
     } catch (error) {
       next(error);
+    }
+  }
+
+  public payment = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const { type , amount , user, org } = req.body;
+      if(type == true ) {
+        res.json(await this.paymentService.increase({user,amount}))
+      } else if(type == false) {
+        res.json(await this.paymentService.dicrease({user,amount}))
+      } else {
+        res.json({
+          message:"bad request",
+          status:400
+        })
+      }
+    } catch (error) {
+      next(error)
     }
   }
 

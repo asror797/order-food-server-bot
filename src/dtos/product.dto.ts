@@ -1,4 +1,4 @@
-import { IsString } from "class-validator";
+import { IsBoolean, IsNumber, IsString } from "class-validator";
 
 
 
@@ -21,4 +21,16 @@ export class CreateProduct {
 
   @IsString()
   org: string;
+}
+
+
+export class UpdateAmount {
+  @IsString()
+  prodcut: string
+
+  @IsNumber()
+  amount: number
+
+  @IsBoolean()
+  type: boolean;
 }

@@ -1,3 +1,5 @@
+import { UpdateGroupDto } from "../dtos/org.dto";
+import { httException } from "../exceptions/httpException";
 import { IOrg } from "../interfaces/org.interface";
 import orgModel from "../models/org.model";
 
@@ -31,6 +33,25 @@ class OrgService {
     });
 
     return newOrg;
+  }
+
+  public async  updateGroupId(orgData:UpdateGroupDto) {
+    const { org , group_a_id , group_b_id } = orgData;
+    const Org = await this.orgs.findById(org);
+    if(!Org) throw new httException(400,'not found org')
+    delete orgData.org;
+    const newOrgField:any = {}
+
+    if(group_a_id) {
+      newOrgField.group_a_id = Number(group_a_id);
+    }
+
+    if(group_b_id) {
+      newOrgField.group_b_id = Number(group_b_id);
+    }
+    const updatedGroup = await this.orgs.findByIdAndUpdate(org,newOrgField,{ new:true });
+    console.log(updatedGroup)
+    return updatedGroup;
   }
 
   public update() {

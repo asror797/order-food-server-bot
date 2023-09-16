@@ -6,5 +6,5 @@ export interface IOrg extends Document {
   group_b_id: number;
   is_active: boolean
   is_verified: boolean
-  is_deleted: boolean
+  is_deleted: boolean;
 }
