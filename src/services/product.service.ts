@@ -1,4 +1,4 @@
-import { CreateProduct } from "../dtos/product.dto";
+import { CreateProduct, UpdateAmount } from "../dtos/product.dto";
 import productModel from "../models/product.model";
 
 
@@ -33,11 +33,11 @@ class ProductService {
   }
 
 
-  public async increaseAmount(productData) {
+  public async increaseAmount(productData:UpdateAmount) {
     
   }
 
-  public async decreaseAmount() {
+  public async decreaseAmount(productData:UpdateAmount) {
 
   }
 }

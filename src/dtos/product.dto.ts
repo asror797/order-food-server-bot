@@ -11,7 +11,6 @@ export class CreateProductBody {
 }
 
 
-
 export class CreateProduct {
   @IsString()
   name: string;
