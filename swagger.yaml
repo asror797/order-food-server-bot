@@ -9,6 +9,8 @@ tags:
     description: Api for Auth
   - name: User
     descriptions: Api for users
+  - name: Admin
+    descriptions: Api for admin
   - name: Product
     descriptions: Api for products
   - name: Food
@@ -17,8 +19,50 @@ tags:
     description: Api for Orders
   - name: Settings
     description: Settings 
+  - name: Trip
+    description: Api for Trips
 
 paths:
+
+  /admin:
+    get:
+      summary: Get admins
+      tags: 
+        - Admin
+
+      responses:
+        200: 
+          description: "ok"  
+    post:
+      summary: Create admin
+      tags: 
+        - Admin
+      parameters:
+        - name: Admin
+          in: body
+          description: 'create admin'
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAdmin'    
+      responses:
+        200:
+          description: "ok"  
+  /admin/login:
+    post:
+      summary: Login User
+      tags:
+        - Admin
+      parameters:
+        - name: Login
+          in: body
+          decription: ''
+          required: true
+          schema:
+            $ref: '#/definitions/LoginAdmin'
+      responses:
+        200:
+          description: "ok"
+
   /user:
     get:
       summary: Retrieve a list of books
@@ -156,10 +200,31 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/Payment'
-      response:
+      responses:
         200:
           description: "ok"
 
+  /trip:
+    get:
+      summary: Get trips
+      tags:
+        - Trip
+      parameters:
+        - name: page
+          in: query
+          description: ''
+          type: integer
+          minimum: 1
+          default: 1
+        - name: size
+          in: query
+          description: ''
+          type: integer
+          minimum: 1
+          default: 10
+      responses:
+        200:
+          description: "ok"
 
   /auth:
     get:
@@ -302,7 +367,21 @@ paths:
       responses:
         200:
           description: Org created
-      
+
+  /product/amount:
+    patch:
+      summary: Update amount
+      tags:
+        - Product
+      parameters:
+        - name: page
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateAmount'
+      responses:
+        200: 
+          description: "ok"    
   /food:
     get:
       summary: Retrieve a list of foods
@@ -341,6 +420,17 @@ paths:
             $ref: '#/definitions/CreateFood'  
 
 definitions:
+
+  UpdateAmount:
+    type: object
+    properties:
+      product:
+        type: string
+      amount:
+        type: number
+      type: 
+        type: boolean
+  
   User:
     type: object
     properties:
@@ -487,6 +577,9 @@ definitions:
       org:
         type: string 
 
+
+
+
   ChangeOrg: 
     type: object
     properties:
@@ -510,6 +603,40 @@ definitions:
       group_a_id: 
         type: string
       group_b_id: 
+        type: string
+  
+  CreateAdmin:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          example: '1234567890'
+        fullname:
+          type: string
+          example: 'John Doe'
+        password:
+          type: string
+          example: 'password123'
+        org:
+          type: string
+          example: 'Organization Name'
+        role:
+          type: string
+          example: 'admin'
+        permissions:
+          type: array
+          items:
+            type: string
+            example:
+              - 'read'
+              - 'write'
+          
+  LoginAdmin:
+    type: object
+    properties:
+      phone_number: 
+        type: string
+      password:
         type: string
       
     

@@ -25,11 +25,19 @@ export class CreateProduct {
 
 export class UpdateAmount {
   @IsString()
-  prodcut: string
+  product: string
+
+  @IsNumber()
+  amount: number
+}
+
+export class UpdateAmountWithType {
+  @IsString()
+  product: string;
 
   @IsNumber()
   amount: number
 
   @IsBoolean()
-  type: boolean;
+  type: boolean
 }

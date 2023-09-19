@@ -16,7 +16,7 @@ export interface IUser extends Document {
   is_verified: boolean
   telegram_id: number
   language_code: string
-  role: UserRole[]
+  roles: UserRole[]
   org: IOrg['_id']
   balance: number
 }

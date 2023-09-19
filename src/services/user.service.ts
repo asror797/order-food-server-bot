@@ -1,7 +1,7 @@
 import userModel from "../models/user.model";
 import { ChangeOrg, ChangeStatus, CreateUserDto, SendMessae, UpdateUserDto } from "../dtos/user.dto";
 import { httException } from "../exceptions/httpException";
-import { IUser } from "../interfaces/user.interface";
+import { IUser, UserRole } from "../interfaces/user.interface";
 import { formatPhoneNumber } from "../utils/phoneNumberFormatter";
 import botService from "../bot/bot";
 import orgModel from "../models/org.model";
@@ -190,6 +190,50 @@ class UserService {
         status:200
       }
     }
+  }
+
+  public async addRole(userData:any){
+    const { user, role } = userData;
+
+    const User = await this.users.findById(user);
+
+    if(!User) throw new httException(200,'user not found');
+    if (!Object.values(UserRole).includes(role)) {
+      throw new httException(200,"Invalid role");
+    }
+
+    if (User.roles.includes(role)) {
+      throw new Error("User already has this role");
+    }
+
+    User.roles.push(role);
+
+    const updatedUser = await User.save();
+
+    return updatedUser;
+  }
+
+  public async removeRole(userData:any){
+    const { user , role } = userData;
+    const User = await this.users.findById(user);
+
+    if (!User) {
+      throw new httException(200,"User not found");
+    }
+
+    if (!Object.values(UserRole).includes(role)) {
+      throw new httException(200,"Invalid role");
+    }
+
+    if (!User.roles.includes(role)) {
+      throw new Error("User does not have this role");
+    }
+
+    User.roles = user.role.filter((e:string) => e !== role);
+
+    const updatedUser = await user.save();
+
+    return updatedUser;
   }
 
   public async transaction(userData:any) {

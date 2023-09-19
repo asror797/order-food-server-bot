@@ -15,6 +15,7 @@ class FoodService {
               .select('-updatedAt')
               .skip(skip)
               .limit(size)
+              .populate('products.product','name cost')
               .populate('org','name_org')
               .exec();
     const totalFoods = await this.foods.countDocuments().exec()

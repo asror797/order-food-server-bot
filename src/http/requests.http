@@ -148,3 +148,51 @@ Content-Type: application/json
     }
   ]
 }
+
+
+### payment
+PATCH http://localhost:9000/user/payment
+Content-Type: application/json
+
+{
+  "amount": 10000,
+  "user": "64ff00bb49490c972a59020c",
+  "type": true
+}
+
+
+
+
+
+### login
+POST http://localhost:9000/admin/login 
+Content-Type: application/json
+
+{
+  "phone_number":"913650221",
+  "password":"password123"
+}
+
+
+
+###
+POST http://localhost:9000/admin 
+Content-Type: application/json 
+
+{
+  "phone_number": "909336272",
+  "fullname": "Javohir oka",
+  "password": "password123",
+  "org": "650001df0394e11e1233e3cb",
+  "role": "cook"
+}
+
+
+### edit role
+PATCH http://localhost:9000/user/role 
+Content-Type: application/json
+
+{
+  "user":"6505a05e894bb772e4a81006",
+  "role":"cook"
+}

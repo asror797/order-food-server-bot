@@ -5,8 +5,6 @@ import orderModel from "../models/order.model";
 import userModel from "../models/user.model";
 import PaymentService from "./payment.service";
 
-
-
 class OrderService {
   public orders = orderModel;
   public foods = foodModel;
@@ -16,8 +14,11 @@ class OrderService {
   public async getOrders(page:number , size:number) {
     const skip = (page - 1) * size
 
+    const orderWithStatus:any = [];
+
     const orders = await this.orders.find()
               .select('-updatedAt')
+              .sort({ createdAt: -1 })
               .skip(skip)
               .limit(size)
               .populate('client','first_name last_name')
@@ -25,9 +26,32 @@ class OrderService {
               .populate('foods.food','name cost')
               .exec();
     const totalorders = await this.orders.countDocuments().exec()
-    const totalPages = Math.ceil(totalorders / size)
+    const totalPages = Math.ceil(totalorders / size);
+
+    orders.map((e) => {
+      // accepted
+      const newObj = e.toJSON()
+      if(e.is_accepted == true && e.is_canceled == false) {
+        orderWithStatus.push({
+          ...newObj,
+          status:'accepted'
+        })
+      // canceled
+      } else if(e.is_accepted == false && e.is_canceled == true ) {
+        orderWithStatus.push({
+          ...newObj,
+          status:'canceled'
+        })
+      // pending
+      } else {
+        orderWithStatus.push({
+          ...newObj,
+          status:'pending'
+        })
+      }
+    })
     return {
-      data: orders,
+      data: orderWithStatus,
       currentPage: page,
       totalPages,
       totalorders,
@@ -88,12 +112,15 @@ class OrderService {
       is_accepted: true
     },{ new: true });
 
-    if(!updatedOrder) throw new httException(400,'something went wrong')
+    if(!updatedOrder) throw new httException(400,'something went wrong');
+
     const updatedUser = await this.paymentService.dicrease({amount: updatedOrder?.total_cost , user: updatedOrder?.client });
 
-    if(!updatedUser) throw new httException(400,'something wnet wrong')
+    if(!updatedUser) throw new httException(400,'something wnet wrong');
 
-    return updatedOrder;
+    const populatedOrder = await this.orders.findById(updatedOrder['_id']).populate('client','first_name last_name telegram_id phone_number').populate('foods.food','name cost').populate('org','name_org group_a_id group_b_id')
+    console.log('Order',populatedOrder)
+    return populatedOrder;
   }
 
   public async cancelOrder(orderData:UpdateOrder) {
@@ -107,7 +134,10 @@ class OrderService {
       is_canceled: true
     },{ new: true });
 
-    return updatedOrder;
+    if(!updatedOrder) throw new httException(200,'not found');
+    const populatedOrder = await this.orders.findById(updatedOrder['_id']).populate('client','first_name last_name telegram_id phone_number').populate('foods.food','name cost').populate('org','name_org group_a_id group_b_id')
+    console.log('Order',populatedOrder)
+    return populatedOrder;
   }
 }
 

@@ -1,4 +1,5 @@
 import { CreateProduct, UpdateAmount } from "../dtos/product.dto";
+import { httException } from "../exceptions/httpException";
 import productModel from "../models/product.model";
 
 
@@ -34,11 +35,33 @@ class ProductService {
 
 
   public async increaseAmount(productData:UpdateAmount) {
+    const { product , amount } = productData;
+
+    const isExist = await this.products.findById(product);
+
+    if(!isExist) throw new httException(200,'product not found');
+
+    const updatedproduct = await this.products.findByIdAndUpdate(product,
+      {
+        amount: Number(isExist.amount) + Number(amount)
+      }, { new: true});
     
-  }
+      return updatedproduct;
+
+  } 
 
   public async decreaseAmount(productData:UpdateAmount) {
+    const { product , amount } = productData;
 
+    const isExist = await this.products.findById(product);
+
+    if(!isExist) throw new httException(200,'product not found');
+
+    if(Number(isExist.amount < Number(amount))) throw new httException(200,'amount dont decrease')
+    
+    const updatedProduct = await this.products.findByIdAndUpdate(product,{ amount: Number(isExist.amount) - Number(amount)},{ new: true});
+
+    return updatedProduct;
   }
 }
 

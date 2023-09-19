@@ -78,3 +78,12 @@ export class Payment {
   @IsNumber()
   amount: number;
 }
+
+
+export class EditRole {
+  @IsString()
+  user: string
+
+  @IsString()
+  role: string
+}

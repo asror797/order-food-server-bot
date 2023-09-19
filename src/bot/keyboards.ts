@@ -81,6 +81,20 @@ export const SendNote: ReplyKeyboardMarkup = {
   ]
 }
 
+export const CookMenu: ReplyKeyboardMarkup = {
+  keyboard: [
+    [
+      {
+        text:"Yangi Buyurtma"
+      },
+      {
+        text:"Buyurtmalarni ko'rish"
+      }
+    ]
+  ],
+  resize_keyboard: true
+}
+
 
 
 // export function PaginationInlineKeyboard(current:number,maxPage: number,data: string[]) {
@@ -112,7 +126,7 @@ export function formatter(data:CallBack[]) {
   data.map((e,i) => {
     keys.push([
       {
-        text: `${i+1}. ${e.name} - ${e.cost} so'm`,
+        text: `${e.name} - ${e.cost} so'm`,
         callback_data: `food-${e.id}`
       }
     ])
@@ -121,6 +135,21 @@ export function formatter(data:CallBack[]) {
 
   return keys;
 }
+
+
+export function KeyboardInline(data: string[]) {
+  const keys:any = []
+
+  if(data.length > 0) {
+    data.map((e:any) => {
+      keys.push({
+        tex:`${e.name}`,
+        callback_data: `lunch-${e['_id']}`
+      })
+    })
+  }
+}
+
 
 export function KeyboardFormatter(current: number, pageData: string[]) {
   const keys:any = []

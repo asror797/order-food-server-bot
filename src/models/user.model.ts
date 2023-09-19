@@ -53,7 +53,6 @@ const userSchema: Schema = new Schema(
 );
 
 
-
 const userModel = model<IUser & Document>('User',userSchema);
 
 export default userModel;

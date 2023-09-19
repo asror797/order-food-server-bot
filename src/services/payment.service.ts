@@ -1,3 +1,4 @@
+import botService from "../bot/bot";
 import { CreatePaymentDto } from "../dtos/payment.dto";
 import { httException } from "../exceptions/httpException";
 import paymentModel from "../models/payment.model";
@@ -16,6 +17,7 @@ class PaymentService {
       balance: Number(User.balance) + Number(amount)
     },{ new: true });
 
+    botService.sendText(User.telegram_id,`🟢 Hisobingizga ${amount} s*m pul tushurildi`)
     await this.paymentRepo.create({
       type: true,
       org: User.org,
@@ -41,6 +43,8 @@ class PaymentService {
       client: User['_id'],
       amount
     });
+
+    botService.sendText(User.telegram_id,`🔴 Hisobdan ${amount} s*m pul yechib olindi`)
 
     return updatedUser;
   }

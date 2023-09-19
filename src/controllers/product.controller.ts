@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import ProductService from "../services/product.service";
 import { ParsedQs } from "qs";
-import { CreateProduct, CreateProductBody } from "../dtos/product.dto";
+import { CreateProduct, CreateProductBody, UpdateAmountWithType } from "../dtos/product.dto";
 import { RequestWithUser } from "../interfaces/auth.interface";
 
 
@@ -33,6 +33,26 @@ class ProductController {
       next(error)
     }
   } 
+
+  public editAmountProduct = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const productData:UpdateAmountWithType = req.body;
+      const { product , amount , type } = productData;
+      if(type == true ) {
+        res.json(await this.productService.increaseAmount({
+          product,
+          amount
+        }))
+      } else if(type == false){
+        res.json(await this.productService.decreaseAmount({
+          product,
+          amount
+        }))
+      }
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 

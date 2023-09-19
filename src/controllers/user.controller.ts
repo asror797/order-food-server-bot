@@ -106,6 +106,15 @@ class UserController {
     }
   }
 
+  public addRole = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const updatedUser = await this.userService.addRole(req.body)
+      res.json(updatedUser)
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public payment = async(req:Request,res:Response,next:NextFunction) => {
     try {
       const { type , amount , user, org } = req.body;

@@ -6,7 +6,6 @@ import { httException } from "../exceptions/httpException";
 import { AdminLoginDto } from "../dtos/admin.dto";
 
 class AuthService {
-  private otpService = new OtpService()
   private users = userModel;
   private admins = [
     {
@@ -17,7 +16,6 @@ class AuthService {
 
   public loginAdmin(adminDto:AdminLoginDto) {
     const { phone_number , password } = adminDto;
-    // validate phone_number
     const validatedPhoneNumber = formatPhoneNumber(phone_number);
     if(!validatedPhoneNumber) throw new httException(400,'invalid format of phone_number')
 

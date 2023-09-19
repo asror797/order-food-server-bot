@@ -9,3 +9,22 @@ export class AdminLoginDto {
   @IsString()
   password: string;
 }
+
+
+
+export class CreateAdmin {
+  @IsString()
+  phone_number: string;
+
+  @IsString()
+  fullname: string;
+
+  @IsString()
+  password: string
+
+  @IsString()
+  org: string;
+
+  @IsString()
+  role: string;
+}

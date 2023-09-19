@@ -27,6 +27,18 @@ class LunchService {
     };
   }
 
+  public async getById(lunch:string) {
+    return await this.lunches.findById(lunch)
+  }
+
+  public async getByOrg(org: string) {
+    const lunches = await this.lunches.find({
+      org: org
+    });
+
+    return lunches;
+  } 
+
   public async createLunch(lunchData:CreateLunch) {
     const newLunch = await this.lunches.create(lunchData);
 

@@ -22,6 +22,7 @@ class UserRoute {
     this.router.post(`${this.path}/send-message`,this.userController.sendMessage)
     this.router.put(`${this.path}/org/:user`,this.userController.updateOrg)
     this.router.patch(`${this.path}/payment`,this.userController.payment)
+    this.router.patch(`${this.path}/role`,this.userController.addRole)
   }
 }
 
