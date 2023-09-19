@@ -39,16 +39,10 @@ class FoodService {
 
   public async getFoodsForBot(getFood:GetFoods) {
     const { page, size , org , category } = getFood;
-    const Page:number = page || 1
-    const Size :number= size || 10
-    const skip = (Page-1)*Size 
     const foods = await this.foods.find({
       org: org,
       category: category
-    })
-            .skip(skip)
-            .limit(Size)
-            .exec();
+    }).exec();
     console.log(foods)
 
     return foods;

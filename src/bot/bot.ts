@@ -78,7 +78,7 @@ class BotService {
         if(messageText == '/group') {
           this.bot.sendMessage(chatId,`Groupd ID: ${chatId}`)
         }
-      } else if(isExist.data.roles.indexOf('cook') !== -1) {
+      } else if(isExist.data && isExist.data.roles.indexOf('cook') !== -1) {
         if(messageText.startsWith('/start')) {
           this.bot.sendMessage(chatId,'Siz oshpazsiz',{ reply_markup: CookMenu});
         } else if(messageText == 'Yangi Buyurtma') {
@@ -581,7 +581,7 @@ class BotService {
   }
 }
 
-const token = '5398672106:AAF_zgtGfTYwu9_F-uTg1S1LrbhLzR2VKkk';
+const token = '6320311774:AAHMDWWIFS7Q-D8NWBkLG6ppf7CX-iHBiDc';
 
 const botService = new BotService(token);
 

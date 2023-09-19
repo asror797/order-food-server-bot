@@ -248,6 +248,10 @@ class UserService {
     }
   }
 
+  public async searchUser(userData:any) {
+    
+  }
+
 }
 
 
