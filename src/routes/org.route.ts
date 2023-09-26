@@ -2,7 +2,6 @@ import { Router } from "express"
 import OrgController from "../controllers/org.controller"
 
 
-
 class OrgRoute {
   public path = '/org'
   public router = Router()
@@ -20,3 +19,5 @@ class OrgRoute {
 }
 
 export default OrgRoute;
+
+

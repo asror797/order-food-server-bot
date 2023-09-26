@@ -3,6 +3,7 @@ import UserService from "../services/user.service";
 import { ChangeStatus, CreateUserDto, Payment, SendMessae, UpdateUserDto, VerifyUser } from "../dtos/user.dto";
 import { ParsedQs } from "qs";
 import PaymentService from "../services/payment.service";
+import { httException } from "../exceptions/httpException";
 
 
 class UserController {
@@ -115,6 +116,44 @@ class UserController {
     }
   }
 
+  public updateUserRole = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const { user, role , type} = req.body
+
+      if(type === true) {
+        const updatedUser = await this.userService.addRole({
+          user,
+          role
+        })
+
+        if(!updatedUser) throw new httException(500,'somethign went wrong')
+        res.json({
+          _id: updatedUser['_id'],
+          first_name: updatedUser.first_name,
+          last_name: updatedUser.last_name,
+          roles: updatedUser.roles
+        })
+      } else if(type === false) {
+        const updatedUser = await this.userService.removeRole({
+          user,
+          role
+        })
+
+        if(!updatedUser) throw new httException(500,'somethign went wrong')
+        res.json({
+          _id: updatedUser['_id'],
+          first_name: updatedUser.first_name,
+          last_name: updatedUser.last_name,
+          roles: updatedUser.roles
+        })
+      } else {
+        throw new httException(400,'invalid request')
+      }
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public payment = async(req:Request,res:Response,next:NextFunction) => {
     try {
       const { type , amount , user, org } = req.body;
@@ -128,6 +167,14 @@ class UserController {
           status:400
         })
       }
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public SearchUser = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      res.json(await this.userService.searchUser(req.query.search))
     } catch (error) {
       next(error)
     }

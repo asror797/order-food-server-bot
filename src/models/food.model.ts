@@ -13,7 +13,7 @@ const foodSchema: Schema = new Schema(
     },
     img: {
       type: String,
-      default:'https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg'
+      default: 'https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg'
     },
     products: {
       type: [
@@ -29,11 +29,11 @@ const foodSchema: Schema = new Schema(
           }
         }
       ],
-      default:[]
+      default: []
     },
     org: {
       type: Schema.Types.ObjectId,
-      ref:'Org',
+      ref: 'Org',
       required: true
     },
     category: {
@@ -47,6 +47,6 @@ const foodSchema: Schema = new Schema(
   }
 );
 
-const foodModel = model<IFood & Document>('Food',foodSchema);
+const foodModel = model<IFood & Document>('Food', foodSchema);
 
 export default foodModel;

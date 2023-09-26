@@ -91,6 +91,30 @@ class FoodService {
     return food;
   }
 
+  public async updatePic(foodData:any) {
+    const { food , image } = foodData
+
+    const isExist = await this.foods.findById(food)
+
+    if(!isExist) throw new httException(400,'food not found')
+
+    const urlPattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i
+    if(!urlPattern.test(image)) throw new httException(400,'image should be link')
+
+    const updatedFood = await this.foods.findByIdAndUpdate(food,{
+      img: image
+    },{ new: true })
+
+    if(!updatedFood) throw new httException(500,'something went wrong')
+
+    return {
+      _id: updatedFood['_id'],
+      name: updatedFood.name,
+      cost: updatedFood.cost,
+      category: updatedFood.category
+    }
+  }
+
 }
 
 

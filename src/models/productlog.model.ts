@@ -20,6 +20,10 @@ const productLog: Schema = new Schema(
     cost: {
       type: Number,
       required: true
+    },
+    type: {
+      type: Boolean,
+      required: true
     }
   },
   {
@@ -28,6 +32,6 @@ const productLog: Schema = new Schema(
   }
 );
 
-const productLogModel = model<IProductLog & Document>('Product',productLog);
+const productLogModel = model<IProductLog & Document>('ProductLog',productLog);
 
 export default productLogModel;

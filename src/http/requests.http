@@ -10,14 +10,28 @@ Content-Type: application/json
 
 
 ### update user
-PUT http://localhost:9000/user 
+GET http://localhost:3000/user/search?search=asror
 Content-Type: application/json 
 
 {
   "_id":"6505851a044812f315a7e8fe",
   "org":"650012d462949f8744859129"
 }
+### Get 
+GET https://food.mirabdulloh.uz/org
+Content-Type: application/json
 
+
+
+### Change
+PATCH https://food.mirabdulloh.uz/org/group
+Content-Type: application/json
+
+{
+  "group_a_id":"-4011058879",
+  "group_b_id":"-4089696767",
+  "org":"650966e945a4bff87cb47439"
+}
 
 ### GET User
 GET http://localhost:9000/user 
@@ -176,15 +190,15 @@ Content-Type: application/json
 
 
 ###
-POST http://localhost:9000/admin 
+POST https://food.mirabdulloh.uz/admin 
 Content-Type: application/json 
 
 {
-  "phone_number": "909336272",
-  "fullname": "Javohir oka",
+  "phone_number": "903339973",
+  "fullname": "Tohirjon oka",
   "password": "password123",
   "org": "650001df0394e11e1233e3cb",
-  "role": "cook"
+  "role": "admin"
 }
 
 

@@ -38,6 +38,9 @@ export class UpdateAmountWithType {
   @IsNumber()
   amount: number
 
+  @IsNumber()
+  cost: number
+
   @IsBoolean()
   type: boolean
 }

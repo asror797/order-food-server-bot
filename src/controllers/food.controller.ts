@@ -29,6 +29,15 @@ class FoodController {
       next(error)
     }
   }
+
+  public updateFoodPic = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const foodData = req.body
+      res.json(await this.foodService.updatePic(foodData))
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 

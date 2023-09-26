@@ -97,9 +97,6 @@ export const CookMenu: ReplyKeyboardMarkup = {
 
 
 
-// export function PaginationInlineKeyboard(current:number,maxPage: number,data: string[]) {
-//   const keys = []
-// }
 
 
 

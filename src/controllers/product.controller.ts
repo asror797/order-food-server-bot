@@ -3,11 +3,14 @@ import ProductService from "../services/product.service";
 import { ParsedQs } from "qs";
 import { CreateProduct, CreateProductBody, UpdateAmountWithType } from "../dtos/product.dto";
 import { RequestWithUser } from "../interfaces/auth.interface";
+import ProductLogService from "../services/product-log.service";
+import { httException } from "../exceptions/httpException";
 
 
 
 class ProductController {
   public productService = new ProductService();
+  public productLogService = new ProductLogService()
 
 
   public getProducts = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
@@ -37,17 +40,41 @@ class ProductController {
   public editAmountProduct = async(req:Request,res:Response,next:NextFunction) => {
     try {
       const productData:UpdateAmountWithType = req.body;
-      const { product , amount , type } = productData;
+      const { product , amount , type, cost } = productData;
       if(type == true ) {
-        res.json(await this.productService.increaseAmount({
+        const editedProduct = await this.productService.increaseAmount({
           product,
           amount
-        }))
+        });
+
+        if(!editedProduct) throw new httException(500,'somethign went wrong')
+
+        const logCreated = await this.productLogService.createLog({
+          product,
+          amount,
+          type: true,
+          org:editedProduct['org'],
+          cost:cost
+        });
+
+        res.json(editedProduct);
       } else if(type == false){
-        res.json(await this.productService.decreaseAmount({
+        const editedProduct = await this.productService.decreaseAmount({
           product,
           amount
-        }))
+        });
+
+        if(!editedProduct) throw new httException(500,'somethign went wrong')
+
+        const logCreated = await this.productLogService.createLog({
+          product,
+          amount,
+          type: false,
+          org:editedProduct['org'],
+          cost:cost
+        });
+
+        res.json(editedProduct);
       }
     } catch (error) {
       next(error)

@@ -22,6 +22,10 @@ const orgSchema: Schema = new Schema(
     group_b_id: {
       type: Number,
       default: null
+    },
+    trip_timeout: {
+      type: Number,
+      default: 0
     }
   },
   {

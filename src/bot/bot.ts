@@ -88,15 +88,15 @@ class BotService {
           const keys:any = [];
 
           foods.map((e:any) => {
-            keys.push([
-              {
-                text:`${e.name} - ${e.cost}`,
-                callback_data:`lunch-${e['_id']}`
-              }
-            ])
+              keys.push([
+                {
+                  text:`${e.name} - ${e.cost}`,
+                  callback_data:`lunch-${e['_id']}`
+                }
+              ])
           })
 
-          this.bot.sendMessage(chatId,"Taomni tanlang:",{ reply_markup: {
+          this.bot.sendMessage(chatId,"Tanlangan Taom",{ reply_markup: {
             inline_keyboard: [
              ...keys
             ]
@@ -270,21 +270,50 @@ class BotService {
     const data = callbackQuery.data
 
     const splited = data?.split('-')[0]
+    const ID = data?.split('-')[1]
 
     try {
       if(splited == 'remove' && chatId && callbackQuery.message) {
         await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
       }
 
+      if(splited == 'agree' && ID) {
+        // const trip = await this.tripService.agreeClient(ID,chatId)
+      } else if(splited == 'disagree') {
+
+      }
+
       if(splited == 'newtrip' && chatId && data) {
+        
         const User = await this.users.isExist(chatId);
         if(User.data?.roles) {
           console.log(User.data)
-          const newTrip = await this.tripService.createTrip({
+          const newTrip:any = await this.tripService.createTrip({
             meal: data.split('-')[1],
             org:User.data.org['_id'],
             sent_at:callbackQuery.message?.date || 5478965874
           });
+          if(newTrip) {
+            const clients = await this.users.getTelegramIDOfClients(User.data.org['_id']);
+            clients.map((e:any) => {
+              this.bot.sendMessage(e.telegram_id,`Bugungi menu:\n${newTrip.meal.name}`,{
+                reply_markup: {
+                  inline_keyboard: [
+                    [
+                      {
+                        text:'Ha',
+                        callback_data:`agree-${newTrip['_id']}`
+                      },
+                      {
+                        text:'yuq',
+                        callback_data:`disagree-${newTrip['_id']}`
+                      }
+                    ]
+                  ]
+                }
+              })
+            })
+          }
           console.log(newTrip)
         }
 
@@ -582,7 +611,8 @@ class BotService {
 }
 
 const token = '6320311774:AAHMDWWIFS7Q-D8NWBkLG6ppf7CX-iHBiDc';
+const demo_bot = '5398672106:AAF_zgtGfTYwu9_F-uTg1S1LrbhLzR2VKkk'
 
-const botService = new BotService(token);
+const botService = new BotService(demo_bot);
 
 export default botService;

@@ -249,8 +249,28 @@ class UserService {
   }
 
   public async searchUser(userData:any) {
-    
+    const { text , org } = userData;
+    const users = await this.users.find({
+      $or: [
+        { first_name: { $regex: new RegExp(text, 'i') } }, // Case-insensitive regex for first_name
+        { last_name: { $regex: new RegExp(text, 'i') } },   // Case-insensitive regex for last_name
+        { phone_number: { $regex: new RegExp(text, 'i') } } // Case-insensitive regex for phone_number
+      ]
+    }).limit(7).exec();
+    console.log(users)
+    return users;
   }
+
+  public async getTelegramIDOfClients(org: string) {
+
+    const Org = await this.orgs.findById(org);
+    if(!Org) throw new httException(400,'org not found')
+    const clients = await this.users.find({
+      org: org
+    }).select('telegram_id').exec();
+
+    return clients;
+  } 
 
 }
 

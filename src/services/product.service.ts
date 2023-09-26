@@ -46,7 +46,7 @@ class ProductService {
         amount: Number(isExist.amount) + Number(amount)
       }, { new: true});
     
-      return updatedproduct;
+    return updatedproduct;
 
   } 
 

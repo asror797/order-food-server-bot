@@ -14,6 +14,7 @@ class UserRoute {
   }
 
   private initializeRoutes() {
+    this.router.get(`${this.path}/search`,this.userController.SearchUser)
     this.router.get(`${this.path}/:telegramid`,this.userController.findUser)
     this.router.get(`${this.path}`,this.userController.getUsers)
     this.router.put(`${this.path}/status/:user`,this.userController.updateStatus)
@@ -22,7 +23,7 @@ class UserRoute {
     this.router.post(`${this.path}/send-message`,this.userController.sendMessage)
     this.router.put(`${this.path}/org/:user`,this.userController.updateOrg)
     this.router.patch(`${this.path}/payment`,this.userController.payment)
-    this.router.patch(`${this.path}/role`,this.userController.addRole)
+    this.router.patch(`${this.path}/role`,this.userController.updateUserRole)
   }
 }
 
