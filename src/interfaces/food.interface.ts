@@ -20,4 +20,5 @@ export interface IFood extends Document {
   img: string;
   org: IOrg['_id'];
   category: Category;
+  is_deleted: boolean
 }

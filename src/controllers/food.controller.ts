@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import FoodService from "../services/food.service";
 import { ParsedQs } from "qs";
 import { CreateFood } from "../dtos/food.dto";
+import { httException } from "../exceptions/httpException";
 
 
 
@@ -39,6 +40,20 @@ class FoodController {
     try {
       const foodData = req.body
       res.json(await this.foodService.updatePic(foodData))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public changeStatus = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const status = req.body.status 
+      const id = req.params.food as string
+      if(!id) throw new httException(400,'food on params and is required')
+      res.json(await this.foodService.changeStatus({
+        id,
+        status
+      }))
     } catch (error) {
       next(error)
     }

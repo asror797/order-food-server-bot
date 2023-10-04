@@ -63,7 +63,11 @@ class FoodService {
     const { page, size , org , category } = getFood;
     const foods = await this.foods.find({
       org: org,
-      category: category
+      category: category,
+      $or: [
+        { is_deleted: false },
+        { is_deleted: { $exists: false } }
+      ]
     }).exec();
     console.log(foods)
 
@@ -158,6 +162,20 @@ class FoodService {
       name: updatedFood.name,
       cost: updatedFood.cost,
       category: updatedFood.category
+    }
+  }
+
+  public async changeStatus(payload:any) {
+    const { id , status } = payload
+    const food = await this.foods.findById(id)
+
+    if(!food) throw new httException(400,'not found food')
+
+    const updatedFood = await this.foods.findByIdAndUpdate(id,{ is_deleted: status }, { new: true })
+
+    return {
+      _id: updatedFood ? updatedFood['_id'] : '' ,
+      name: updatedFood?.name
     }
   }
 

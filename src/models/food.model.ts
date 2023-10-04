@@ -39,6 +39,10 @@ const foodSchema: Schema = new Schema(
     category: {
       type: String,
       enum: Object.values(Category)
+    },
+    is_deleted: {
+      type: Boolean,
+      default: false
     }
   },
   {
