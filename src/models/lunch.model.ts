@@ -2,9 +2,6 @@ import { Schema, model } from "mongoose";
 import { ILunch } from "../interfaces/lunch.interface";
 import { Document } from "mongoose";
 
-
-
-
 const lunchSchema: Schema = new Schema(
   {
     name: {
@@ -14,6 +11,21 @@ const lunchSchema: Schema = new Schema(
     cost: {
       type: Number,
       required: true
+    },
+    products: {
+      type: [
+        {
+          product: {
+            type: Schema.Types.ObjectId,
+            ref:'Product'
+          },
+          amount: {
+            type: Number,
+            default: 0
+          }
+        }
+      ],
+      default: []
     },
     org: {
       type: Schema.Types.ObjectId,
@@ -29,4 +41,4 @@ const lunchSchema: Schema = new Schema(
 
 const lunchModel = model<ILunch & Document>('Lunch',lunchSchema);
 
-export default lunchModel;
+export default lunchModel

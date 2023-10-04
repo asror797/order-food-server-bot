@@ -11,7 +11,7 @@ interface DB_CONNECTION {
 
 
 export const dbConnection:DB_CONNECTION = {
-  url:PATH,
+  url:PROD_PATH,
   options: {
     autoIndex: true
   }

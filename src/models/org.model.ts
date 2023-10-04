@@ -9,7 +9,7 @@ const orgSchema: Schema = new Schema(
     },
     is_active: {
       type: Boolean,
-      default: false
+      default: true
     },
     is_deleted: {
       type: Boolean,
@@ -34,8 +34,6 @@ const orgSchema: Schema = new Schema(
   }
 );
 
-
 const orgModel = model<IOrg & Document>('Org',orgSchema);
-
 
 export default orgModel;

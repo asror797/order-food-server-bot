@@ -1,16 +1,20 @@
+import { endOfWeek, startOfWeek } from "date-fns";
 import { CreateOrderDto, UpdateOrder } from "../dtos/order.dto";
 import { httException } from "../exceptions/httpException";
 import foodModel from "../models/food.model";
 import orderModel from "../models/order.model";
 import userModel from "../models/user.model";
+import FoodService from "./food.service";
 import PaymentService from "./payment.service";
+import ProductLogService from "./product-log.service";
 
 class OrderService {
   public orders = orderModel;
   public foods = foodModel;
   public users = userModel;
   public paymentService = new PaymentService();
-
+  public foodService = new FoodService()
+  
   public async getOrders(page:number , size:number) {
     const skip = (page - 1) * size
 
@@ -118,7 +122,16 @@ class OrderService {
 
     if(!updatedUser) throw new httException(400,'something wnet wrong');
 
-    const populatedOrder = await this.orders.findById(updatedOrder['_id']).populate('client','first_name last_name telegram_id phone_number').populate('foods.food','name cost').populate('org','name_org group_a_id group_b_id')
+    const populatedOrder = await this.orders.findById(updatedOrder['_id']).populate('client','first_name last_name telegram_id phone_number').populate('foods.food','name cost').populate('org','name_org group_a_id group_b_id')  || {foods:[]}
+
+
+    for (let i = 0; i < populatedOrder.foods.length; i++) {
+      const { food , amount } = populatedOrder.foods[i]
+      await this.foodService.DecreaseProductsOfFood({
+        amount:amount,
+        food:food,
+      })
+    }
     console.log('Order',populatedOrder)
     return populatedOrder;
   }
@@ -138,6 +151,46 @@ class OrderService {
     const populatedOrder = await this.orders.findById(updatedOrder['_id']).populate('client','first_name last_name telegram_id phone_number').populate('foods.food','name cost').populate('org','name_org group_a_id group_b_id')
     console.log('Order',populatedOrder)
     return populatedOrder;
+  }
+
+  public async getTotalOrderCount() {
+    const startDate = new Date(
+      startOfWeek(new Date(), { weekStartsOn: 1 }).setHours(
+        startOfWeek(new Date(), { weekStartsOn: 1 }).getHours() + 5
+      )
+    );
+    const endDate = new Date(
+      endOfWeek(new Date(), { weekStartsOn: 1 }).setHours(
+        endOfWeek(new Date(), { weekStartsOn: 1 }).getHours() + 5
+      )
+    );
+
+    const WeeklyOrders = await this.orders.find({
+      createdAt: {
+        $gte: startDate,
+        $lt: endDate,
+      }
+    })
+  }
+
+
+  public async orderRetrieveTotalSum(payload:any) {
+    const { user } = payload
+
+    const totalSum = await this.orders.find({
+      user: user,
+    })
+
+    /*
+      totalSum
+      amount order
+      amount canceled
+
+    */
+
+    return {
+      totalSum: 5
+    }
   }
 }
 

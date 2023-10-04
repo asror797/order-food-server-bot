@@ -17,7 +17,7 @@ class App {
 
   constructor(routes:Routes[]) {
     this.app = express()
-    this.port = 3000
+    this.port = 9070
     this.bot = botService
 
     this.connectToDatabase()

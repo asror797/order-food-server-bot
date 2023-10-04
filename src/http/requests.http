@@ -18,19 +18,19 @@ Content-Type: application/json
   "org":"650012d462949f8744859129"
 }
 ### Get 
-GET https://food.mirabdulloh.uz/org
+GET http://localhost:3000/org
 Content-Type: application/json
 
 
 
 ### Change
-PATCH https://food.mirabdulloh.uz/org/group
+PATCH http://localhost:3000/org/group
 Content-Type: application/json
 
 {
   "group_a_id":"-4011058879",
   "group_b_id":"-4089696767",
-  "org":"650966e945a4bff87cb47439"
+  "org":"6518025d91f8ff02544c4b5a"
 }
 
 ### GET User
@@ -79,7 +79,7 @@ Content-Type: application/json
 
 
 ### get product
-GET http://localhost:9000/food 
+GET http://localhost:3000/org 
 Content-Type: application/json
 
 
@@ -165,16 +165,14 @@ Content-Type: application/json
 
 
 ### payment
-PATCH http://localhost:9000/user/payment
+PATCH http://localhost:3000/user/role
 Content-Type: application/json
 
 {
-  "amount": 10000,
-  "user": "64ff00bb49490c972a59020c",
+  "role": "cook",
+  "user": "6518023691f8ff02544c4b41",
   "type": true
 }
-
-
 
 
 
@@ -203,10 +201,22 @@ Content-Type: application/json
 
 
 ### edit role
-PATCH http://localhost:9000/user/role 
+PATCH http://localhost:3000/user/role 
 Content-Type: application/json
 
 {
-  "user":"6505a05e894bb772e4a81006",
-  "role":"cook"
+  "user":"6518023691f8ff02544c4b41",
+  "role":"cook",
+  "type": true
+}
+
+
+### update org
+PATCH http://localhost:3000/org/6518026691f8ff02544c4b5e
+Content-Type: application/json
+
+{
+  "trip_timeout":60,
+  "group_a_id": -4011058879,
+  "group_b_id": -4089696767
 }

@@ -5,6 +5,8 @@ import FoodRoute from "./routes/food.route";
 import LunchRoute from "./routes/lunch.route";
 import OrderRoute from "./routes/order.route";
 import OrgRoute from "./routes/org.route";
+import PaymentRoute from "./routes/payment.route";
+import ProductLogRoute from "./routes/product-log.route";
 import ProductRoute from "./routes/product.route";
 import SettingsRoute from "./routes/settings.route";
 import TripRoute from "./routes/trip.route";
@@ -21,7 +23,9 @@ const app = new App([
   new OrderRoute(),
   new LunchRoute(),
   new AdminRoute(),
-  new TripRoute()
+  new TripRoute(),
+  new ProductLogRoute(),
+  new PaymentRoute(),
 ]);
 
 app.listen()

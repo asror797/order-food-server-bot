@@ -58,7 +58,6 @@ class BotService {
         this.bot.sendMessage(contact.user_id,'Something went wrong try again :(')
       }
     }
-
   }
 
   private async handleMessage(msg: Message) {
@@ -101,6 +100,18 @@ class BotService {
              ...keys
             ]
           }})
+        } else if( messageText == "Buyurtmalarni ko'rish") {
+          const trip = await this.tripService.tripRetrieveOne(chatId)
+          const agreeusers:any = []
+          if(trip.status)
+            
+            trip.data.agree_users.map((e:any,i:number) => {
+              agreeusers.push(`${i+1}. ${e.first_name} ${e.last_name} \n+998${e.phone_number}\n---------------------\n`)
+            })
+            this.bot.sendMessage(chatId,`${trip.data.meal.name}\n`+ agreeusers.join('')+`Rozi: ${agreeusers.length} ta`)
+          if(!trip.status) {
+            this.bot.sendMessage(chatId,`Admin malumotlari xato`)
+          }
         }
       } else {
         if (messageText.startsWith('/start')) {
@@ -272,51 +283,95 @@ class BotService {
     const splited = data?.split('-')[0]
     const ID = data?.split('-')[1]
 
+    
     try {
       if(splited == 'remove' && chatId && callbackQuery.message) {
         await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
       }
 
-      if(splited == 'agree' && ID) {
-        // const trip = await this.tripService.agreeClient(ID,chatId)
-      } else if(splited == 'disagree') {
-
+      if(splited == 'canceltrip' && ID) {
+        const updatedTrip = await this.tripService.cancelAgreeClient({
+          trip: ID,
+          client: data.split('-')[2]
+        })
+        console.log('Canceled',updatedTrip)
       }
 
-      if(splited == 'newtrip' && chatId && data) {
-        
+      if(splited == 'agree' && ID && chatId && callbackQuery.message) {
+        await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
+        const Trip = await this.tripService.agreeClient(ID,chatId)
+
+        if(Trip.status && Trip.data) {
+          const {  user ,trip , org} = Trip.data
+          console.log('User',user)
+          console.log('Trip',trip)
+          console.log('Org',org)
+          this.bot.sendMessage(chatId,`${trip?.meal?.name} Qabul qilindi`)
+          this.bot.sendMessage(org.group_b_id,`Kimga: \n👤: ${user?.first_name} ${user?.last_name}\n📞: +998${user?.phone_number} \n`,{
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text:'Bajarish ✅',
+                    callback_data:'remove'
+                  }
+                ],
+                [
+                  {
+                    text:'Bekor qilish ❌',
+                    callback_data:`canceltrip-${trip['_id']}-${chatId}`
+                  }
+                ]
+              ]
+            }
+          })
+        } else {
+          this.bot.sendMessage(chatId,'Vaqt tugadi.')  
+        }
+      } else if(splited == 'disagree' && chatId && callbackQuery.message && ID) {
+        await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
+        const trip = await this.tripService.disagreeClient(ID,chatId)
+        console.log(trip)
+        this.bot.sendMessage(chatId,`${ID} yuborildi`)
+      }
+
+      if(splited == 'newtrip' && chatId && data && callbackQuery.message) {
+        // this.bot.answerCallbackQuery({}) 
+        await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
         const User = await this.users.isExist(chatId);
         if(User.data?.roles) {
           console.log(User.data)
           const newTrip:any = await this.tripService.createTrip({
             meal: data.split('-')[1],
             org:User.data.org['_id'],
-            sent_at:callbackQuery.message?.date || 5478965874
+            sent_at:Math.floor(Date.now() / 1000)
           });
-          if(newTrip) {
+          if(newTrip.status) {
+            this.bot.sendMessage(chatId,'Yuborildi')
             const clients = await this.users.getTelegramIDOfClients(User.data.org['_id']);
             clients.map((e:any) => {
-              this.bot.sendMessage(e.telegram_id,`Bugungi menu:\n${newTrip.meal.name}`,{
+              this.bot.sendMessage(e.telegram_id,`Bugungi menu:\n${newTrip.data.meal.name}`,{
                 reply_markup: {
                   inline_keyboard: [
                     [
                       {
-                        text:'Ha',
-                        callback_data:`agree-${newTrip['_id']}`
+                        text:'Ha ✅',
+                        callback_data:`agree-${newTrip.data['_id']}`
                       },
                       {
-                        text:'yuq',
-                        callback_data:`disagree-${newTrip['_id']}`
+                        text:"Yo'q ❌",
+                        callback_data:`disagree-${newTrip.data['_id']}`
                       }
                     ]
                   ]
                 }
               })
             })
+          } else {
+            this.bot.sendMessage(chatId,`⏳ Yangi e'lon berish uchun ${Math.floor(newTrip.data.diffrence)} minut vatq qoldi.`)
           }
           console.log(newTrip)
         }
-
       }
 
       if(splited == 'lunch' && chatId) {
@@ -444,7 +499,7 @@ class BotService {
               foods.push(`\n------------------\nJami: <code> ${Order.total_cost}</code> s*m \n`)
               foods.push(`\nBuyurtma Holati: 🕓 <code>Kutilmoqda...</code>`)
               // this.bot.sendMessage()
-              if(user.data.org.group_a_id && (user.data.balance >=Order.total_cost)) {
+              if(user.data.org.group_a_id && (user.data.balance >= Order.total_cost)) {
                 await this.store.clear(chatId)
                 await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id);
                 this.bot.sendMessage(chatId,`Buyurtma:\n  ${foods.join(' ')}`,{ parse_mode: 'HTML'});

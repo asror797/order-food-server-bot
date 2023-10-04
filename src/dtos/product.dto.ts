@@ -29,6 +29,9 @@ export class UpdateAmount {
 
   @IsNumber()
   amount: number
+
+  @IsNumber()
+  cost: number
 }
 
 export class UpdateAmountWithType {

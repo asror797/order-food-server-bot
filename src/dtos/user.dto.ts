@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsString } from "class-validator"
+import { IsBoolean, IsNumber, IsPositive, IsString, isPositive } from "class-validator"
 
 export class CreateUserDto {
 
@@ -86,4 +86,18 @@ export class EditRole {
 
   @IsString()
   role: string
+}
+
+
+export class SearchPagination {
+  @IsString()
+  search: string
+
+  @IsNumber()
+  @IsPositive()
+  page: number 
+
+  @IsNumber()
+  @IsPositive()
+  size: number
 }

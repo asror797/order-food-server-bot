@@ -6,24 +6,51 @@ import productModel from "../models/product.model";
 class ProductService {
   public products = productModel;
 
-  public async getProducts(page:number,size:number) {
+  public async getProducts(payload: any) {
+    const { page, size, search } = payload
     const skip = (page - 1) * size
 
-    const products = await this.products.find()
-              .select('-updatedAt')
-              .skip(skip)
-              .populate('org','name_org')
-              .limit(size)
-              .exec();
-    const totalProducts = await this.products.countDocuments().exec()
-    const totalPages = Math.ceil(totalProducts / size)
-    return {
-      data: products,
-      currentPage: page,
-      totalPages,
-      totalProducts,
-      productsOnPage: products.length
-    };
+    if (!search || search.trim() === "") {
+      // If data is null, empty, or whitespace, return all users (no search filter)
+      const products = await this.products
+        .find()
+        .populate('org', 'name_org')
+        .skip((page - 1) * size)
+        .limit(size)
+        .exec();
+
+      const totalProducts = await this.products.countDocuments().exec()
+      const totalPages = Math.ceil(totalProducts / size)
+      return {
+        data: products,
+        currentPage: page,
+        totalPages,
+        totalProducts,
+        productsOnPage: products.length
+      };
+    }
+
+    const re = new RegExp(search, "i");
+    const products = await this.products
+      .find({
+        $or: [
+          { name: { $regex: re } },
+        ]
+      })
+      .populate('org', 'name_org')
+      .skip(skip)
+      .limit(size)
+      .exec();
+
+      const totalProducts = await this.products.countDocuments().exec()
+      const totalPages = Math.ceil(totalProducts / size)
+      return {
+        data: products,
+        currentPage: page,
+        totalPages,
+        totalProducts,
+        productsOnPage: products.length
+      };
   }
 
   public async createNew(productData:CreateProduct) {
@@ -35,7 +62,7 @@ class ProductService {
 
 
   public async increaseAmount(productData:UpdateAmount) {
-    const { product , amount } = productData;
+    const { product , amount, cost } = productData;
 
     const isExist = await this.products.findById(product);
 
@@ -43,11 +70,11 @@ class ProductService {
 
     const updatedproduct = await this.products.findByIdAndUpdate(product,
       {
-        amount: Number(isExist.amount) + Number(amount)
+        amount: Number(isExist.amount) + Number(amount),
+        cost: cost
       }, { new: true});
     
     return updatedproduct;
-
   } 
 
   public async decreaseAmount(productData:UpdateAmount) {

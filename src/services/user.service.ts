@@ -1,5 +1,5 @@
 import userModel from "../models/user.model";
-import { ChangeOrg, ChangeStatus, CreateUserDto, SendMessae, UpdateUserDto } from "../dtos/user.dto";
+import { ChangeOrg, ChangeStatus, CreateUserDto, SearchPagination, SendMessae, UpdateUserDto } from "../dtos/user.dto";
 import { httException } from "../exceptions/httpException";
 import { IUser, UserRole } from "../interfaces/user.interface";
 import { formatPhoneNumber } from "../utils/phoneNumberFormatter";
@@ -38,6 +38,55 @@ class UserService {
       phone_number
     });
     return newUser;
+  }
+
+  public async userRetrieveAll(payload:SearchPagination) {
+    const { search , page , size} = payload
+    if (!search || search.trim() === "") {
+      // If data is null, empty, or whitespace, return all users (no search filter)
+      const users = await this.users
+        .find()
+        .populate('org', 'name_org')
+        .skip((page - 1) * size)
+        .limit(size)
+        .exec();
+
+      const totalUsers = await this.users.countDocuments().exec()
+      const totalPages = Math.ceil(totalUsers / size)
+      return {
+        data: users,
+        currentPage: page,
+        totalPages,
+        totalUsers,
+        usersOnPage: users.length
+      };
+    }
+
+    const re = new RegExp(search, "i");
+    const skip = (page - 1) * size;
+
+    const users = await this.users
+      .find({
+        $or: [
+          { phone_number: { $regex: re } },
+          { first_name: { $regex: re } },
+          { last_name: { $regex: re } }
+        ]
+      })
+      .populate('org', 'name_org')
+      .skip(skip)
+      .limit(size)
+      .exec();
+
+      const totalUsers = await this.users.countDocuments().exec()
+      const totalPages = Math.ceil(totalUsers / size)
+      return {
+        data: users,
+        currentPage: page,
+        totalPages,
+        totalUsers,
+        usersOnPage: users.length
+      };
   }
 
   public async getUsers(page:number,size:number) {
@@ -229,9 +278,11 @@ class UserService {
       throw new Error("User does not have this role");
     }
 
-    User.roles = user.role.filter((e:string) => e !== role);
+    console.log(User)
 
-    const updatedUser = await user.save();
+    User.roles = User.roles.filter((e:string) => e !== role);
+
+    const updatedUser = await User.save();
 
     return updatedUser;
   }
@@ -248,31 +299,64 @@ class UserService {
     }
   }
 
-  public async searchUser(userData:any) {
-    const { text , org } = userData;
-    const users = await this.users.find({
-      $or: [
-        { first_name: { $regex: new RegExp(text, 'i') } }, // Case-insensitive regex for first_name
-        { last_name: { $regex: new RegExp(text, 'i') } },   // Case-insensitive regex for last_name
-        { phone_number: { $regex: new RegExp(text, 'i') } } // Case-insensitive regex for phone_number
-      ]
-    }).limit(7).exec();
-    console.log(users)
+  // public async searchUser(userData:any) {
+  //   const { text , org } = userData;
+  //   const users = await this.users.find({
+  //     $or: [
+  //       { first_name: { $regex: new RegExp(text, 'i') } }, // Case-insensitive regex for first_name
+  //       { last_name: { $regex: new RegExp(text, 'i') } },   // Case-insensitive regex for last_name
+  //       { phone_number: { $regex: new RegExp(text, 'i') } } // Case-insensitive regex for phone_number
+  //     ]
+  //   }).limit(7).exec();
+  //   return users;
+  // }
+
+  public async searchUser(data:string) {
+    let  re = new RegExp(data, "i");
+    console.log(re,data)
+    if(data === undefined && data === "") throw new httException(200,'search word is empty');
+
+    const users = await this.users
+                   .find({
+                      $or: [
+                         { phone_number: { $regex: re } },
+                         { first_name: { $regex: re } },
+                         { last_name: { $regex: re } }
+                      ]
+                   })
+                   .populate('org','name_org')
+                   .limit(5)
+                   .exec()
     return users;
-  }
+ }
+
 
   public async getTelegramIDOfClients(org: string) {
 
     const Org = await this.orgs.findById(org);
     if(!Org) throw new httException(400,'org not found')
     const clients = await this.users.find({
-      org: org
-    }).select('telegram_id').exec();
+      org: org,
+      $and: [
+        { roles: 'user' }, 
+        { roles: { $nin: ['cook'] } } 
+      ]
+    }).select('telegram_id roles').exec();
 
     return clients;
   } 
+
+  public async revenueOfUser(payload:any) {
+    const { user } = payload
+    const User = await this.users.findById(user)
+
+    if(!User) throw new httException(200,'user not found')
+  }
 
 }
 
 
 export default UserService;
+
+
+

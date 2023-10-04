@@ -12,10 +12,15 @@ class UserController {
 
   public getUsers = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
     try {
+      const search = req.query.search as string
       const page = parseInt(req.query.page as string) || 1;
       const size = parseInt(req.query.size as string) || 10;
 
-      res.json(await this.userService.getUsers(page,size))
+      res.json(await this.userService.userRetrieveAll({
+        search,
+        page,
+        size
+      }))
     } catch (error) {
       console.log(error)
       next(error)
@@ -174,7 +179,8 @@ class UserController {
 
   public SearchUser = async(req:Request,res:Response,next:NextFunction) => {
     try {
-      res.json(await this.userService.searchUser(req.query.search))
+      console.log(req.query.search)
+      res.json(await this.userService.searchUser(req.query.search as string))
     } catch (error) {
       next(error)
     }

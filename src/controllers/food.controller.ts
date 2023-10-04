@@ -13,8 +13,13 @@ class FoodController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const size = parseInt(req.query.size as string) || 10;
+      const search = req.query.search as string
 
-      const foods = await this.foodService.getFoods(page,size)
+      const foods = await this.foodService.getFoods({
+        page,
+        size,
+        search
+      })
       res.json(foods)
     } catch (error) {
       next(error)

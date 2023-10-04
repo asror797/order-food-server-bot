@@ -15,9 +15,14 @@ class ProductController {
 
   public getProducts = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
     try {
+      const search = req.query.search as string
       const page = parseInt(req.query.page as string) || 1;
       const size = parseInt(req.query.size as string) || 10;
-      res.json(await this.productService.getProducts(page,size))
+      res.json(await this.productService.getProducts({
+        page,
+        size,
+        search
+      }))
     } catch (error) {
       console.log(error)
       next(error)
@@ -44,12 +49,13 @@ class ProductController {
       if(type == true ) {
         const editedProduct = await this.productService.increaseAmount({
           product,
-          amount
+          amount,
+          cost
         });
 
         if(!editedProduct) throw new httException(500,'somethign went wrong')
 
-        const logCreated = await this.productLogService.createLog({
+        const logCreated = await this.productLogService.logCreateForStore({
           product,
           amount,
           type: true,
@@ -61,12 +67,13 @@ class ProductController {
       } else if(type == false){
         const editedProduct = await this.productService.decreaseAmount({
           product,
-          amount
+          amount,
+          cost
         });
 
         if(!editedProduct) throw new httException(500,'somethign went wrong')
 
-        const logCreated = await this.productLogService.createLog({
+        const logCreated = await this.productLogService.logCreateForStore({
           product,
           amount,
           type: false,

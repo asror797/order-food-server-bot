@@ -17,12 +17,18 @@ const tripSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref:'Org'
     },
-    agree_users: {
-
-    },
-    disagree_users: {
-
-    }
+    agree_users: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+      }
+    ],
+    disagree_users: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+      }
+    ]
   },
   {
     timestamps: true,

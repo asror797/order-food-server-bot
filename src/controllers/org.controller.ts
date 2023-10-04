@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import OrgService from "../services/org.service";
 import { ParsedQs } from "qs";
-import { UpdateGroupDto } from "../dtos/org.dto";
+import { Update, UpdateGroupDto } from "../dtos/org.dto";
 
 
 
@@ -37,6 +37,28 @@ class OrgController {
     try {
       const orgData:UpdateGroupDto = req.body;
       res.json(await this.orgService.updateGroupId(orgData))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public update = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const org: string = req.params.org 
+      const updateData: Omit<Update,'org'> = req.body
+      res.json(await this.orgService.update({org,...updateData}))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public updateTime = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const orgData: any = req.body
+      res.json(await this.orgService.updateOrg({
+        org: orgData.Org,
+        time: orgData.time
+      }))
     } catch (error) {
       next(error)
     }

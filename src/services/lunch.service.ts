@@ -48,6 +48,10 @@ class LunchService {
   public async updateLunch() {
 
   }
+
+  public async pushProduct(lunchData:any) {
+    const { lunch , products  } = lunchData
+  }
 }
 
 

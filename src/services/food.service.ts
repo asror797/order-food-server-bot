@@ -2,38 +2,60 @@ import { CreateFood, GetFoods } from "../dtos/food.dto";
 import { httException } from "../exceptions/httpException";
 import foodModel from "../models/food.model";
 import productModel from "../models/product.model";
+import ProductLogService from "./product-log.service";
 
 
 class FoodService {
   public foods = foodModel;
   public products = productModel;
+  public productLog = new ProductLogService()
 
-  public async getFoods(page: number , size: number) {
+  public async getFoods(payload: any) {
+    const { page, size, search } = payload
     const skip = (page - 1) * size
 
-    const foods = await this.foods.find()
-              .select('-updatedAt')
-              .skip(skip)
-              .limit(size)
-              .populate('products.product','name cost')
-              .populate('org','name_org')
-              .exec();
+    if (!search || search.trim() === "") {
+      const foods = await this.foods
+        .find()
+        .populate('org', 'name_org')
+        .populate('products.product','name cost')
+        .skip((page - 1) * size)
+        .limit(size)
+        .exec();
+
+      const totalFoods = await this.foods.countDocuments().exec()
+      const totalPages = Math.ceil(totalFoods / size)
+      return {
+        data: foods,
+        currentPage: page,
+        totalPages,
+        totalFoods,
+        foodsOnPage: foods.length
+      };
+    }
+
+    const re = new RegExp(search, "i");
+    const foods = await this.foods
+      .find({
+        $or: [
+          { name: { $regex: re } },
+        ]
+      })
+      .populate('org', 'name_org')
+      .populate('products.product','name cost')
+      .skip(skip)
+      .limit(size)
+      .exec();
+
     const totalFoods = await this.foods.countDocuments().exec()
     const totalPages = Math.ceil(totalFoods / size)
-    const formattedFoods = foods.map(food => ({
-      ...food.toObject(), 
-      products: food.products.map(productItem => ({
-        product: productItem.product,
-        amount: productItem.amount,
-      })),
-    }));
 
     return {
-      data: formattedFoods,
+      data: foods,
       currentPage: page,
       totalPages,
       totalFoods,
-      foodsOnPage: formattedFoods.length
+      foodsOnPage: foods.length
     };
   }
 
@@ -47,6 +69,30 @@ class FoodService {
 
     return foods;
   }
+
+  public async DecreaseProductsOfFood(payload:any) {
+    const { food, amount } = payload
+
+    const Food = await this.foods.findById(food).populate('products.product').exec()
+
+    if(!Food) throw new httException(400,'not found food')
+
+    const products = Food.products
+
+    for (let i = 0; i < products.length; i++) {
+      const orderFood:any = products[i]
+      await this.productLog.createLog({
+        amount: amount * orderFood.amount,
+        product: orderFood.product['_id'].toString(),
+        type: false,
+        cost: orderFood.product.cost,
+        org: Food.org
+      })
+    }
+    return "ok"
+
+  } 
+
 
   public async creatNew(foodData:CreateFood) {
     const { name , org , cost , category , products } = foodData;
