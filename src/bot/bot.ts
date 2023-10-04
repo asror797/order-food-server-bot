@@ -668,6 +668,6 @@ class BotService {
 const token = '6320311774:AAHMDWWIFS7Q-D8NWBkLG6ppf7CX-iHBiDc';
 const demo_bot = '5398672106:AAF_zgtGfTYwu9_F-uTg1S1LrbhLzR2VKkk'
 
-const botService = new BotService(demo_bot);
+const botService = new BotService(token);
 
 export default botService;
