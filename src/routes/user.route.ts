@@ -16,7 +16,7 @@ class UserRoute {
   private initializeRoutes() {
     this.router.get(`${this.path}/search-pagination`,this.userController.getUsers)
     this.router.get(`${this.path}/search`,this.userController.SearchUser)
-    this.router.get(`${this.path}/:telegramid`,this.userController.findUser)
+    this.router.get(`${this.path}/telegram/:telegramid`,this.userController.findUser)
     this.router.put(`${this.path}/status/:user`,this.userController.updateStatus)
     this.router.put(`${this.path}/`,this.userController.updateInfoUser)
     this.router.put(`${this.path}/verify/:user`,this.userController.verifyUser)
