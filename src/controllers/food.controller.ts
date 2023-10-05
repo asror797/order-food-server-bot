@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import FoodService from "../services/food.service";
 import { ParsedQs } from "qs";
-import { CreateFood } from "../dtos/food.dto";
+import { CreateFood, UpdateFoodDto } from "../dtos/food.dto";
 import { httException } from "../exceptions/httpException";
 
 
@@ -54,6 +54,31 @@ class FoodController {
         id,
         status
       }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public updateFood = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const food = req.params.food as string
+      if(!food) throw new httException(400,'id required')
+      const data: Omit<UpdateFoodDto,'food'> = req.body 
+      res.json(await this.foodService.updateFood({
+        food,
+        ...data
+      }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public deleteProduct = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const food = req.params.food as string
+      const payload = req.body
+
+      res.json(await this.foodService.deleteProduct({ food, ...payload}))
     } catch (error) {
       next(error)
     }

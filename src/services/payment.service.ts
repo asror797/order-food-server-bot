@@ -17,7 +17,7 @@ class PaymentService {
     const totalPages = Math.ceil(totalPayments / size)
 
     return {
-      data: payments,
+      data: payments.reverse(),
       currentPage: page,
       totalPages,
       totalPayments,

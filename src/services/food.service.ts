@@ -1,14 +1,19 @@
-import { CreateFood, GetFoods } from "../dtos/food.dto";
+import { CreateFood, GetFoods, UpdateFoodDto } from "../dtos/food.dto";
 import { httException } from "../exceptions/httpException";
+import { IFood } from "../interfaces/food.interface";
 import foodModel from "../models/food.model";
+import orgModel from "../models/org.model";
 import productModel from "../models/product.model";
 import ProductLogService from "./product-log.service";
+import ProductService from "./product.service";
 
 
 class FoodService {
   public foods = foodModel;
   public products = productModel;
   public productLog = new ProductLogService()
+  public productService = new ProductService()
+  public org = orgModel
 
   public async getFoods(payload: any) {
     const { page, size, search } = payload
@@ -69,9 +74,29 @@ class FoodService {
         { is_deleted: { $exists: false } }
       ]
     }).exec();
-    console.log(foods)
+    console.log('Foods',foods)
 
-    return foods;
+    const availableFoods = []
+
+    for (let i = 0; i < foods.length; i++) {
+      const food = foods[i];
+
+      console.log('Selected',food)
+
+      if(food.products.length > 0) {
+        for (let j = 0; j < food.products.length; j++) {
+          const product = food.products[j];
+          
+          const statusProduct = await this.productService.checkAmountProduct({product:product.product['_id'],amount: product.amount})
+  
+          if(statusProduct) {
+            availableFoods.push(food)
+          }
+        }
+      }
+    }
+
+    return availableFoods;
   }
 
   public async DecreaseProductsOfFood(payload:any) {
@@ -179,6 +204,85 @@ class FoodService {
     }
   }
 
+  public async updateFood(payload:UpdateFoodDto) {
+    const { food , cost , name , category , org, is_deleted, img } = payload
+
+    const updateData = {
+      ...(org !== undefined && { org }),
+      ...(cost !== undefined && { cost }),
+      ...(category !== undefined && { category }),
+      ...(is_deleted !== undefined && { is_deleted }),
+      ...(img !== undefined && { img }),
+      ...(name !== undefined && { name }),
+    }
+
+    if(updateData.org) {
+      const isExist = await this.org.findById(org)
+      if(!org) throw new httException(400,'org not found')
+    }
+
+    const updatedFood = await this.foods.findByIdAndUpdate(food,updateData,{ new: true }).exec()
+
+    if(!updatedFood) throw new httException(500,'something went wrong')
+
+    // delete updatedFood.products
+
+    return updatedFood
+  }
+
+  public async updateProductFood(payload:any) {
+    const { food , products } = payload;
+
+    const Food = await this.foods.findById(food)
+
+    if(!Food) throw new httException(400,'food not found')
+
+    for (let i = 0; i < products.length; i++) {
+      const productWithAmount = products[i];
+
+      const Product = await this.products.findById(productWithAmount.product)
+      if(!Product) throw new httException(400,'product not found')
+      if(productWithAmount.amount == 0) {
+ 
+      } else if(productWithAmount.amount > 0) {
+
+      } else {
+        throw new httException(400,'amount is not valid')
+      }
+    }
+  }
+
+  // delete 
+  public async deleteProduct(payload:any) {
+    const { food , product } = payload
+
+    const Food = await this.getFoodById(food)
+
+    const isProductInArray = Food.products.some((item) => item.product == product.id)
+
+    if(!isProductInArray) throw new httException(400,'product not found')
+
+    const updatedFood = await this.foods.findByIdAndUpdate(
+      food,
+      { $pull: { products: { product: product.id } } },
+      { new: true }
+    );
+    return updatedFood
+  }
+  // update | add or remove amount 
+  public async updateProduct(payload: any) {
+    const { food , product } = payload
+  }
+  // add  new product with amount 
+  public async addProduct(payload: any) {
+    const { food , product } = payload
+  }
+
+  public async getFoodById(id:string):Promise<IFood> {
+    const Food = await this.foods.findById(id)
+    if(!Food) throw new httException(400,'food not found')
+    return Food
+  }
 }
 
 

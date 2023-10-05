@@ -75,7 +75,25 @@ class ProductService {
       }, { new: true});
     
     return updatedproduct;
-  } 
+  }
+
+  public async checkAmountProduct(payload:any) {
+    const { product, amount} = payload 
+
+    const Product = await this.products.findById(product)
+
+    if(!Product) {
+      return false
+    }
+
+    if(Product.amount >= amount) {
+      return true
+    }
+
+    if(Product.amount < amount) {
+      return false
+    }
+  }
 
   public async decreaseAmount(productData:UpdateAmount) {
     const { product , amount } = productData;

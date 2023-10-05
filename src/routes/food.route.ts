@@ -15,6 +15,7 @@ class FoodRoute {
     this.router.get(`${this.path}`,this.foodController.getFoods)
     this.router.post(`${this.path}`,this.foodController.createFood)
     this.router.patch(`${this.path}`,this.foodController.updateFoodPic)
+    this.router.patch(`${this.path}/update/:food`,this.foodController.updateFood)
     this.router.patch(`${this.path}/:food`,this.foodController.changeStatus)
   }
 }
