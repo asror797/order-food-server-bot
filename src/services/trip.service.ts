@@ -96,7 +96,18 @@ class TripService {
           }
         }
       }
-    } 
+    } else {
+      const newTrip = await this.trips.create({
+        sent_at: Math.floor(Date.now() / 1000),
+        meal: meal,
+        org: org
+      });
+
+      return {
+        status: true,
+        data: await this.trips.findById(newTrip['_id']).populate('meal','name cost')
+      }
+    }
   }
 
   public async agreeClient(trip: string,client: number) {
