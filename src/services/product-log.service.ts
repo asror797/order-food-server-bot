@@ -8,10 +8,20 @@ class ProductLogService {
   public products = productModel
 
 
-  public async getLog() {
-    const productsLog = await this.productLog.find().populate('product','name unit').populate('org','name_org').exec()
+  public async getLog(page: number,size:number) {
+    const skip = (page - 1) * size
+    const products =  await this.productLog.find().skip(skip).select('-updatedAt').limit(size).populate('org','name_org').exec()
 
-    return productsLog;
+    const totalProductLog = await this.productLog.countDocuments().exec()
+    const totalPages = Math.ceil(totalProductLog / size)
+
+    return {
+      data: products.reverse(),
+      currentPage: page,
+      totalPages,
+      totalProductLog,
+      productLogsOnPage: products.length
+    };
   }
 
   public async createLog(logData:CreateProductLog) {

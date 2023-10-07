@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { CreateLunch } from "../dtos/lunch.dto";
 import LunchService from "../services/lunch.service";
 import { ParsedQs } from "qs";
+import { httException } from "../exceptions/httpException";
 
 
 
@@ -26,6 +27,17 @@ class LunchController {
       res.json(await this.lunchService.createLunch(lunchData))
     } catch (error) {
       next(error)
+    }
+  }
+
+  public deleteLunch =  async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const lunch_id = req.params.id 
+      if(!lunch_id) throw new httException(400,'lunch id required')
+
+      res.json(await this.lunchService.deleteLunch(lunch_id))
+    } catch (error) {
+      
     }
   }
 }

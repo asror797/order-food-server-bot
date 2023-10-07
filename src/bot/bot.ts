@@ -346,7 +346,8 @@ class BotService {
             org:User.data.org['_id'],
             sent_at:Math.floor(Date.now() / 1000)
           });
-          if(newTrip.status) {
+          console.log('Created Trip')
+          if(newTrip?.status) {
             this.bot.sendMessage(chatId,'Yuborildi')
             const clients = await this.users.getTelegramIDOfClients(User.data.org['_id']);
             clients.map((e:any) => {

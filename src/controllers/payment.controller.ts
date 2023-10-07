@@ -2,10 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import PaymentService from "../services/payment.service";
 import { ParsedQs } from "qs";
 
-
-
-
-
 class PaymentController {
   public paymentService = new PaymentService()
 
