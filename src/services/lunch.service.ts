@@ -1,4 +1,5 @@
 import { CreateLunch } from "../dtos/lunch.dto";
+import { httException } from "../exceptions/httpException";
 import { ILunch } from "../interfaces/lunch.interface";
 import lunchModel from "../models/lunch.model";
 
@@ -38,6 +39,17 @@ class LunchService {
 
     return lunches;
   } 
+
+
+  public async deleteLunch(id: string) {
+    const Lunch = await this.lunches.findById(id)
+    if(!Lunch) throw new httException(400,'not found lunch')
+    const deletedLunch = await this.lunches.deleteOne({
+      _id: Lunch['_id']
+    },{ new: true }).exec()
+
+    return deletedLunch;
+  }
 
   public async createLunch(lunchData:CreateLunch) {
     const newLunch = await this.lunches.create(lunchData);
