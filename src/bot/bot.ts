@@ -1,4 +1,4 @@
-import TelegramBot, { Message, CallbackQuery, InlineQueryResultArticle, ReplyKeyboardMarkup } from 'node-telegram-bot-api';
+import TelegramBot, { Message, CallbackQuery, InlineQueryResultArticle, ReplyKeyboardMarkup, InlineKeyboardButton } from 'node-telegram-bot-api';
 import UserService from '../services/user.service';
 import { IUser } from '../interfaces/user.interface';
 import { CookMenu, FoodMenu, KeyboardFormatter, MainMenu, ShareContact, formatter } from './keyboards';
@@ -8,12 +8,14 @@ import StoreService from '../services/store.service';
 import OrderService from '../services/order.service';
 import LunchService from '../services/lunch.service';
 import TripService from '../services/trip.service';
+import LunchBaseService from '../services/lunch-base.service';
 class BotService {
   private bot: TelegramBot;
   private users = new UserService()
   private foods = new FoodService()
   private store = new StoreService()
   private lunchService =  new LunchService();
+  private lunchBaseService = new LunchBaseService()
   private orderService = new OrderService()
   private tripService = new TripService();
 
@@ -81,7 +83,7 @@ class BotService {
         if(messageText.startsWith('/start')) {
           this.bot.sendMessage(chatId,'Siz oshpazsiz',{ reply_markup: CookMenu});
         } else if(messageText == 'Yangi Buyurtma') {
-          const foods = await this.lunchService.getByOrg(isExist.data.org['_id'])
+          const foods = await this.lunchBaseService.getByOrg(isExist.data.org['_id'])
           console.log(foods);
 
           const keys:any = [];
@@ -89,13 +91,13 @@ class BotService {
           foods.map((e:any) => {
               keys.push([
                 {
-                  text:`${e.name} - ${e.cost}`,
+                  text:`${e.name}`,
                   callback_data:`lunch-${e['_id']}`
                 }
               ])
           })
 
-          this.bot.sendMessage(chatId,"Tanlangan Taom",{ reply_markup: {
+          this.bot.sendMessage(chatId,"Taomni tanlang: ",{ reply_markup: {
             inline_keyboard: [
              ...keys
             ]
@@ -104,11 +106,13 @@ class BotService {
           const trip = await this.tripService.tripRetrieveOne(chatId)
           const agreeusers:any = []
           if(trip.status)
-            
-            trip.data.agree_users.map((e:any,i:number) => {
-              agreeusers.push(`${i+1}. ${e.first_name} ${e.last_name} \n+998${e.phone_number}\n---------------------\n`)
-            })
-            this.bot.sendMessage(chatId,`${trip.data.meal.name}\n`+ agreeusers.join('')+`Rozi: ${agreeusers.length} ta`)
+            console.log(trip.data)
+            let outputStr = '';
+
+            for (const key in trip.count) {
+              outputStr += `${key}x : ${trip.count[key]} ta kishi\n`;
+            }
+            this.bot.sendMessage(chatId,`${trip.data.meal.name}\n${trip.data.candidates.length} ta hohlaydi.\n\n------------\nShundan:\n\n${outputStr}`)
           if(!trip.status) {
             this.bot.sendMessage(chatId,`Admin malumotlari xato`)
           }
@@ -297,42 +301,122 @@ class BotService {
         console.log('Canceled',updatedTrip)
       }
 
+      if(splited == 'ask') {
+        
+      }
+
       if(splited == 'agree' && ID && chatId && callbackQuery.message) {
         await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
-        const Trip = await this.tripService.agreeClient(ID,chatId)
 
-        if(Trip.status && Trip.data) {
-          const {  user ,trip , org} = Trip.data
-          console.log('User',user)
-          console.log('Trip',trip)
-          console.log('Org',org)
-          this.bot.sendMessage(chatId,`${trip?.meal?.name} Qabul qilindi`)
-          this.bot.sendMessage(org.group_b_id,`Kimga: \n👤: ${user?.first_name} ${user?.last_name}\n📞: +998${user?.phone_number} \n`,{
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text:'Bajarish ✅',
-                    callback_data:'remove'
-                  }
-                ],
-                [
-                  {
-                    text:'Bekor qilish ❌',
-                    callback_data:`canceltrip-${trip['_id']}-${chatId}`
-                  }
-                ]
-              ]
-            }
-          })
-        } else {
-          this.bot.sendMessage(chatId,'Vaqt tugadi.')  
-        }
+        console.log(ID)
+
+        this.bot.sendMessage(chatId,'ok')
+        // const Trip = await this.tripService.agreeClient(ID,chatId)
+
+        // if(Trip.status && Trip.data) {
+        //   const {  user ,trip , org} = Trip.data
+        //   console.log('User',user)
+        //   console.log('Trip',trip)
+        //   console.log('Org',org)
+        //   if(user) {
+        //     this.bot.sendMessage(chatId,`${trip?.meal?.name} Qabul qilindi`,{
+        //       reply_markup: {
+        //         inline_keyboard: [
+        //           [
+        //             {
+        //               text:'Olish uchun keldim',
+        //               callback_data:`ask-${trip['_id']}-${user['_id']}`
+        //             }
+        //           ]
+        //         ]
+        //       }
+        //     })
+        //     this.bot.sendMessage(org.group_b_id,`Kimga: \n👤: ${user?.first_name} ${user?.last_name}\n📞: +998${user?.phone_number} \n`,{
+        //       reply_markup: {
+        //         inline_keyboard: [
+        //           [
+        //             {
+        //               text:'Bajarish ✅',
+        //               callback_data:'remove'
+        //             }
+        //           ],
+        //           [
+        //             {
+        //               text:'Bekor qilish ❌',
+        //               callback_data:`canceltrip-${trip['_id']}-${chatId}`
+        //             }
+        //           ]
+        //         ]
+        //       }
+        //     })
+        //   }
+        // } else {
+        //   this.bot.sendMessage(chatId,'Vaqt tugadi.')  
+        // }
       } else if(splited == 'disagree' && chatId && callbackQuery.message && ID) {
         await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
         const trip = await this.tripService.disagreeClient(ID,chatId)
         console.log(trip)
         this.bot.sendMessage(chatId,`${ID} yuborildi`)
+      }
+
+      if(splited == 'select' && chatId && data && callbackQuery.message) {
+        await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
+        const Order = await this.tripService.pushUser(data.split('-')[2],chatId,data.split('-')[1])
+
+        if(Order.status && Order.data) {
+          const {  user ,trip , org, lunch} = Order.data
+          if(user && trip ) {
+            this.bot.sendMessage(chatId,'Olish Uchun borish',{ 
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text:'Olish uchun keldim',
+                      callback_data:`ask-${trip['_id']}-${user['_id']}`
+                    }
+                  ]
+                ]
+              }
+            })
+          }
+        } else {
+          console.log(Order)
+          this.bot.sendMessage(chatId,'Vaqt tugadi.')
+        }
+      }
+
+      if(splited == 'ask' && chatId && callbackQuery.message && callbackQuery.data ) {
+        await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
+        const order:any = await this.tripService.findOrderTrip({
+          trip: callbackQuery.data.split('-')[1],
+          user: callbackQuery.data.split('-')[2]
+        })
+        console.log(order)
+
+        if(order.candidates.length > 0) {
+          this.bot.sendMessage(chatId,'Yuborildi')
+          this.bot.sendMessage(order?.org?.group_b_id,`${order.candidates[0].user.first_name} ${order.candidates[0].user.last_name} +998${order.candidates[0].user.phone_number}\n${order.meal.name} - ${order.candidates[0].lunch.name}x \n-----------\nTotal: ${order.candidates[0].lunch.cost} so'm`,{
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text:'Berdim ✅',
+                    callback_data:'donetrip'
+                  }
+                ]
+              ]
+            }
+          })
+        }
+      }
+
+      if(splited == 'donetrip' && chatId && callbackQuery.message) {
+        this.bot.editMessageText(`${callbackQuery.message.text}\nBajarildi ✅`,{
+          chat_id: chatId,
+          message_id: callbackQuery.message.message_id,
+          reply_markup: { inline_keyboard: [] }
+        })
       }
 
       if(splited == 'newtrip' && chatId && data && callbackQuery.message) {
@@ -349,16 +433,29 @@ class BotService {
           console.log('Created Trip',newTrip)
           if(newTrip?.status) {
             this.bot.sendMessage(chatId,'Yuborildi')
+            const lunches = await this.lunchService.getByBase(data.split('-')[1])
+            interface OneKey {
+              text: string
+              callback_data: string
+            }
+            const baseKeys:Array<[OneKey]> = []
+
+            lunches.map(e => {
+              baseKeys.push([
+                {
+                  text:`${e.name} - ${e.cost}`,
+                  callback_data:`select-${e['_id']}-${newTrip.data['_id']}`
+                }
+              ])
+            })
+            console.log(lunches)
             const clients = await this.users.getTelegramIDOfClients(User.data.org['_id']);
             clients.map((e:any) => {
               this.bot.sendMessage(e.telegram_id,`Bugungi menu:\n${newTrip.data.meal.name}`,{
                 reply_markup: {
                   inline_keyboard: [
+                    ...baseKeys,
                     [
-                      {
-                        text:'Ha ✅',
-                        callback_data:`agree-${newTrip.data['_id']}`
-                      },
                       {
                         text:"Yo'q ❌",
                         callback_data:`disagree-${newTrip.data['_id']}`
@@ -378,12 +475,12 @@ class BotService {
       if(splited == 'lunch' && chatId) {
         const lunchID = data?.split('-')[1];
         if(lunchID) {
-          const Lunch = await this.lunchService.getById(lunchID);
+          const Lunch = await this.lunchBaseService.getById(lunchID);
   
           if(Lunch && callbackQuery.message) {
             // this.bot.editMessageReplyMarkup()
             await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
-            this.bot.sendMessage(chatId,`Tanlangan taom:\nnomi: ${Lunch.name}\nnarxi: ${Lunch.cost}`,{
+            this.bot.sendMessage(chatId,`Tanlangan taom:\nnomi: ${Lunch.name}`,{
               reply_markup: {
                 inline_keyboard: [
                   [

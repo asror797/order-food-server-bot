@@ -177,19 +177,14 @@ class OrderService {
   public async orderRetrieveTotalSum(payload:any) {
     const { user } = payload
 
-    const totalSum = await this.orders.find({
+    const orders = await this.orders.find({
       user: user,
     })
 
-    /*
-      totalSum
-      amount order
-      amount canceled
-
-    */
-
-    return {
-      totalSum: 5
+    if(!user) throw new httException(400,'user not found')
+    for (let index = 0; index < orders.length; index++) {
+      const element = orders[index];
+      
     }
   }
 }

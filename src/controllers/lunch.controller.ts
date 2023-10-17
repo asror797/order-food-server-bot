@@ -30,6 +30,28 @@ class LunchController {
     }
   }
 
+  public getByBase = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const base = req.params.base as string
+      res.json(await this.lunchService.getByBase(base))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public lunchUpdate = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      
+      const lunch = req.params.lunch 
+      res.json(await this.lunchService.updateLunch({
+        id: lunch,
+        ...req.body
+      }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public deleteLunch =  async(req:Request,res:Response,next:NextFunction) => {
     try {
       const lunch_id = req.params.id 

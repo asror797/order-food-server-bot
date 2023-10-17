@@ -1,8 +1,16 @@
 
+export interface AttendedUser {
+  lunch: string
+  cost: number
+  user: string
+  is_accepted: boolean
+  is_canceled: boolean
+}
+
+
 export interface ITrip extends Document {
   meal: string;
   sent_at: number
-  agree_users: string
-  disagree_users: string
+  candidates: AttendedUser[]
   org: string
 }

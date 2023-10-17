@@ -12,6 +12,7 @@ class LunchRoute {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`,this.lunchController.getLunch)
+    this.router.get(`${this.path}/:base`,this.lunchController.getByBase)
     this.router.post(`${this.path}`,this.lunchController.createLunch)
     this.router.delete(`${this.path}/:id`,this.lunchController.deleteLunch)
   }

@@ -1,0 +1,117 @@
+import { CreateLunchBaseDto, GetLunchBaseDto, UpdateLunchBaseDto } from "../dtos/lunch-base.dto";
+import { httException } from "../exceptions/httpException";
+import lunchBaseModel from "../models/lunch-base.model";
+import lunchModel from "../models/lunch.model";
+import orgModel from "../models/org.model";
+
+
+class LunchBaseService {
+  readonly lunchbase = lunchBaseModel
+  readonly orgs = orgModel
+  public lunches = lunchModel;
+
+  async retrieveAllLunchBases(payload:GetLunchBaseDto) {
+    const skip = (payload.page - 1) * payload.size
+    
+    const query:any = {}
+
+    if(payload.search) {
+      query.$or = [
+        { name: { $regex: payload.search, $options: 'i' } },
+      ];
+    }
+
+    const org = await this.lunchbase.find(query)
+              .select('-updatedAt')
+              .skip(skip)
+              .limit(payload.size)
+              .exec();
+    const totalLunchBases = await this.lunchbase.countDocuments().exec()
+    const totalPages = Math.ceil(totalLunchBases / payload.size)
+    return {
+      data: org,
+      currentPage: payload.page,
+      totalPages,
+      totalLunchBases,
+      LunchBasesOnPage: org.length
+    };
+  }
+
+  public async getByOrg(org: string) {
+    const lunches = await this.lunchbase.find({
+      org: org
+    });
+
+    return lunches;
+  } 
+
+  public async getById(lunch:string) {
+    const lunches = await this.lunches.find({
+      where: {
+        base: lunch
+      }
+    })
+
+    console.log(lunches)
+
+    console.log(lunches)
+    return await this.lunchbase.findById(lunch)
+  }
+  
+  public async retrieveAllBasesByBase(id: string) {
+    const lunches = await this.lunchbase.find({
+      where: {
+        base: id
+      }
+    }) || []
+
+
+    return lunches
+  }
+
+
+  public async retrieveLunchBase(id: string) {
+    const base = await this.lunchbase.findById(id).select('name org createdAt')
+    if(!base) throw new httException(400,'lunch-base not found')
+    return base
+  }
+
+  async createLunchBase(payload:CreateLunchBaseDto) {
+
+    const Org = await this.orgs.findById({
+      _id: payload.org
+    })
+
+    if(!Org) throw new httException(400,'org not found')
+
+    const createdBase = await this.lunchbase.create({
+      name: payload.name,
+      org: payload.org
+    })
+    
+    return createdBase
+  }
+
+  async updateLunchBase(payload:UpdateLunchBaseDto) {
+    await this.retrieveLunchBase(payload.id)
+    const updateField:any = {}
+
+    if(payload.name) {
+      updateField.name = payload.name
+    }
+    if(payload.org) {
+      const Org = await this.orgs.findById({
+        _id: payload.org
+      })
+  
+      if(!Org) throw new httException(400,'org not found')
+
+      updateField.Org = payload.org
+    }
+
+    const updatedAtBase = await this.lunchbase.findByIdAndUpdate(payload.id,updateField,{ new: true })
+    return updatedAtBase
+  }
+}
+
+export default LunchBaseService

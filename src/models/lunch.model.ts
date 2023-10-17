@@ -12,6 +12,10 @@ const lunchSchema: Schema = new Schema(
       type: Number,
       required: true
     },
+    base: {
+      type: Schema.Types.ObjectId,
+      ref: 'LunchBase'
+    },
     products: {
       type: [
         {
@@ -31,6 +35,10 @@ const lunchSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref:'Org',
       required: true
+    },
+    percent_cook: {
+      type: Number,
+      default:0
     }
   },
   {
