@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
 
 export class CreateLunch {
   @IsString()
@@ -43,4 +43,24 @@ export class LunchUpdateDto {
   @IsNumber()
   @IsOptional()
   percent_cook?: number
+}
+
+
+export class ProductWithAmountDto {
+  @IsString()
+  @IsNotEmpty()
+  product: string
+
+  @IsNumber()
+  @IsNotEmpty()
+  amount: number
+}
+
+export class PushProductDto {
+  @IsString()
+  @IsNotEmpty()
+  lunch: string
+
+  @ValidateNested({ each: true })
+  products: ProductWithAmountDto[]
 }

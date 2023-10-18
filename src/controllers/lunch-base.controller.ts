@@ -25,6 +25,15 @@ class LunchBaseController {
     }
   }
 
+  public retrieveBase = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const lunchBase = req.params.base as string
+      res.json(await this.service.retrieveLunches(lunchBase))
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public lunchBaseUpdate = async(req:Request, res:Response, next:NextFunction) => {
     try {
       

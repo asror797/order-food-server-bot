@@ -1,15 +1,17 @@
-import { CreateLunch, LunchUpdateDto } from "../dtos/lunch.dto";
+import { CreateLunch, LunchUpdateDto, PushProductDto } from "../dtos/lunch.dto";
 import { httException } from "../exceptions/httpException";
 import { ILunch } from "../interfaces/lunch.interface";
 import lunchBaseModel from "../models/lunch-base.model";
 import lunchModel from "../models/lunch.model";
 import orgModel from "../models/org.model";
+import productModel from "../models/product.model";
 
 
 
 class LunchService {
   public lunches = lunchModel;
   public orgs = orgModel
+  public products = productModel
   public bases = lunchBaseModel
 
   public async getLunches(page:number ,size: number) {
@@ -67,13 +69,17 @@ class LunchService {
 
   public async createLunch(payload:CreateLunch) {
 
-    const Org = await this.orgs.findById(payload.org)
-    if(!Org) throw new httException(400,'org not found')
+    
 
     const Base = await this.bases.findById(payload.base)
     if(!Base) throw new httException(400,'lunch base not found')
 
-    const newLunch = await this.lunches.create(payload);
+    const newLunch = await this.lunches.create({
+      base: payload.base,
+      org: Base.org,
+      cost: payload.cost,
+      name: payload.name
+    });
 
     return newLunch;
   }
@@ -111,9 +117,56 @@ class LunchService {
     return updatedLunch
   }
 
-  public async pushProduct(lunchData:any) {
-    const { lunch , products  } = lunchData
+  public async pushProduct(lunchData:PushProductDto) {
+    interface IProducts {
+      product: string
+      amount: number
+    }
+    const lunch = lunchData.lunch
+    const addProducts:IProducts[] = []
+
+    const Lunch = await this.lunches.findById(lunch)
+
+    if(!Lunch) throw new httException(400,'lunch not found')
+ 
+    for (let i = 0; i < lunchData.products.length; i++) {
+      console.log(i)
+      const product = lunchData.products[i]
+      const Product = await this.products.findById(product.product) 
+      console.log('Produt',Product)
+      if(!Product) throw new httException(400,'Product not found')
+      if(Lunch.products.length > 0) {
+        for (let j = 0; j < Lunch.products.length; j++) {
+          const jproduct = Lunch.products[j]
+          console.log('j',jproduct)
+          if(product.product == jproduct.product) throw new httException(400,`${jproduct.product} product already exist`)
+          if(product.amount < 0) throw new httException(400,'amount should be higher than 0')
+          addProducts.push({
+            product: product.product,
+            amount: product.amount
+          })
+        }
+      }else {
+        if(product.amount < 0) throw new httException(400,'amount should be higher than 0') 
+        addProducts.push({
+          product: product.product,
+          amount: product.amount
+        })
+      }
+    }
+
+    console.log(addProducts)
+    const updatedProduct = await this.lunches.findByIdAndUpdate(lunch,
+      {
+        $addToSet: { products: { $each: addProducts } }
+      },
+      { new: true }
+    ).exec()
+
+    return updatedProduct
   }
+
+  // public async 
 }
 
 

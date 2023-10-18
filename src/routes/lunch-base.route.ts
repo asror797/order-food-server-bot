@@ -12,6 +12,7 @@ class LunchBaseRoute {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`,this.lunchBaseController.lunchBaseRetrieveAll)
+    this.router.get(`${this.path}/lunches/:base`,this.lunchBaseController.retrieveBase)
     this.router.post(`${this.path}`,this.lunchBaseController.lunchBaseCreate)
     this.router.get(`${this.path}/:lunch`,this.lunchBaseController.getByBase)
   }

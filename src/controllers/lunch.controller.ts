@@ -23,8 +23,15 @@ class LunchController {
 
   public createLunch = async (req:Request,res:Response,next:NextFunction) => {
     try {
+      const base = req.params.base as string
+
       const lunchData:CreateLunch = req.body;
-      res.json(await this.lunchService.createLunch(lunchData))
+      res.json(await this.lunchService.createLunch({
+        base: base,
+        cost: lunchData.cost,
+        name: lunchData.name,
+        org: lunchData.org
+      }))
     } catch (error) {
       next(error)
     }
@@ -46,6 +53,19 @@ class LunchController {
       res.json(await this.lunchService.updateLunch({
         id: lunch,
         ...req.body
+      }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public pushProduct = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const lunch = req.params.lunch as string
+      console.log(req.body.products)
+      res.json(await this.lunchService.pushProduct({
+        lunch: lunch,
+        products: req.body.products
       }))
     } catch (error) {
       next(error)

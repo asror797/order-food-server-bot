@@ -39,6 +39,10 @@ const lunchSchema: Schema = new Schema(
     percent_cook: {
       type: Number,
       default:0
+    },
+    is_active: {
+      type: Boolean,
+      default: true
     }
   },
   {

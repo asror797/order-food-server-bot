@@ -11,6 +11,10 @@ const lunchBaseSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref:'Org',
       required: true
+    },
+    is_active: {
+      type: Boolean,
+      default: true
     }
   },
   {

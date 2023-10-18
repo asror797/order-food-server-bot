@@ -69,6 +69,13 @@ class LunchBaseService {
     return lunches
   }
 
+  public async retrieveLunches(id: string) {
+    const lunches = await this.lunches.find({
+      base: id
+    })
+
+    return lunches
+  }
 
   public async retrieveLunchBase(id: string) {
     const base = await this.lunchbase.findById(id).select('name org createdAt')
