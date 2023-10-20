@@ -23,6 +23,7 @@ class LunchService {
               .limit(size)
               .populate('org','name_org')
               .populate('base','name')
+              .populate('products.product','name cost')
               .exec();
     const totalLunches = await this.lunches.countDocuments().exec()
     const totalPages = Math.ceil(totalLunches / size)
@@ -51,7 +52,7 @@ class LunchService {
   public async getByBase(base:string) {
     const lunches = await this.lunches.find({
      base: base
-    })
+    }).populate('products.product','name cost').select('name cost percent_cook')
 
     return lunches
   }
@@ -130,11 +131,10 @@ class LunchService {
     if(!Lunch) throw new httException(400,'lunch not found')
  
     for (let i = 0; i < lunchData.products.length; i++) {
-      console.log(i)
       const product = lunchData.products[i]
       const Product = await this.products.findById(product.product) 
-      console.log('Produt',Product)
       if(!Product) throw new httException(400,'Product not found')
+
       if(Lunch.products.length > 0) {
         for (let j = 0; j < Lunch.products.length; j++) {
           const jproduct = Lunch.products[j]
@@ -155,7 +155,6 @@ class LunchService {
       }
     }
 
-    console.log(addProducts)
     const updatedProduct = await this.lunches.findByIdAndUpdate(lunch,
       {
         $addToSet: { products: { $each: addProducts } }
@@ -166,7 +165,128 @@ class LunchService {
     return updatedProduct
   }
 
-  // public async 
+  public async fullUpdateProduct(payload:any) {
+    const lunch = payload.lunch 
+    interface IProducts {
+      product: string
+      amount: number
+    }
+    const addingPorducts:IProducts[] = []
+    const updatingProducts:IProducts[] = []
+
+    const Lunch = await this.lunches.findById(lunch)
+    if(!Lunch) throw new httException(400,'not found lunch')
+
+    for (let i = 0; i < payload.products.length; i++) {
+      const uProduct = payload.products[i]
+      for (let j = 0; j < Lunch.products.length; j++) {
+        const eProduct = Lunch.products[j];
+
+        if(uProduct.product == eProduct.product) {
+          if(uProduct.amount < 0 || uProduct.amount == eProduct.amount) throw new httException(400,'amount should be valid')
+          updatingProducts.push({
+            product:uProduct.product,
+            amount: uProduct.amount
+          })
+        }
+      }
+    }
+
+    for (let i = 0; i < payload.products.length; i++) {
+      const aProduct = payload.products[i];
+      let isExist: boolean = false
+
+      for (let j = 0; j < Lunch.products.length; j++) {
+        const element = Lunch.products[j]
+
+        if(element.product == aProduct.product) {
+          isExist = true
+        }
+      }
+      if(isExist == false) {
+        addingPorducts.push({
+          ...aProduct
+        })
+      }
+    }
+
+    const response:any = []
+    let addedProducts:any = {}
+
+    if(addingPorducts.length > 0) {
+      addedProducts = await this.lunches.findByIdAndUpdate(lunch,
+        {
+          $addToSet: { products: { $each: addingPorducts } }
+        },
+        { new: true }
+      ).exec()
+    }
+
+    for (const UProduct of updatingProducts) {
+      const updatedProduct = await this.lunches.updateOne(
+        {
+          _id: lunch,
+          'products.product': UProduct.product
+        },
+        {
+          $set: { 'products.$.amount': UProduct.amount}
+        }
+      ).exec()
+
+      if (updatedProduct.modifiedCount > 0) {
+          response.push(UProduct);
+      }
+    }
+
+    return {
+      added: addedProducts.products,
+      updated: response
+    }
+  }
+
+  public async updateProduct(payload:any) {
+    const lunch = payload.lunch 
+    interface IProducts {
+      product: string
+      amount: number
+    }
+    const updateProducts:IProducts[] = []
+    const Lunch = await this.lunches.findById(lunch)
+    const response:any = []
+    if(!Lunch) throw new httException(400,'lunch not found')
+    for (let j = 0; j < payload.products.length; j++) {
+      const uProduct = payload.products[j]
+      for (let i = 0; i < Lunch.products.length; i++) {
+        const product = Lunch.products[i]
+        if(uProduct.product == product.product) {
+          if(uProduct.amount > 0) {
+            updateProducts.push({
+              product: uProduct.product,
+              amount: uProduct.amount
+            })
+          } else {
+            throw new httException(400,`${uProduct.product} product amount should be higher than 0`)
+          }
+        }
+      }
+    }
+    for (const UProduct of updateProducts) {
+      const updatedProduct = await this.lunches.updateOne(
+        {
+          _id: lunch,
+          'products.product': UProduct.product
+        },
+        {
+          $set: { 'products.$.amount': UProduct.amount}
+        }
+      ).exec()
+
+      if (updatedProduct.modifiedCount > 0) {
+          response.push(UProduct);
+      }
+    }
+    return response
+  }
 }
 
 

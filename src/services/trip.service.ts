@@ -25,7 +25,16 @@ class TripService {
               .skip(skip)
               .limit(size)
               .populate('candidates.user','first_name last_name phone_number telegram_id')
-              .populate('candidates.lunch','name cost')
+              // .populate('candidates.lunch','name cost')
+              .populate({
+                path: 'candidates.lunch',
+                populate: {
+                  path: 'products.product',
+                  model: 'Product',
+                  select:'name '
+                },
+                select:'name cost'
+              })
               .populate('org','name_org')
               .populate('meal','name')
               .exec();
@@ -56,7 +65,14 @@ class TripService {
       .findOne({ org: cook.org['_id']})
       .populate('candidates')
       .populate('candidates.user')
-      .populate('candidates.lunch')
+      // .populate('candidates.lunch')
+      .populate({
+        path: 'candidates.lunch',
+        populate: {
+          path: 'products.product',
+          model: 'Product',
+        },
+      })
       .populate('meal')
       .sort({ createdAt: -1 }) 
       .limit(1);

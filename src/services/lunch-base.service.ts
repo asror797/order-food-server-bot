@@ -25,6 +25,7 @@ class LunchBaseService {
               .select('-updatedAt')
               .skip(skip)
               .limit(payload.size)
+              .populate('org','name_org')
               .exec();
     const totalLunchBases = await this.lunchbase.countDocuments().exec()
     const totalPages = Math.ceil(totalLunchBases / payload.size)
@@ -33,7 +34,7 @@ class LunchBaseService {
       currentPage: payload.page,
       totalPages,
       totalLunchBases,
-      LunchBasesOnPage: org.length
+      lunchBasesOnPage: org.length
     };
   }
 

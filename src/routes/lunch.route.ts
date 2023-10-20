@@ -15,6 +15,8 @@ class LunchRoute {
     this.router.get(`${this.path}/:base`,this.lunchController.getByBase)
     this.router.post(`${this.path}/:base`,this.lunchController.createLunch)
     this.router.post(`${this.path}/product/:lunch`,this.lunchController.pushProduct)
+    this.router.patch(`${this.path}/product/:lunch`,this.lunchController.updateProducts)
+    this.router.patch(`${this.path}/products/update/:lunch`,this.lunchController.fullUpdateProducts)
     this.router.delete(`${this.path}/:id`,this.lunchController.deleteLunch)
   }
 }

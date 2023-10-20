@@ -72,6 +72,39 @@ class LunchController {
     }
   }
 
+
+  public fullUpdateProducts = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+
+      const lunch = req.params.lunch as string
+      if(!lunch) throw new httException(400,'lucnh id required')
+      const paylodBody = req.body
+
+      if(!paylodBody.products) {
+        throw new httException(400,'products required')
+      }
+      res.json(await this.lunchService.fullUpdateProduct({
+        lunch: lunch,
+        products: paylodBody.products
+      }))
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
+  public updateProducts = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const lunch = req.params.lunch as string
+      res.json(await this.lunchService.updateProduct({
+        lunch: lunch,
+        products: req.body.products
+      }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public deleteLunch =  async(req:Request,res:Response,next:NextFunction) => {
     try {
       const lunch_id = req.params.id 
