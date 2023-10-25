@@ -764,8 +764,9 @@ class BotService {
 }
 
 const token = '6320311774:AAHMDWWIFS7Q-D8NWBkLG6ppf7CX-iHBiDc';
-const demo_bot = '5398672106:AAF_zgtGfTYwu9_F-uTg1S1LrbhLzR2VKkk'
+const demo_bot = '5398672106:AAF_zgtGfTYwu9_F-uTg1S1LrbhLzR2VKkk';
+const old_bot = '5903607123:AAFYVouBA0EtGRuefEHc6HzxhIFI5IIp_00'
 
-const botService = new BotService(token);
+const botService = new BotService(old_bot);
 
 export default botService;
