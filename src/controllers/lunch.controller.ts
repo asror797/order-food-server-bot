@@ -46,6 +46,14 @@ class LunchController {
     }
   }
 
+  public getById = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      res.json(await this.lunchService.getLunchByBase(req.params.lunch))
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public lunchUpdate = async(req:Request,res:Response,next:NextFunction) => {
     try {
       

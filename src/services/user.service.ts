@@ -1,5 +1,5 @@
 import userModel from "../models/user.model";
-import { ChangeOrg, ChangeStatus, CreateUserDto, SearchPagination, SendMessae, UpdateUserDto } from "../dtos/user.dto";
+import { ChangeOrg, ChangeStatus, CreateUserDto, EditUserDto, SearchPagination, SendMessae, UpdateUserDto } from "../dtos/user.dto";
 import { httException } from "../exceptions/httpException";
 import { IUser, UserRole } from "../interfaces/user.interface";
 import { formatPhoneNumber } from "../utils/phoneNumberFormatter";
@@ -117,7 +117,6 @@ class UserService {
   }
 
   public async updateUser(userData:UpdateUserDto) {
-    botService.sendText(5104936606,"Updayted")
     const { _id , last_name , first_name , org , is_active , is_verified , type } = userData;
 
     if(type == 'verify') {
@@ -140,6 +139,31 @@ class UserService {
       }
       
     }
+  }
+
+  public async editUser(payload:EditUserDto) {
+    const { id , first_name, last_name, org } = payload 
+    const User = await this.users.findById(id) 
+    if(!User) throw new httException(400,'user not found')
+    let updateData:{org?: string,first_name?: string,last_name?: string} = {}
+
+    if(org) {
+      const Org = await this.orgs.findById(org)
+      if(!Org) throw new httException(400,'org not found')
+      updateData.org = payload.org
+    }
+
+    if(first_name) {
+      updateData.first_name = first_name
+    }
+
+    if(last_name) {
+      updateData.last_name = last_name
+    }
+    
+    const updateduser = await this.users.findByIdAndUpdate(id,updateData,{ new: true });
+
+    return updateduser;
   }
 
   public async sendMessageToUsers(msgData: SendMessae) {

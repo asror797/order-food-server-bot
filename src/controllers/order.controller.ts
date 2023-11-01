@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import OrderService from "../services/order.service";
 import { ParsedQs } from "qs";
 import { CreateOrderDto } from "../dtos/order.dto";
+import { httException } from "../exceptions/httpException";
 
 
 
@@ -26,6 +27,35 @@ class OrderController {
       next(error)
     }
   } 
+
+  public getOrderByUser = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
+    try {
+      const id = req.params.user as string
+      if(!id) throw new httException(400,'user id required')
+      const page = parseInt(req.query.page as string) || 1;
+      const size = parseInt(req.query.size as string) || 10;
+      res.json(await this.orderService.getByUser({id,page,size}))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public getSpentsByUser = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
+    try {
+      const user = req.params.user as string
+      if(!user) throw new httException(400,'user id not found')
+      const startDate = req.query.startDate as string || new Date()
+      const endDate = req.query.endDate as string || new Date()
+      res.json(await this.orderService.getTotalSpent({
+        user: user,
+        start: startDate,
+        end: endDate
+      }))
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
 }
 
 

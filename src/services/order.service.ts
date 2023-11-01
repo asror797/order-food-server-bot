@@ -1,5 +1,5 @@
 import { endOfWeek, startOfWeek } from "date-fns";
-import { CreateOrderDto, UpdateOrder } from "../dtos/order.dto";
+import { CreateOrderDto, OrderRetrieveByUserDto, UpdateOrder } from "../dtos/order.dto";
 import { httException } from "../exceptions/httpException";
 import foodModel from "../models/food.model";
 import orderModel from "../models/order.model";
@@ -29,8 +29,8 @@ class OrderService {
               .populate('org','name_org')
               .populate('foods.food','name cost')
               .exec();
-    const totalorders = await this.orders.countDocuments().exec()
-    const totalPages = Math.ceil(totalorders / size);
+    const totalOrders = await this.orders.countDocuments().exec()
+    const totalPages = Math.ceil(totalOrders / size);
 
     orders.map((e) => {
       // accepted
@@ -58,8 +58,8 @@ class OrderService {
       data: orderWithStatus,
       currentPage: page,
       totalPages,
-      totalorders,
-      productsOnPage: orders.length
+      totalOrders,
+      ordersOnPage: orders.length
     };
   }
 
@@ -72,6 +72,62 @@ class OrderService {
     console.log(Orders)
 
     return Orders;
+  }
+
+  public async getByUser(payload:OrderRetrieveByUserDto) {
+    let { id , size, page  } = payload
+    const orderWithStatus:any = [];
+    const skip = (page - 1) * size
+
+    const user = await this.users.findById(id)
+
+    if(!user) throw new httException(400,'user not found')
+
+    const orders = await this.orders.find({
+      client: id
+    })
+              .select('-updatedAt')
+              .sort({ createdAt: -1 })
+              .skip(skip)
+              .limit(size)
+              .populate('client','first_name last_name')
+              .populate('org','name_org')
+              .populate('foods.food','name cost')
+              .exec();
+    
+    const totalOrders = await this.orders.countDocuments({ client: id }).exec()
+    const totalPages = Math.ceil(totalOrders / size);
+
+    orders.map((e) => {
+      // accepted
+      const newObj = e.toJSON()
+      if(e.is_accepted == true && e.is_canceled == false) {
+        orderWithStatus.push({
+          ...newObj,
+          status:'accepted'
+        })
+      // canceled
+      } else if(e.is_accepted == false && e.is_canceled == true ) {
+        orderWithStatus.push({
+          ...newObj,
+          status:'canceled'
+        })
+      // pending
+      } else {
+        orderWithStatus.push({
+          ...newObj,
+          status:'pending'
+        })
+      }
+    })
+
+    return {
+      data: orderWithStatus,
+      currentPage: page,
+      totalPages,
+      totalOrders,
+      ordersOnPage: orders.length
+    };
   }
 
   public async createOrder(orderData:CreateOrderDto) {
@@ -173,6 +229,20 @@ class OrderService {
     })
   }
 
+
+  public async getTotalSpent(payload:any) {
+    const { user , start, end} = payload
+
+    const allOrders = await this.orders.find({
+      _id: user,
+      createdAt: {
+        $gte: new Date(start),
+        $lte: new Date(end)
+      }
+    })
+
+    return allOrders
+  }
 
   public async orderRetrieveTotalSum(payload:any) {
     const { user } = payload

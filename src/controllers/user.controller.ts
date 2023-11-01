@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import UserService from "../services/user.service";
-import { ChangeStatus, CreateUserDto, Payment, SendMessae, UpdateUserDto, VerifyUser } from "../dtos/user.dto";
+import { ChangeStatus, CreateUserDto, EditUserDto, Payment, SendMessae, UpdateUserDto, VerifyUser } from "../dtos/user.dto";
 import { ParsedQs } from "qs";
 import PaymentService from "../services/payment.service";
 import { httException } from "../exceptions/httpException";
@@ -76,6 +76,15 @@ class UserController {
       const user:string = req.params.user as string
       const org: string = req.body.org ;
       res.json(await this.userService.ChangeOrg({ user: user , org: org}));
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public editUser = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const payload:EditUserDto = req.body
+      res.json(await this.userService.editUser(payload))
     } catch (error) {
       next(error)
     }

@@ -14,6 +14,8 @@ class OrderRoute {
   public initializeRoutes() {
     this.router.get(`${this.path}`,this.orderController.getWithPagination)
     this.router.post(`${this.path}`,this.orderController.createOrder)
+    this.router.get(`${this.path}/user/:user`,this.orderController.getOrderByUser)
+    this.router.get(`${this.path}/spent/:user`,this.orderController.getSpentsByUser)
   }
 }
 

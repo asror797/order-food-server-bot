@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsNumber, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, ValidateNested } from "class-validator";
 
 
 
@@ -40,4 +40,18 @@ export class UpdateOrder {
 
   @IsBoolean()
   type: boolean
+}
+
+export class OrderRetrieveByUserDto {
+  @IsString()
+  @IsNotEmpty()
+  id: string
+
+  @IsInt()
+  @IsPositive()
+  page: number
+
+  @IsInt()
+  @IsPositive()
+  size: number
 }

@@ -52,9 +52,17 @@ class LunchService {
   public async getByBase(base:string) {
     const lunches = await this.lunches.find({
      base: base
-    }).populate('products.product','name cost').select('name cost percent_cook')
+    }).populate('products.product','name cost').select('name cost percent_cook products.amount')
 
     return lunches
+  }
+
+  public async getLunchByBase(lunch: string) {
+    const Lunch = await this.lunches.findById({
+      _id: lunch
+    }).populate('products.product','name cost').populate('base','name').select('name cost percent_cook products.amount')
+
+    return Lunch
   }
 
 
@@ -146,12 +154,22 @@ class LunchService {
             amount: product.amount
           })
         }
-      }else {
-        if(product.amount < 0) throw new httException(400,'amount should be higher than 0') 
-        addProducts.push({
-          product: product.product,
-          amount: product.amount
+      } else {
+        if(product.amount <= 0) throw new httException(400,'amount should be higher than 0')
+        let isExist:boolean = false
+        addProducts.map((e) => {
+          if(e.product == product.product) {
+            isExist = true
+          }
         })
+
+        if(!isExist) {
+          addProducts.push({
+            product: product.product,
+            amount: product.amount
+          })
+        }
+      
       }
     }
 

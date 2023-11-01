@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsPositive, IsString, isPositive } from "class-validator"
+import { IsBoolean, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, isPositive } from "class-validator"
 
 export class CreateUserDto {
 
@@ -100,4 +100,23 @@ export class SearchPagination {
   @IsNumber()
   @IsPositive()
   size: number
+}
+
+
+export class EditUserDto {
+  @IsNotEmpty()
+  @IsMongoId()
+  id: string
+
+  @IsString()
+  @IsOptional()
+  first_name: string
+
+  @IsString()
+  @IsOptional()
+  last_name: string
+
+  @IsMongoId()
+  @IsOptional()
+  org: string
 }
