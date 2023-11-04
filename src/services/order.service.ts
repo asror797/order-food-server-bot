@@ -1,5 +1,6 @@
-import { endOfWeek, startOfWeek } from "date-fns";
-import { CreateOrderDto, OrderRetrieveByUserDto, UpdateOrder } from "../dtos/order.dto";
+import { daysInWeek, eachDayOfInterval, eachMonthOfInterval, eachWeekOfInterval, endOfDay, endOfISOWeek, endOfMonth, endOfWeek, endOfYear, format, monthsInYear, startOfDay, startOfISOWeek, startOfMonth, startOfWeek, startOfYear } from "date-fns";
+import { utcToZonedTime } from 'date-fns-tz'
+import { CreateOrderDto, OrderRetrieveAllDto, OrderRetrieveByUserDto, UpdateOrder } from "../dtos/order.dto";
 import { httException } from "../exceptions/httpException";
 import foodModel from "../models/food.model";
 import orderModel from "../models/order.model";
@@ -7,6 +8,7 @@ import userModel from "../models/user.model";
 import FoodService from "./food.service";
 import PaymentService from "./payment.service";
 import ProductLogService from "./product-log.service";
+import { ru } from "date-fns/locale";
 
 class OrderService {
   public orders = orderModel;
@@ -230,18 +232,81 @@ class OrderService {
   }
 
 
-  public async getTotalSpent(payload:any) {
-    const { user , start, end} = payload
+  public async getTotalSpent(payload:OrderRetrieveAllDto) {
+    const { user, type} = payload
 
-    const allOrders = await this.orders.find({
-      _id: user,
-      createdAt: {
-        $gte: new Date(start),
-        $lte: new Date(end)
-      }
-    })
+    const User = await this.users.findById(user).populate('org','name_org').select('first_name last_name phone_number').exec()
+    if(!User) throw new httException(400,'user not found')
 
-    return allOrders
+    const response: any = []
+   
+    if(type == 'day') {
+      const daysOfWeek = eachDayOfInterval({
+        start: startOfWeek(new Date()),
+        end: endOfWeek(new Date())
+      })
+      await Promise.all(daysOfWeek.map(async(day) => {
+        const orders = await this.orders.find({
+          client: user,
+          createdAt: {
+            $gte: startOfDay(day),
+            $lte: endOfDay(day)
+          }
+        }).select('total_cost')
+        response.push({
+          label: day,
+          data: orders.reduce((accumulator, currentValue) => { return accumulator + currentValue.total_cost; }, 0)
+        })
+      }))
+    }
+
+    if(type == 'week') {
+      const weekOfMonth = eachWeekOfInterval({
+        start: startOfMonth(new Date()),
+        end: endOfMonth(new Date())
+      })
+
+      await Promise.all(weekOfMonth.map(async(week) => {
+        const orders = await this.orders.find({
+          client: user,
+          createdAt: {
+            $gte: startOfWeek(week),
+            $lte: endOfWeek(week)
+          }
+        }).select('total_cost')
+        response.push({
+          label: week,
+          data: orders.reduce((accumulator, currentValue) => { return accumulator + currentValue.total_cost; }, 0)
+        })
+      }))
+    }
+
+
+    if(type == 'month') {
+      const monthOfYear = eachMonthOfInterval({
+        start: startOfYear(new Date()),
+        end: endOfYear(new Date())
+      })
+
+      await Promise.all(monthOfYear.map(async(month) => {
+        const orders = await this.orders.find({
+          client: user,
+          createdAt: {
+            $gte: startOfMonth(month),
+            $lte: endOfMonth(month)
+          }
+        }).select('total_cost')
+        response.push({
+          label: month,
+          data: orders.reduce((accumulator, currentValue) => { return accumulator + currentValue.total_cost; }, 0)
+        })
+      }))
+    }
+
+    return {
+      user: User,
+      data: response
+    }
   }
 
   public async orderRetrieveTotalSum(payload:any) {

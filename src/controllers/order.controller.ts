@@ -44,12 +44,10 @@ class OrderController {
     try {
       const user = req.params.user as string
       if(!user) throw new httException(400,'user id not found')
-      const startDate = req.query.startDate as string || new Date()
-      const endDate = req.query.endDate as string || new Date()
+      const type = req.query.type  as string  || 'day'
       res.json(await this.orderService.getTotalSpent({
         user: user,
-        start: startDate,
-        end: endDate
+        type: type
       }))
     } catch (error) {
       console.log(error)

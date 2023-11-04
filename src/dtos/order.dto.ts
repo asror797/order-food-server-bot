@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsEnum, IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, ValidateNested } from "class-validator";
 
 
 
@@ -54,4 +54,21 @@ export class OrderRetrieveByUserDto {
   @IsInt()
   @IsPositive()
   size: number
+}
+
+enum TypeDate {
+  day = 'day',
+  week = 'week',
+  month = 'month',
+  year = 'year'
+}
+
+export class OrderRetrieveAllDto {
+  @IsString()
+  @IsNotEmpty()
+  user: string
+
+  @IsEnum(TypeDate)
+  @IsNotEmpty()
+  type: string
 }

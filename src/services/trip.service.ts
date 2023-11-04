@@ -25,7 +25,6 @@ class TripService {
               .skip(skip)
               .limit(size)
               .populate('candidates.user','first_name last_name phone_number telegram_id')
-              // .populate('candidates.lunch','name cost')
               .populate({
                 path: 'candidates.lunch',
                 populate: {
@@ -47,6 +46,24 @@ class TripService {
       totalTrips,
       tripsOnPage: trips.length
     };
+  }
+
+  public async tripRetrieveOneById(id: string) {
+    const trip = await this.trips.findById(id).populate('candidates.user','first_name last_name phone_number telegram_id')
+    .populate({
+      path: 'candidates.lunch',
+      populate: {
+        path: 'products.product',
+        model: 'Product',
+        select:'name '
+      },
+      select:'name cost'
+    }).exec()
+
+    console.log('Trip',trip)
+
+    return trip
+
   }
 
   public async tripRetrieveOne(client:number) {
