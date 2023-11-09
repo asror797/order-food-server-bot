@@ -126,15 +126,14 @@ class LunchController {
 
   public deleteProducts = async(req:Request,res:Response,next:NextFunction) => {
     try {
-      const lunch = req.params.lunch
-      const { product } = req.body
+      const { lunchId, productId } = req.params;
 
-      if(!lunch || !product) return res.json({
+      if(!lunchId || !productId) return res.json({
         message:"product or lunch  is required"
       })  
       res.json(await this.lunchService.deleteProductOfLunch({
-        lunch: lunch,
-        product: product
+        lunch: lunchId,
+        product: productId
       }))
     } catch (error) {
       console.log(error)
