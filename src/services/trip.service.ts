@@ -27,11 +27,11 @@ class TripService {
               .populate('candidates.user','first_name last_name phone_number telegram_id')
               .populate({
                 path: 'candidates.lunch',
-                populate: {
-                  path: 'products.product',
-                  model: 'Product',
-                  select:'name '
-                },
+                // populate: {
+                //   path: 'products.product',
+                //   model: 'Product',
+                //   select:'name '
+                // },
                 select:'name cost'
               })
               .populate('org','name_org')
@@ -302,7 +302,10 @@ class TripService {
   public async findOrderTrip(payload:any) {
     const { trip, user } = payload
 
-    const User = await this.trips.findOne(
+
+    const User = await this.users.findById(user).populate('org').select('phone_number first_name last_name').exec()
+
+    const Order = await this.trips.findOne(
       {
         _id: trip,
         'candidates.user':user
@@ -312,7 +315,7 @@ class TripService {
 
     console.log('Trip finded',User)
 
-    return User
+    return Order
   }
 
   public async cancelAgreeClient(payload:any) {

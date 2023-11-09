@@ -305,6 +305,21 @@ class LunchService {
     }
     return response
   }
+
+  public async deleteProductOfLunch(payload:any) {
+    const { lunch, product } = payload
+
+    const Lunch = await this.lunches.findById(lunch)
+    if(!Lunch) throw new httException(400,'not found lunch')
+
+    const updatedOrder = await this.lunches.findByIdAndUpdate(
+      lunch,
+      { $pull: { products: { product: product } } },
+      { new: true }
+    );
+
+    return updatedOrder
+  }
 }
 
 

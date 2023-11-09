@@ -120,7 +120,25 @@ class LunchController {
 
       res.json(await this.lunchService.deleteLunch(lunch_id))
     } catch (error) {
-      
+      next(error)
+    }
+  }
+
+  public deleteProducts = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const lunch = req.params.lunch
+      const { product } = req.body
+
+      if(!lunch || !product) return res.json({
+        message:"product or lunch  is required"
+      })  
+      res.json(await this.lunchService.deleteProductOfLunch({
+        lunch: lunch,
+        product: product
+      }))
+    } catch (error) {
+      console.log(error)
+      next(error)
     }
   }
 }
