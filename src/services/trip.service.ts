@@ -24,7 +24,7 @@ class TripService {
               .select('-updatedAt')
               .skip(skip)
               .limit(size)
-              .populate('candidates.user','first_name last_name phone_number telegram_id')
+              .populate('candidates.user','first_name last_name phone_number')
               .populate({
                 path: 'candidates.lunch',
                 // populate: {

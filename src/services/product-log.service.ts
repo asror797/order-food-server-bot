@@ -10,13 +10,13 @@ class ProductLogService {
 
   public async getLog(page: number,size:number) {
     const skip = (page - 1) * size
-    const products =  await this.productLog.find().skip(skip).select('-updatedAt').limit(size).populate('org','name_org').exec()
+    const products =  await this.productLog.find().skip(skip).select('-updatedAt').limit(size).populate('product','unit name').populate('org','name_org').exec()
 
     const totalProductLog = await this.productLog.countDocuments().exec()
     const totalPages = Math.ceil(totalProductLog / size)
 
     return {
-      data: products.reverse(),
+      data: products,
       currentPage: page,
       totalPages,
       totalProductLog,

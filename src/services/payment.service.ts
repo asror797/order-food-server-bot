@@ -11,7 +11,7 @@ class PaymentService {
   public async getRetrieveAll(payload:any) {
     const { page , size } = payload
     const skip = (page - 1) * size
-    const payments =  await this.paymentRepo.find().skip(skip).select('-updatedAt').limit(size).populate('org','name_org').populate('client','first_name last_name phone_number roles').exec()
+    const payments =  await this.paymentRepo.find().sort({ createdAt: 'desc' }).skip(skip).select('-updatedAt').limit(size).populate('org','name_org').populate('client','first_name last_name phone_number roles').exec()
 
     const totalPayments = await this.paymentRepo.countDocuments().exec()
     const totalPages = Math.ceil(totalPayments / size)
