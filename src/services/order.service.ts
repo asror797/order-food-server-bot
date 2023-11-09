@@ -170,6 +170,9 @@ class OrderService {
 
     if(!Order) throw new httException(400,'order not found');
 
+    const User = await this.users.findById(Order.client)
+    if(!User) throw new httException(400,'client id not found')
+    if(User.balance < Order.total_cost) throw new httException(400,'balansda pul mavjud emas')
     const updatedOrder = await this.orders.findByIdAndUpdate(order,{
       is_accepted: true
     },{ new: true });
