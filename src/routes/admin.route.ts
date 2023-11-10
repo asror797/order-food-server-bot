@@ -16,6 +16,7 @@ class AdminRoute {
     this.router.get(`${this.path}`,this.adminController.getAdmins)
     this.router.post(`${this.path}`,this.adminController.createAdmin)
     this.router.post(`${this.path}/login`,this.adminController.loginAdmin)
+    this.router.patch(`${this.path}/:admin`,this.adminController.updateAdmin)
   }
 }
 

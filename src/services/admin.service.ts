@@ -41,6 +41,38 @@ class AdminService {
     }
   }
 
+
+  public async updateAdmin(payload:any) {
+    const { admin , fullname, password, newPassword } = payload;
+
+    const Admin = await this.admins.findById(admin)
+
+    if(!Admin) throw new httException(400,'admin is not defined')
+
+    interface IUpdate {
+      fullname?: string
+      password?: string
+    }
+
+    let updatesData:IUpdate = {}
+
+    if(fullname) {
+      updatesData.fullname = fullname
+    }
+
+    if(newPassword) {
+      if(Admin.password !== password) throw new httException(400,'old password is wrong')
+      updatesData.password = newPassword
+    }
+
+    const updatedAdmin = await this.admins.findOneAndUpdate({
+      _id: admin
+    },{...updatesData},{ new: true });
+
+    return updatedAdmin;
+
+  }
+
 }
 
 
