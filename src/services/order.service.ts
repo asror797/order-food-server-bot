@@ -8,7 +8,7 @@ import userModel from "../models/user.model";
 import FoodService from "./food.service";
 import PaymentService from "./payment.service";
 import ProductLogService from "./product-log.service";
-import { ru } from "date-fns/locale";
+import { uz } from "date-fns/locale";
 
 class OrderService {
   public orders = orderModel;
@@ -245,8 +245,8 @@ class OrderService {
    
     if(type == 'day') {
       const daysOfWeek = eachDayOfInterval({
-        start: startOfWeek(new Date()),
-        end: endOfWeek(new Date())
+        start: startOfWeek(new Date(),{ weekStartsOn: 1 }),
+        end: endOfWeek(new Date(),{ weekStartsOn: 1 })
       })
       await Promise.all(daysOfWeek.map(async(day) => {
         const orders = await this.orders.find({
@@ -257,7 +257,7 @@ class OrderService {
           }
         }).select('total_cost')
         response.push({
-          label: day,
+          label: format(day, 'eeee', { locale: uz}),
           data: orders.reduce((accumulator, currentValue) => { return accumulator + currentValue.total_cost; }, 0)
         })
       }))

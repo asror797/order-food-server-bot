@@ -14,7 +14,19 @@ class TripRoute {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`,this.tripController.getTrips);
+    this.router.get(`${this.path}/latest`,this.tripController.tripRetrieveOne)
   }
 }
 
 export default TripRoute;
+
+/*
+  ovqatni porsiyalarini yigib olish kerak 
+  { name, count, product: [{}] }
+
+
+  masalik nomi va amount { name, amount }
+  bitasiga qancha product ketishini xisoblab count ga kopaytirish kerak 
+
+
+*/

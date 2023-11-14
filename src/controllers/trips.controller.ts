@@ -30,6 +30,13 @@ class TripController {
       next(error)
     }
   }
-}
 
+  public tripRetrieveOne= async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      res.json(await this.tripService.tripRetrieveOne(6526893061))
+    } catch (error) {
+      next(error)
+    }
+  }
+}
 export default TripController;
