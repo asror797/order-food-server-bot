@@ -102,17 +102,28 @@ class BotService {
              ...keys
             ]
           }})
+
         } else if( messageText == "Buyurtmalarni ko'rish") {
           const trip = await this.tripService.tripRetrieveOne(chatId)
           const agreeusers:any = []
           if(trip.status)
             console.log(trip.data)
-            let outputStr = '';
+            let outputStr = '\nSarflanadigan Mahsulotlar:\n\n';
+            let countLunch = ''
 
-            for (const key in trip.count) {
-              outputStr += `${key}x : ${trip.count[key]} ta kishi\n`;
+            console.log(trip.count)
+            if(trip.count) {
+              Object.keys(trip.count).forEach((lunch, e) => {
+                countLunch += `${e+1}. ${lunch} - ${trip.count[lunch].amount} kishi\n`
+              })
             }
-            this.bot.sendMessage(chatId,`${trip.data.meal.name}\n${trip.data.candidates.length} ta hohlaydi.\n\n------------\nShundan:\n\n${outputStr}`)
+
+            Object.keys(trip.productCount).forEach((product,e) => {
+              outputStr += `${e+1}. ${trip.productCount[product].name} - ${trip.productCount[product].amount} ${trip.productCount[product].unit}`;
+            })
+
+            this.bot.sendMessage(chatId,`${trip.data.meal.name}\n${trip.data.candidates.length} ta hohlaydi.\n\nShundan:\n${countLunch} ${outputStr}`)
+            
           if(!trip.status) {
             this.bot.sendMessage(chatId,`Admin malumotlari xato`)
           }
@@ -387,6 +398,7 @@ class BotService {
       }
 
       if(splited == 'ask' && chatId && callbackQuery.message && callbackQuery.data ) {
+        // const tripsResponse = await this.tripService.pushUser()
         await this.bot.deleteMessage(chatId,callbackQuery.message?.message_id)
         const order:any = await this.tripService.findOrderTrip({
           trip: callbackQuery.data.split('-')[1],
@@ -592,9 +604,9 @@ class BotService {
               const foods:string[] = [] 
               foods.push(`Kimga:\n👤: ${user.data.first_name} ${user.data.last_name ? `${user.data.last_name}` : ''} \n📞: +998${user.data.phone_number}\n`);
               Order.foods.map((e:any,i) => {
-                foods.push(`\n${i+1}. ${e.food.name} - <b>${e.food.cost}</b> s*m \n - Soni: ${e.amount} ta\n`)
+                foods.push(`\n${i+1}. ${e.food.name} - <b>${e.food.cost}</b> so'm \n - Soni: ${e.amount} ta\n`)
               })
-              foods.push(`\n------------------\nJami: <code> ${Order.total_cost}</code> s*m \n`)
+              foods.push(`\n------------------\nJami: <code> ${Order.total_cost}</code> so'm \n`)
               foods.push(`\nBuyurtma Holati: 🕓 <code>Kutilmoqda...</code>`)
               // this.bot.sendMessage()
               if(user.data.org.group_a_id && (user.data.balance >= Order.total_cost)) {
@@ -765,7 +777,8 @@ class BotService {
 
 const token = '6320311774:AAHMDWWIFS7Q-D8NWBkLG6ppf7CX-iHBiDc';
 const demo_bot = '5398672106:AAF_zgtGfTYwu9_F-uTg1S1LrbhLzR2VKkk';
-const old_bot = '5903607123:AAFYVouBA0EtGRuefEHc6HzxhIFI5IIp_00'
+const old_bot = '5903607123:AAFYVouBA0EtGRuefEHc6HzxhIFI5IIp_00';
+const silver_bot = '6630953879:AAGOmGTzMZaSNr3Q9MmZUHEV4wQBdOwN3t0'
 
 const botService = new BotService(old_bot);
 

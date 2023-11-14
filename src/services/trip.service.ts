@@ -13,7 +13,7 @@ class TripService {
   public trips = tripModel;
   public users = userModel;
   public org = orgModel;
-  public lunch = lunchModel
+  public lunch = lunchModel;
   public paymentService = new PaymentService()
 
   public async getTrips(page: number,size:number) {
@@ -81,39 +81,102 @@ class TripService {
     const latestData:any = await this.trips
       .findOne({ org: cook.org['_id']})
       .populate('candidates')
-      .populate('candidates.user')
+      .populate('candidates.user','first_name last_name phone_number')
       // .populate('candidates.lunch')
       .populate({
         path: 'candidates.lunch',
         populate: {
           path: 'products.product',
           model: 'Product',
+          select:'name unit'
         },
       })
-      .populate('meal')
+      .populate('meal','name')
+      .select('-createdAt -updatedAt')
       .sort({ createdAt: -1 }) 
       .limit(1);
+
+
+
+    interface IProduct {
+      [orderId: string]: {
+        products: [
+          {
+            product: {
+              "_id":string,
+              name: string,
+              unit: string
+            },
+            amount: number
+          }
+        ],
+        amount: number
+      }
+    } 
     
-    const countProduct:any = {}
+    const countProduct:IProduct = {}
 
     for (const order of latestData.candidates) {
       const { lunch, user } = order
 
       if(!countProduct[lunch.name]) {
-        countProduct[lunch.name] = 1
+        countProduct[lunch.name] = {
+          products: lunch.products,
+          amount: 1
+        }
       } else {
-        countProduct[lunch.name] ++
+        countProduct[lunch.name].amount ++
       }
     }
 
-    console.log(countProduct)
+    interface IProductCount {
+      [key: string]: {
+        name: string,
+        unit: string,
+        amount: number
+      }
+    }
+    
+    let productCount: IProductCount[] | any = {};
 
+    // for(let i =0;i<Object.keys(countProduct).length;i++){ // ["1","0.7"]
+    //   console.log(countProduct[Object.keys(countProduct)[i]])
+    //   for(let a=0;a<countProduct[Object.keys(countProduct)[i]].products.length;a++){
+    //     productCount[countProduct[Object.keys(countProduct)[i]].products[a].product._id]
+    //     if(Object.keys(productCount).includes(countProduct[Object.keys(countProduct)[i]].products[a].product._id)){
 
+    //       productCount[countProduct[Object.keys(countProduct)[i]].products[a].product._id].amount = 
+    //             productCount[countProduct[Object.keys(countProduct)[i]].products[a].product._id] + countProduct[Object.keys(countProduct)[i]].products[a].amount * countProduct[Object.keys(countProduct)[i]].amount
+    //     } else {
+    //       productCount[countProduct[Object.keys(countProduct)[i]].products[a].product._id] = {
+    //          name:countProduct[Object.keys(countProduct)[i]].products[a].product.name,
+    //          unit:countProduct[Object.keys(countProduct)[i]].products[a].product.unit,
+    //          amount:  countProduct[Object.keys(countProduct)[i]].products[a].amount * countProduct[Object.keys(countProduct)[i]].amount}
+    //     }
+    //   }
+    // }
+
+    Object.keys(countProduct).forEach(orderId => {
+      countProduct[orderId].products.forEach(product => {
+        const productId = product.product._id;
+    
+        if (Object.keys(productCount).includes(productId)) {
+          productCount[productId].amount += product.amount * countProduct[orderId].amount;
+        } else {
+          productCount[productId] = {
+            name: product.product.name,
+            unit: product.product.unit,
+            amount: product.amount * countProduct[orderId].amount
+          };
+        }
+      });
+    });
 
     return {
       status: true,
       data: latestData,
-      count: countProduct
+      count: countProduct,
+      productCount: productCount
     }
   }
 
@@ -177,7 +240,7 @@ class TripService {
     const latestData:any = await this.trips
       .findOne()
       .sort({ createdAt: -1 }) 
-      .limit(1);
+      .limit(1)
     
     if(latestData) {
       const diffrence = (Math.floor(Date.now() / 1000) - latestData.sent_at) / 60
