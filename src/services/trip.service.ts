@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import botService from "../bot/bot";
 import { CreateTrip } from "../dtos/trip.dto";
 import { httException } from "../exceptions/httpException";
@@ -365,20 +366,60 @@ class TripService {
   public async findOrderTrip(payload:any) {
     const { trip, user } = payload
 
-
     const User = await this.users.findById(user).populate('org').select('phone_number first_name last_name').exec()
+
+    const userByTrip = await this.trips.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(trip),
+          'candidates.user': new mongoose.Types.ObjectId(user)
+        }
+      },
+      {
+        $unwind: '$candidates'
+      },
+      {
+        $match: {
+          'candidates.user': new mongoose.Types.ObjectId(user)
+        }
+      },
+      {
+        $lookup: {
+          from: 'users', // Assuming the user collection is named 'users'
+          localField: 'candidates.user',
+          foreignField: '_id',
+          as: 'attendedUser.user'
+        }
+      },
+      {
+        $lookup: {
+          from: 'lunches', // Assuming the lunch collection is named 'lunches'
+          localField: 'candidates.lunch',
+          foreignField: '_id',
+          as: 'attendedUser.lunch'
+        }
+      },
+      {
+        $project: {
+          'attendedUser.user': { $arrayElemAt: ['$attendedUser.user', 0] },
+          'attendedUser.lunch': { $arrayElemAt: ['$attendedUser.lunch', 0] },
+          'attendedUser.total': '$candidates.total',
+          'attendedUser._id': '$candidates._id'
+        }
+      }
+    ]).exec()
 
     const Order = await this.trips.findOne(
       {
         _id: trip,
-        'candidates.user':user
       },
-    ).populate('meal','name').populate('org','group_a_id group_b_id').populate('candidates.user','first_name last_name phone_number telegram_id')
-    .populate('candidates.lunch','name cost').exec()
+    ).populate('meal','name').populate('org','group_a_id group_b_id').exec()
 
-    console.log('Trip finded',User)
-
-    return Order
+    return {
+      meal: Order?.meal,
+      org: Order?.org,
+      candidates: [userByTrip[0].attendedUser]
+    }
   }
 
   public async cancelAgreeClient(payload:any) {
