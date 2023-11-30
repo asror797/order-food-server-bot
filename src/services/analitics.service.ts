@@ -14,6 +14,10 @@ class AnaliticsService {
 
   }
 
+  public async totalMarket() {
+    
+  }
+
   public async totalSale(argData:any) {
     const { type , org , startDate , endDate } = argData;
 
