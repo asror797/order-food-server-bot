@@ -27,12 +27,15 @@ class LunchController {
 
       const lunchData:CreateLunch = req.body;
       res.json(await this.lunchService.createLunch({
+        ...lunchData,
         base: base,
         cost: lunchData.cost,
         name: lunchData.name,
-        org: lunchData.org
+        org: lunchData.org,
+        products: lunchData.products,
       }))
     } catch (error) {
+      console.log(error)
       next(error)
     }
   }
@@ -95,6 +98,21 @@ class LunchController {
         lunch: lunch,
         products: paylodBody.products
       }))
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
+
+  public updateLunch = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const lunchId = req.params.lunch
+      if(!lunchId) throw new httException(400,'not found lunch')
+      res.json(await this.lunchService.fullUpdateLunch({
+        ...req.body,
+        id: lunchId,
+      })) 
     } catch (error) {
       console.log(error)
       next(error)

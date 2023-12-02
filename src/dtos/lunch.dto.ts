@@ -16,6 +16,9 @@ export class CreateLunch {
   @IsString()
   @IsNotEmpty()
   base: string
+
+  @IsOptional()
+  products?: []
 }
 
 

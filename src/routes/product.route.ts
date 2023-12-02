@@ -17,6 +17,7 @@ class ProductRoute {
     this.router.get(`${this.path}`,this.productController.getProducts)
     this.router.post(`${this.path}`,this.productController.createProduct)
     this.router.patch(`${this.path}/amount`,this.productController.editAmountProduct)
+    this.router.patch(`${this.path}/update/:product`,this.productController.updateProduct)
   }
 }
 

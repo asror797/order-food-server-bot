@@ -83,12 +83,23 @@ class LunchService {
     const Base = await this.bases.findById(payload.base)
     if(!Base) throw new httException(400,'lunch base not found')
 
+    console.log(payload)
+
     const newLunch = await this.lunches.create({
+      ...payload,
       base: payload.base,
       org: Base.org,
       cost: payload.cost,
-      name: payload.name
+      name: payload.name,
+      products: payload.products ?? []
     });
+
+    // const updatedProduct = await this.lunches.findByIdAndUpdate(newLunch['_id'],
+    //   {
+    //     $addToSet: { products: { $each: payload.products } }
+    //   },
+    //   { new: true }
+    // ).exec()
 
     return newLunch;
   }
@@ -260,6 +271,48 @@ class LunchService {
       added: addedProducts.products,
       updated: response
     }
+  }
+
+  public async fullUpdateLunch(payload:any) {
+
+    const updateObj:any = {}
+    const Lunch = await this.lunches.findById(payload.id)
+
+    if(!Lunch) throw new httException(400,'lunch not found')
+
+    if(payload.org) {
+      const Org = await this.orgs.findById(payload.org)
+      if(!Org) throw new httException(400,'org not found')
+      updateObj.org = payload.org
+    }
+
+    if(payload.base) {
+      const Base = await this.bases.findById(payload.base)
+      if(!Base) throw new httException(400,'base not found')
+      updateObj.base = payload.base
+    }
+    if(payload.cost) {
+      updateObj.cost = payload.cost
+    }
+    if(payload.name) {
+      updateObj.name = payload.name
+    }
+
+    if(payload.percent_cook) {
+      updateObj.percent_cook = payload.percent_cook
+    }
+
+    const updatedLunch = await this.bases.findByIdAndUpdate(payload.id,updateObj,{ new: true })
+
+   
+    if(payload.products) {
+      await this.pushProduct({
+        lunch:payload.id,
+        products: payload.products
+      })
+    }
+
+    return updatedLunch
   }
 
   public async updateProduct(payload:any) {

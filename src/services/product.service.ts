@@ -95,6 +95,16 @@ class ProductService {
     }
   }
 
+  public async updateProduct(payload:any) {
+
+    const newUpdate = await this.products.findByIdAndUpdate(payload.product,{
+      name: payload.name,
+      unit: payload.unit
+    },{ new: true }).exec()
+
+    return newUpdate
+  }
+
   public async decreaseAmount(productData:UpdateAmount) {
     const { product , amount } = productData;
 

@@ -38,6 +38,7 @@ class ProductController {
       }
       res.json(await this.productService.createNew(productData))
     } catch (error) {
+      console.log(error)
       next(error)
     }
   } 
@@ -47,6 +48,7 @@ class ProductController {
       const productData:UpdateAmountWithType = req.body;
       const { product , amount , type, cost } = productData;
       if(type == true ) {
+        let prod;
         const editedProduct = await this.productService.increaseAmount({
           product,
           amount,
@@ -54,6 +56,8 @@ class ProductController {
         });
 
         if(!editedProduct) throw new httException(500,'somethign went wrong')
+
+        // const mediumPrice = Math.floor((prod?.cost * +product.amount + data.price * data.amount) / (+product.amount + data.amount) );
 
         const logCreated = await this.productLogService.logCreateForStore({
           product,
@@ -87,6 +91,35 @@ class ProductController {
       next(error)
     }
   }
+
+  public updateProduct = async(req:Request,res:Response,next:NextFunction) =>  {
+    try {
+      const product = req.params.product
+
+      if(!product) throw new httException(400,'product id required')
+      const { name, unit, } = req.body
+
+      res.json(await this.productService.updateProduct({
+        name,
+        unit,
+        product
+      }))
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
+/*  public fullUpdateProduct = async(req:Request,res:Response,:next:NextFunction) => {
+    try {
+      const lunchId = req.params.lunch 
+      if(!lunchId) throw new httException(400,'bad request')
+      const { name, cost, products, percent_cook } = req.body
+      res.json(await this.productService.updateProduct({}))
+    } catch (error) {
+      next(error)
+    }
+  } */
 }
 
 
