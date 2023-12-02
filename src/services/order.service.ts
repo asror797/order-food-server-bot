@@ -1,4 +1,4 @@
-import { daysInWeek, eachDayOfInterval, eachMonthOfInterval, eachWeekOfInterval, endOfDay, endOfISOWeek, endOfMonth, endOfWeek, endOfYear, format, monthsInYear, startOfDay, startOfISOWeek, startOfMonth, startOfWeek, startOfYear } from "date-fns";
+import { daysInWeek, eachDayOfInterval, eachMonthOfInterval, eachWeekOfInterval, endOfDay, endOfISOWeek, endOfMonth, endOfWeek, endOfYear, format, getDate, getWeek, monthsInYear, startOfDay, startOfISOWeek, startOfMonth, startOfWeek, startOfYear } from "date-fns";
 import { utcToZonedTime } from 'date-fns-tz'
 import { CreateOrderDto, OrderRetrieveAllDto, OrderRetrieveByUserDto, UpdateOrder } from "../dtos/order.dto";
 import { httException } from "../exceptions/httpException";
@@ -277,8 +277,10 @@ class OrderService {
             $lte: endOfWeek(week)
           }
         }).select('total_cost')
+
+        console.log(week)
         response.push({
-          label: week,
+          label: format(week, 'd MMMM'),
           data: orders.reduce((accumulator, currentValue) => { return accumulator + currentValue.total_cost; }, 0)
         })
       }))
@@ -300,7 +302,7 @@ class OrderService {
           }
         }).select('total_cost')
         response.push({
-          label: month,
+          label: format(month, 'd MMMM'),
           data: orders.reduce((accumulator, currentValue) => { return accumulator + currentValue.total_cost; }, 0)
         })
       }))
