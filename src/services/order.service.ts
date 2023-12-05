@@ -251,6 +251,7 @@ class OrderService {
       await Promise.all(daysOfWeek.map(async(day) => {
         const orders = await this.orders.find({
           client: user,
+          is_accepted: true,
           createdAt: {
             $gte: startOfDay(day),
             $lte: endOfDay(day)
@@ -272,6 +273,7 @@ class OrderService {
       await Promise.all(weekOfMonth.map(async(week) => {
         const orders = await this.orders.find({
           client: user,
+          is_accepted: true,
           createdAt: {
             $gte: startOfWeek(week),
             $lte: endOfWeek(week)
@@ -296,6 +298,7 @@ class OrderService {
       await Promise.all(monthOfYear.map(async(month) => {
         const orders = await this.orders.find({
           client: user,
+          is_accepted: true,
           createdAt: {
             $gte: startOfMonth(month),
             $lte: endOfMonth(month)
