@@ -7,19 +7,19 @@ class RedisService {
   private client: redis.RedisClientType;
 
   private constructor() {
-    this.client = redis.createClient({
-        socket: {
-          host: 'redis-18770.c300.eu-central-1-1.ec2.cloud.redislabs.com',
-          port: 18770
-      },
-      password:'xey2znL8FzSjE5CEURmA0rakuZLUCx6f'
-    });
+    // this.client = redis.createClient({
+    //     socket: {
+    //       host: 'redis-18770.c300.eu-central-1-1.ec2.cloud.redislabs.com',
+    //       port: 18770
+    //   },
+    //   password:'xey2znL8FzSjE5CEURmA0rakuZLUCx6f'
+    // });
 
     //redis://default:xey2znL8FzSjE5CEURmA0rakuZLUCx6f@redis-18770.c300.eu-central-1-1.ec2.cloud.redislabs.com:18770
 
-    // this.client = redis.createClient({
-    //   url:'redis://localhost:6379',
-    // });
+    this.client = redis.createClient({
+      url:'redis://localhost:6379',
+    });
 
     this.client.connect()
 
