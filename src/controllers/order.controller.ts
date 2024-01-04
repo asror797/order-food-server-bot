@@ -54,6 +54,21 @@ class OrderController {
       next(error)
     }
   }
+
+  public getOldAnalitics = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
+    try {
+      const user = req.params.user as string
+      if(!user) throw new httException(400,'user id not found')
+      const type = req.query.type as string || 'day'
+      res.json(await this.orderService.getOldAnaltics({
+        user: user,
+        type: type
+      }))
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
 }
 
 

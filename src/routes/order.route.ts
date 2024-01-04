@@ -16,6 +16,7 @@ class OrderRoute {
     this.router.post(`${this.path}`,this.orderController.createOrder)
     this.router.get(`${this.path}/user/:user`,this.orderController.getOrderByUser)
     this.router.get(`${this.path}/spent/:user`,this.orderController.getSpentsByUser)
+    this.router.get(`${this.path}/old-analitics/:user`,this.orderController.getOldAnalitics)
   }
 }
 

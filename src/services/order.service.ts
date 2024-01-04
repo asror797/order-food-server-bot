@@ -317,6 +317,89 @@ class OrderService {
     }
   }
 
+
+  public async getOldAnaltics(payload:OrderRetrieveAllDto) {
+    const { user, type} = payload
+
+    const User = await this.users.findById(user).populate('org','name_org').select('first_name last_name phone_number').exec()
+    if(!User) throw new httException(400,'user not found')
+
+    const response: any = []
+   
+    if(type == 'day') {
+      const daysOfWeek = eachDayOfInterval({
+        start: startOfWeek(new Date(2023, 11, 29),{ weekStartsOn: 1 }),
+        end: endOfWeek(new Date(2023, 11, 29),{ weekStartsOn: 1 })
+      })
+      await Promise.all(daysOfWeek.map(async(day) => {
+        const orders = await this.orders.find({
+          client: user,
+          is_accepted: true,
+          createdAt: {
+            $gte: startOfDay(day),
+            $lte: endOfDay(day)
+          }
+        }).select('total_cost')
+        response.push({
+          label: format(day, 'eeee yyyy', { locale: uz}),
+          data: orders.reduce((accumulator, currentValue) => { return accumulator + currentValue.total_cost; }, 0)
+        })
+      }))
+    }
+
+    if(type == 'week') {
+      const weekOfMonth = eachWeekOfInterval({
+        start: startOfMonth(new Date(2023, 11, 29)),
+        end: endOfMonth(new Date(2023, 11, 29))
+      })
+
+      await Promise.all(weekOfMonth.map(async(week) => {
+        const orders = await this.orders.find({
+          client: user,
+          is_accepted: true,
+          createdAt: {
+            $gte: startOfWeek(week),
+            $lte: endOfWeek(week)
+          }
+        }).select('total_cost')
+
+        console.log(week)
+        response.push({
+          label: format(week, 'd MMMM yyyy'),
+          data: orders.reduce((accumulator, currentValue) => { return accumulator + currentValue.total_cost; }, 0)
+        })
+      }))
+    }
+
+
+    if(type == 'month') {
+      const monthOfYear = eachMonthOfInterval({
+        start: startOfYear(new Date(2023, 11, 29)),
+        end: endOfYear(new Date(2023, 11, 29))
+      })
+
+      await Promise.all(monthOfYear.map(async(month) => {
+        const orders = await this.orders.find({
+          client: user,
+          is_accepted: true,
+          createdAt: {
+            $gte: startOfMonth(month),
+            $lte: endOfMonth(month)
+          }
+        }).select('total_cost')
+        response.push({
+          label: format(month, 'MMMM yyyy'),
+          data: orders.reduce((accumulator, currentValue) => { return accumulator + currentValue.total_cost; }, 0)
+        })
+      }))
+    }
+
+    return {
+      user: User,
+      data: response
+    }
+  }
+
   public async orderRetrieveTotalSum(payload:any) {
     const { user } = payload
 
