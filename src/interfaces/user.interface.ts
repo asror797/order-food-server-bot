@@ -1,6 +1,5 @@
-import { Document } from "mongoose"
-import { IOrg } from "./org.interface"
-
+import { Document } from 'mongoose'
+import { IOrg } from './org.interface'
 
 export enum UserRole {
   ADMIN = 'admin',

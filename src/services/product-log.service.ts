@@ -1,16 +1,21 @@
-import productLogModel from "../models/productlog.model"
-import type { CreateProductLog } from "../dtos/product-log.dto"
-import productModel from "../models/product.model"
-import { httException } from "../exceptions/httpException"
+import type { CreateProductLog } from '../dtos/product-log.dto'
+import { productModel, productLogModel } from '@models'
+import { httException } from '@exceptions'
 
-class ProductLogService {
+export class ProductLogService {
   public productLog = productLogModel
   public products = productModel
 
-
-  public async getLog(page: number,size:number) {
+  public async getLog(page: number, size: number) {
     const skip = (page - 1) * size
-    const products =  await this.productLog.find().skip(skip).select('-updatedAt').limit(size).populate('product','unit name').populate('org','name_org').exec()
+    const products = await this.productLog
+      .find()
+      .skip(skip)
+      .select('-updatedAt')
+      .limit(size)
+      .populate('product', 'unit name')
+      .populate('org', 'name_org')
+      .exec()
 
     const totalProductLog = await this.productLog.countDocuments().exec()
     const totalPages = Math.ceil(totalProductLog / size)
@@ -20,52 +25,54 @@ class ProductLogService {
       currentPage: page,
       totalPages,
       totalProductLog,
-      productLogsOnPage: products.length
-    };
+      productLogsOnPage: products.length,
+    }
   }
 
-  public async createLog(logData:CreateProductLog) {
+  public async createLog(logData: CreateProductLog) {
     const { amount, cost, type, product, org } = logData
 
     const isExist = await this.products.findById(product)
-    
-    if(!isExist) throw new httException(400,'product not found')
+
+    if (!isExist) throw new httException(400, 'product not found')
 
     const updateProductAmount = await this.products.findOneAndUpdate(
       {
-        _id: product
+        _id: product,
       },
       {
-        amount: type ? isExist.amount + amount : isExist.amount - amount
-      },{ new: true })
+        amount: type ? isExist.amount + amount : isExist.amount - amount,
+      },
+      { new: true },
+    )
 
     console.log(updateProductAmount)
-    
+
     const newLog = await this.productLog.create({
       amount,
       type,
       cost,
       product,
-      org
-    });
+      org,
+    })
 
     return newLog
   }
 
-  public async logCreateForStore(logData:CreateProductLog) {
+  public async logCreateForStore(logData: CreateProductLog) {
     const { amount, cost, type, product, org } = logData
 
     const isExist = await this.products.findById(product)
-    
-    if(!isExist) throw new httException(400,'product not found')
+
+    if (!isExist) throw new httException(400, 'product not found')
 
     const newLog = await this.productLog.create({
       amount,
       type,
       cost,
       product,
-      org
-    });
+      org,
+    })
 
     return newLog
   }

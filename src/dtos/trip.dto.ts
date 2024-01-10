@@ -1,5 +1,4 @@
-import { IsNumber, IsString } from "class-validator";
-
+import { IsNumber, IsString } from 'class-validator'
 
 export class CreateTrip {
   @IsString()
@@ -9,5 +8,5 @@ export class CreateTrip {
   org: string
 
   @IsNumber()
-  sent_at: number;
+  sent_at: number
 }

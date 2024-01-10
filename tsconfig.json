@@ -7,11 +7,25 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "strictPropertyInitialization": false,
-    "outDir": "dist",
     "resolveJsonModule": true,                        
     "forceConsistentCasingInFileNames": true,           
     "strict": true,                                      
     "skipLibCheck": true,
-    "strictNullChecks": true,                               
-  }
+    "strictNullChecks": true,
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@services": ["./services"],
+      "@bot": ["./bot"],
+      "@models": ["./models"],
+      "@utils": ["./utils"],
+      "@exceptions": ["./exceptions"],
+      "@routes": ["./routes"],
+      "@database": ["./database"]
+    },
+    "baseUrl": "src",
+    "rootDir": "src",
+    "outDir": "dist",
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"],
 }

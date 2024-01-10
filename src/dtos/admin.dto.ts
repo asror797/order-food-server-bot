@@ -1,30 +1,26 @@
-import { IsString } from "class-validator";
-
-
+import { IsString } from 'class-validator'
 
 export class AdminLoginDto {
   @IsString()
-  phone_number: string;
+  phone_number: string
 
   @IsString()
-  password: string;
+  password: string
 }
-
-
 
 export class CreateAdmin {
   @IsString()
-  phone_number: string;
+  phone_number: string
 
   @IsString()
-  fullname: string;
+  fullname: string
 
   @IsString()
   password: string
 
   @IsString()
-  org: string;
+  org: string
 
   @IsString()
-  role: string;
+  role: string
 }

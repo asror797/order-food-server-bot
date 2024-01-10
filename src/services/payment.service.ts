@@ -1,17 +1,24 @@
-import botService from "../bot/bot";
-import { CreatePaymentDto } from "../dtos/payment.dto";
-import { httException } from "../exceptions/httpException";
-import paymentModel from "../models/payment.model";
-import userModel from "../models/user.model";
+import { botService } from '@bot'
+import { userModel, paymentModel } from '@models'
+import { CreatePaymentDto } from '../dtos/payment.dto'
+import { httException } from '@exceptions'
 
-class PaymentService {
-  private userRepo = userModel;
-  private paymentRepo = paymentModel;
+export class PaymentService {
+  private userRepo = userModel
+  private paymentRepo = paymentModel
 
-  public async getRetrieveAll(payload:any) {
-    const { page , size } = payload
+  public async getRetrieveAll(payload: any) {
+    const { page, size } = payload
     const skip = (page - 1) * size
-    const payments =  await this.paymentRepo.find().sort({ createdAt: 'desc' }).skip(skip).select('-updatedAt').limit(size).populate('org','name_org').populate('client','first_name last_name phone_number roles').exec()
+    const payments = await this.paymentRepo
+      .find()
+      .sort({ createdAt: 'desc' })
+      .skip(skip)
+      .select('-updatedAt')
+      .limit(size)
+      .populate('org', 'name_org')
+      .populate('client', 'first_name last_name phone_number roles')
+      .exec()
 
     const totalPayments = await this.paymentRepo.countDocuments().exec()
     const totalPages = Math.ceil(totalPayments / size)
@@ -21,51 +28,62 @@ class PaymentService {
       currentPage: page,
       totalPages,
       totalPayments,
-      paymentsOnPage: payments.length
-    };
+      paymentsOnPage: payments.length,
+    }
   }
 
   public async increase(paymentData: CreatePaymentDto) {
-    const { user , amount } = paymentData;
-    const User = await this.userRepo.findById(user);
-    if(!User) throw new httException(400,'user not found')
+    const { user, amount } = paymentData
+    const User = await this.userRepo.findById(user)
+    if (!User) throw new httException(400, 'user not found')
 
-    const updatedUser = await this.userRepo.findByIdAndUpdate(user,{
-      balance: Number(User.balance) + Number(amount)
-    },{ new: true });
+    const updatedUser = await this.userRepo.findByIdAndUpdate(
+      user,
+      {
+        balance: Number(User.balance) + Number(amount),
+      },
+      { new: true },
+    )
 
-    botService.sendText(User.telegram_id,`🟢 Hisobingizga ${amount} s*m pul tushurildi`)
+    botService.sendText(
+      User.telegram_id,
+      `🟢 Hisobingizga ${amount} s*m pul tushurildi`,
+    )
     await this.paymentRepo.create({
       type: true,
       org: User.org,
       client: User['_id'],
-      amount
-    });
+      amount,
+    })
 
-    return updatedUser;
+    return updatedUser
   }
 
-  public async dicrease(paymentData:CreatePaymentDto) {
-    const { user , amount } = paymentData;
-    const User = await this.userRepo.findById(user);
-    if(!User) throw new httException(400,'user not found')
+  public async dicrease(paymentData: CreatePaymentDto) {
+    const { user, amount } = paymentData
+    const User = await this.userRepo.findById(user)
+    if (!User) throw new httException(400, 'user not found')
 
-    const updatedUser = await this.userRepo.findByIdAndUpdate(user,{
-      balance: Number(User.balance) - Number(amount)
-    },{ new: true });
+    const updatedUser = await this.userRepo.findByIdAndUpdate(
+      user,
+      {
+        balance: Number(User.balance) - Number(amount),
+      },
+      { new: true },
+    )
 
     await this.paymentRepo.create({
       type: false,
       org: User.org,
       client: User['_id'],
-      amount
-    });
+      amount,
+    })
 
-    botService.sendText(User.telegram_id,`🔴 Hisobdan ${amount} s*m pul yechib olindi`)
+    botService.sendText(
+      User.telegram_id,
+      `🔴 Hisobdan ${amount} s*m pul yechib olindi`,
+    )
 
-    return updatedUser;
+    return updatedUser
   }
 }
-
-
-export default PaymentService;

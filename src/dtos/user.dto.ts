@@ -1,35 +1,41 @@
-import { IsBoolean, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, isPositive } from "class-validator"
+import {
+  IsBoolean,
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from 'class-validator'
 
 export class CreateUserDto {
-
   @IsString()
   public first_name: string
 
   @IsString()
-  public last_name: string;
+  public last_name: string
 
   @IsString()
-  public telegram_id: number;
+  public telegram_id: number
 
   @IsString()
-  public phone_number: string;
+  public phone_number: string
 }
 
 export class ChangeStatus {
   @IsString()
-  user: string;
+  user: string
 
   @IsString()
-  type: string;
+  type: string
 }
-
 
 export class UpdateUserDto {
   @IsString()
-  _id: string;
+  _id: string
 
   @IsString()
-  org: string;
+  org: string
 
   @IsString()
   first_name: string
@@ -52,7 +58,6 @@ export class VerifyUser {
   _id: string
 }
 
-
 export class SendMessae {
   @IsString()
   org: string
@@ -61,24 +66,21 @@ export class SendMessae {
   message: string
 }
 
-
 export class ChangeOrg {
   @IsString()
   user: string
 
   @IsString()
-  org: string;
+  org: string
 }
-
 
 export class Payment {
   @IsString()
-  type: string;
+  type: string
 
   @IsNumber()
-  amount: number;
+  amount: number
 }
-
 
 export class EditRole {
   @IsString()
@@ -88,20 +90,18 @@ export class EditRole {
   role: string
 }
 
-
 export class SearchPagination {
   @IsString()
   search: string
 
   @IsNumber()
   @IsPositive()
-  page: number 
+  page: number
 
   @IsNumber()
   @IsPositive()
   size: number
 }
-
 
 export class EditUserDto {
   @IsNotEmpty()

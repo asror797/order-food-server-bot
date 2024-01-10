@@ -1,14 +1,21 @@
-import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsString, ValidateNested } from "class-validator";
-import { Category } from "../interfaces/food.interface";
-import { Type } from "class-transformer";
-
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator'
+import { Category } from '../interfaces/food.interface'
+import { Type } from 'class-transformer'
 
 class ProductWithAmount {
   @IsString()
-  product: string;
+  product: string
 
   @IsNumber()
-  amount: number;
+  amount: number
 }
 
 export class CreateFood {
@@ -19,10 +26,10 @@ export class CreateFood {
   cost: number
 
   @IsString()
-  org: string;
+  org: string
 
   @IsEnum(Category)
-  category: string;
+  category: string
 
   @IsArray()
   @ValidateNested({ each: true })
@@ -30,24 +37,21 @@ export class CreateFood {
   products: ProductWithAmount[]
 }
 
-
 export class GetFoods {
   @IsNumber()
-  page?: number 
+  page?: number
 
   @IsNumber()
   size?: number
 
   @IsString()
-  category: string;
+  category: string
 
   @IsString()
-  org: string;
+  org: string
 }
 
-
 export class UpdateFoodDto {
-
   @IsNotEmpty()
   @IsString()
   food: string
@@ -56,7 +60,7 @@ export class UpdateFoodDto {
   name?: string
 
   @IsNumber()
-  cost?:number
+  cost?: number
 
   @IsString()
   org?: string

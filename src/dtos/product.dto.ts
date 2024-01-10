@@ -1,27 +1,23 @@
-import { IsBoolean, IsNumber, IsString } from "class-validator";
-
-
+import { IsBoolean, IsNumber, IsString } from 'class-validator'
 
 export class CreateProductBody {
   @IsString()
-  name: string;
+  name: string
 
   @IsString()
-  unit: string;
+  unit: string
 }
-
 
 export class CreateProduct {
   @IsString()
-  name: string;
+  name: string
 
   @IsString()
-  unit: string;
+  unit: string
 
   @IsString()
-  org: string;
+  org: string
 }
-
 
 export class UpdateAmount {
   @IsString()
@@ -36,7 +32,7 @@ export class UpdateAmount {
 
 export class UpdateAmountWithType {
   @IsString()
-  product: string;
+  product: string
 
   @IsNumber()
   amount: number

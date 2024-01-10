@@ -1,23 +1,22 @@
-import express from "express"
-import cors from "cors"
-import errorMiddleware from "./middlewares/error.middleware";
-import { Routes } from "./interfaces/route.interface";
-import { connect } from "mongoose";
-import { dbConnection } from "./database/database";
-import botService from "./bot/bot";
-import swaggerUi from "swagger-ui-express"
-import swaggerJSDoc from "swagger-jsdoc";
-
-
+import express from 'express'
+import cors from 'cors'
+import errorMiddleware from './middlewares/error.middleware'
+import { Routes } from './interfaces/route.interface'
+import { connect } from 'mongoose'
+import { dbConnection } from './database'
+import { botService } from '@bot'
+import swaggerUi from 'swagger-ui-express'
+import swaggerJSDoc from 'swagger-jsdoc'
+// require('dotenv').config()
 
 class App {
   public app: express.Application
   public port: number
   public bot: any
 
-  constructor(routes:Routes[]) {
+  constructor(routes: Routes[]) {
     this.app = express()
-    this.port = 9070
+    this.port = 3000
     this.bot = botService
 
     this.connectToDatabase()
@@ -26,12 +25,11 @@ class App {
     this.initialieErrorHandling()
     this.initializeSwagger()
     this.initializeBot()
-
   }
 
   private async connectToDatabase() {
     try {
-      await connect(dbConnection.url,dbConnection.options)
+      await connect(dbConnection.url, dbConnection.options)
       console.log('Connected to database')
     } catch (error) {
       console.log(error)
@@ -39,21 +37,20 @@ class App {
   }
 
   public listen() {
-    this.app.listen(this.port,() => {
-      console.log(`Server is runing at ${this.port}`);
+    this.app.listen(this.port, () => {
+      console.log(`Server is runing at ${this.port}`)
     })
   }
 
   private initializeMiddlewares() {
     this.app.use(cors())
     this.app.use(express.json())
-    this.app.use('/uploads',express.static('uploads'))
+    this.app.use('/uploads', express.static('uploads'))
   }
 
-
   private initializeRoutes(routes: Routes[]) {
-    routes.forEach(route => {
-      this.app.use('/',route.router)
+    routes.forEach((route) => {
+      this.app.use('/', route.router)
     })
   }
 
@@ -78,9 +75,8 @@ class App {
     }
 
     const specs = swaggerJSDoc(options)
-    this.app.use('/docs',swaggerUi.serve,swaggerUi.setup(specs))
+    this.app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs))
   }
 }
 
-
-export default App;
+export default App

@@ -8,6 +8,14 @@ Content-Type: application/json
 }
 
 
+### Get
+GET http://localhost:3000/user/search-pagination 
+Content-Type: application/json
+
+
+### Get
+GET http://localhost:3000/lunch-base/lunches/652ce6b5b390f9cabe89042c
+Content-Type: application/json
 
 ### update user
 GET http://localhost:3000/user/search?search=asror
@@ -18,7 +26,7 @@ Content-Type: application/json
   "org":"650012d462949f8744859129"
 }
 ### Get 
-GET http://localhost:3000/org
+GET http://localhost:3000/trip
 Content-Type: application/json
 
 
@@ -34,7 +42,7 @@ Content-Type: application/json
 }
 
 ### GET User
-GET http://localhost:9000/user 
+GET http://localhost:3000/user 
 Content-Type: application/json
 
 
@@ -79,7 +87,7 @@ Content-Type: application/json
 
 
 ### get product
-GET http://localhost:3000/org 
+GET http://localhost:3000/product 
 Content-Type: application/json
 
 
@@ -220,3 +228,82 @@ Content-Type: application/json
   "group_a_id": -4011058879,
   "group_b_id": -4089696767
 }
+
+
+
+### GET
+GET http://localhost:3000/food 
+Content-Type: application/json
+
+### update food
+PATCH http://localhost:3000/food/update/651802dd91f8ff02544c4ba6 
+Content-Type: application/json 
+
+{
+  "name":"Кола 1 л.т",
+  "cost":2000,
+  "is_deleted": true
+}
+
+
+### Delete Lunch
+DELETE http://localhost:3000/lunch/:id
+Content-Type: application/json
+
+
+### Get
+GET http://localhost:3000/lunch
+Content-Type: application/json
+
+
+### Create Lunch Base
+POST http://localhost:3000/lunch-base 
+Content-Type: application/json
+
+{
+  "name":"Samarqand Osh",
+  "org":"6518025d91f8ff02544c4b5a"
+}
+
+
+
+### Org
+GET http://localhost:3000/trip
+Content-Type: application/json
+
+
+
+### Lunch
+GET http://localhost:3000/trip?page=4
+Content-Type: application/json
+
+### Create Lunch
+POST http://localhost:3000/lunch/652fa1af0263ddb32aa6b224
+Content-Type: application/json
+
+{
+  "name":"0.7",
+  "cost":19000
+}
+
+
+
+### Get By Lunch
+GET http://localhost:3000/lunch/652fa1af0263ddb32aa6b224
+Content-Type: application/json
+
+
+
+### Add product
+POST http://localhost:3000/lunch/product/652fa2227a912e88edcab492
+Content-Type: application/json
+
+{
+  "products": [
+    {
+      "product":"651bffbfa04aec1f51b56a7b",
+      "amount":1
+    }
+  ]
+}
+

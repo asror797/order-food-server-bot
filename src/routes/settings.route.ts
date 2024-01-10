@@ -1,7 +1,7 @@
-import { Router } from "express"
-import SettingsController from "../controllers/settings.controller"
+import { Router } from 'express'
+import SettingsController from '../controllers/settings.controller'
 
-class SettingsRoute {
+export class SettingsRoute {
   public path = '/settings'
   public router = Router()
   public settingsController = new SettingsController()
@@ -11,8 +11,9 @@ class SettingsRoute {
   }
 
   private initializeRoutes() {
-    this.router.post(`${this.path}/otp-info`,this.settingsController.saveOtpInfo)
+    this.router.post(
+      `${this.path}/otp-info`,
+      this.settingsController.saveOtpInfo,
+    )
   }
 }
-
-export default SettingsRoute;

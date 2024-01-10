@@ -1,4 +1,3 @@
-
 export interface AttendedUser {
   lunch: string
   cost: number
@@ -7,9 +6,8 @@ export interface AttendedUser {
   is_canceled: boolean
 }
 
-
 export interface ITrip extends Document {
-  meal: string;
+  meal: string
   sent_at: number
   candidates: AttendedUser[]
   org: string

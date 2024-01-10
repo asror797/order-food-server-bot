@@ -1,9 +1,8 @@
-import { Document } from "mongoose";
-
+import { Document } from 'mongoose'
 
 export interface IPayment extends Document {
-  client: string;
-  org: string;
-  amount: number;
-  type: boolean;
+  client: string
+  org: string
+  amount: number
+  type: boolean
 }

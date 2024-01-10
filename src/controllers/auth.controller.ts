@@ -1,10 +1,9 @@
-import { NextFunction, Request, Response } from "express";
-import AuthService from "../services/auth.service";
-import { AdminLoginDto } from "../dtos/admin.dto";
-
+import { NextFunction, Request, Response } from 'express'
+import { AuthService } from '@services'
+import { AdminLoginDto } from '../dtos/admin.dto'
 
 class AuthController {
-  private authService = new AuthService();
+  private authService = new AuthService()
 
   // public sendOtp = (req:Request,res:Response,next:NextFunction) => {
   //   try {
@@ -15,7 +14,11 @@ class AuthController {
   //   }
   // }
 
-  public LoginSuperAdmin = (req:Request,res:Response,next:NextFunction) => {
+  public LoginSuperAdmin = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const adminData: AdminLoginDto = req.body
       res.json(this.authService.loginAdmin(adminData))
@@ -25,4 +28,4 @@ class AuthController {
   }
 }
 
-export default AuthController;
+export default AuthController

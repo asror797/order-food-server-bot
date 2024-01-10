@@ -1,9 +1,9 @@
-import { Document } from "mongoose";
+import { Document } from 'mongoose'
 
 export interface IAdmin extends Document {
-  fullname: string;
-  password: string;
-  org: string;
+  fullname: string
+  password: string
+  org: string
   role: string[]
-  phone_number: string;
+  phone_number: string
 }

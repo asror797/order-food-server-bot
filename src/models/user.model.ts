@@ -1,32 +1,32 @@
-import { Schema, model } from "mongoose";
-import { IUser, UserRole } from "../interfaces/user.interface";
+import { Schema, model } from 'mongoose'
+import { IUser, UserRole } from '../interfaces/user.interface'
 
 const userSchema: Schema = new Schema(
   {
     first_name: {
-      type: String
+      type: String,
     },
     last_name: {
-      type: String
+      type: String,
     },
     phone_number: {
       type: String,
     },
     telegram_id: {
       type: Number,
-      nullable: false
+      nullable: false,
     },
-    is_active : {
+    is_active: {
       type: Boolean,
-      default: false
+      default: false,
     },
     is_verified: {
       type: Boolean,
-      default: false
+      default: false,
     },
     org: {
       type: Schema.Types.ObjectId,
-      ref:'Org',
+      ref: 'Org',
     },
     roles: {
       type: [
@@ -35,24 +35,21 @@ const userSchema: Schema = new Schema(
           enum: Object.values(UserRole),
         },
       ],
-      default: [UserRole.USER], 
+      default: [UserRole.USER],
     },
     balance: {
       type: Number,
-      default:0
+      default: 0,
     },
     language_code: {
       type: String,
-      default:'uz'
-    }
+      default: 'uz',
+    },
   },
   {
     versionKey: false,
-    timestamps: true
-  }
-);
+    timestamps: true,
+  },
+)
 
-
-const userModel = model<IUser & Document>('User',userSchema);
-
-export default userModel;
+export const userModel = model<IUser & Document>('User', userSchema)

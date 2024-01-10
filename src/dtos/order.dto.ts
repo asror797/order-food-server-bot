@@ -1,7 +1,15 @@
-import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsDate, IsEnum, IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, ValidateNested } from "class-validator";
-
-
+import { Type } from 'class-transformer'
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  IsString,
+  ValidateNested,
+} from 'class-validator'
 
 export class GetOrderDto {
   @IsNumber()
@@ -10,23 +18,20 @@ export class GetOrderDto {
   size: number
 }
 
-
 class FoodWithAmount {
   @IsString()
-  food: string;
+  food: string
 
   @IsNumber()
   amount: number
 }
 
-
 export class CreateOrderDto {
+  @IsString()
+  client: string
 
   @IsString()
-  client: string;
-
-  @IsString()
-  org: string;
+  org: string
 
   @IsArray()
   @ValidateNested({ each: true })
@@ -60,7 +65,7 @@ enum TypeDate {
   day = 'day',
   week = 'week',
   month = 'month',
-  year = 'year'
+  year = 'year',
 }
 
 export class OrderRetrieveAllDto {
