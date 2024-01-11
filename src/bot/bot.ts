@@ -27,9 +27,8 @@ class BotService {
   private orderService = new OrderService()
   private tripService = new TripService()
 
-  constructor(private token: string) {
+  constructor(token: string) {
     this.bot = new TelegramBot(token, { polling: true })
-    // this.initialize()
   }
 
   public initialize() {
@@ -78,6 +77,7 @@ class BotService {
   private async handleMessage(msg: Message) {
     const chatId = msg.chat.id
     const messageText = msg.text || ''
+    const chatType = msg.chat.type
     interface IisExist {
       message: string
       data: IUser | null | any
@@ -85,6 +85,10 @@ class BotService {
     const isExist: IisExist = await this.users.isExist(chatId)
 
     try {
+
+      if(chatType == 'private') this.handleClientCommands(msg)
+      if(chatType == 'group') this.handleClientCommands(msg)
+
       if (msg.chat.type == 'group') {
         if (messageText == '/group') {
           this.bot.sendMessage(chatId, `Groupd ID: ${chatId}`)
@@ -151,7 +155,16 @@ class BotService {
         if (messageText.startsWith('/start')) {
           if (isExist.data) {
             this.bot.sendMessage(chatId, 'Xush kelibsiz', {
-              reply_markup: MainMenu,
+              reply_markup: {
+                keyboard: [
+                  [
+                    {
+                      text: "🍽 Menu",
+                    }
+                  ]
+                ],
+                remove_keyboard: true
+              },
             })
           } else {
             console.log(msg)
@@ -175,8 +188,22 @@ class BotService {
           }
         } else if (messageText == '🍽 Menu') {
           // await this.bot.deleteMessage(chatId,msg.message_id)
-          this.bot.sendMessage(chatId, 'Buyurma bering', {
-            reply_markup: FoodMenu,
+          this.bot.sendMessage(chatId, 'Oshxonani tanlang:', {
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: "O'rtasaroy",
+                    callback_data: "remove"
+                  },
+                  {
+                    text: "CocaCola",
+                    callback_data: "remove"
+                  }
+                ]
+              ],
+              keyboard: [],
+            },
           })
         } else if (messageText == 'Asosiy menu') {
           if (isExist.data && isExist.data.roles.indexOf('cook') !== -1) {
@@ -335,6 +362,10 @@ class BotService {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  private async handleClientCommands(payload:any) {
+
   }
 
   private async handleCallbackQuery(callbackQuery: CallbackQuery) {

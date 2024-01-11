@@ -1,5 +1,5 @@
 import { CreateProduct, UpdateAmount } from '../dtos/product.dto'
-import { httException } from '@exceptions'
+import { HttpException } from '@exceptions'
 import { productModel } from '@models'
 
 export class ProductService {
@@ -61,7 +61,7 @@ export class ProductService {
 
     const isExist = await this.products.findById(product)
 
-    if (!isExist) throw new httException(200, 'product not found')
+    if (!isExist) throw new HttpException(200, 'product not found')
 
     const updatedproduct = await this.products.findByIdAndUpdate(
       product,
@@ -113,10 +113,10 @@ export class ProductService {
 
     const isExist = await this.products.findById(product)
 
-    if (!isExist) throw new httException(200, 'product not found')
+    if (!isExist) throw new HttpException(200, 'product not found')
 
     if (Number(isExist.amount < Number(amount)))
-      throw new httException(200, 'amount dont decrease')
+      throw new HttpException(200, 'amount dont decrease')
 
     const updatedProduct = await this.products.findByIdAndUpdate(
       product,

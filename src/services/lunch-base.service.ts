@@ -3,7 +3,7 @@ import {
   GetLunchBaseDto,
   UpdateLunchBaseDto,
 } from '../dtos/lunch-base.dto'
-import { httException } from '../exceptions/httpException'
+import { HttpException } from '@exceptions'
 import { lunchBaseModel, lunchModel, orgModel } from '@models'
 
 export class LunchBaseService {
@@ -71,7 +71,7 @@ export class LunchBaseService {
 
   public async retrieveLunchBase(id: string) {
     const base = await this.lunchbase.findById(id).select('name org createdAt')
-    if (!base) throw new httException(400, 'lunch-base not found')
+    if (!base) throw new HttpException(400, 'lunch-base not found')
     return base
   }
 
@@ -80,7 +80,7 @@ export class LunchBaseService {
       _id: payload.org,
     })
 
-    if (!Org) throw new httException(400, 'org not found')
+    if (!Org) throw new HttpException(400, 'org not found')
 
     const createdBase = await this.lunchbase.create({
       name: payload.name,
@@ -102,7 +102,7 @@ export class LunchBaseService {
         _id: payload.org,
       })
 
-      if (!Org) throw new httException(400, 'org not found')
+      if (!Org) throw new HttpException(400, 'org not found')
 
       updateField.Org = payload.org
     }

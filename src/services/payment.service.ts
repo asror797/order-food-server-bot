@@ -1,7 +1,7 @@
 import { botService } from '@bot'
 import { userModel, paymentModel } from '@models'
 import { CreatePaymentDto } from '../dtos/payment.dto'
-import { httException } from '@exceptions'
+import { HttpException } from '@exceptions'
 
 export class PaymentService {
   private userRepo = userModel
@@ -35,7 +35,7 @@ export class PaymentService {
   public async increase(paymentData: CreatePaymentDto) {
     const { user, amount } = paymentData
     const User = await this.userRepo.findById(user)
-    if (!User) throw new httException(400, 'user not found')
+    if (!User) throw new HttpException(400, 'user not found')
 
     const updatedUser = await this.userRepo.findByIdAndUpdate(
       user,
@@ -62,7 +62,7 @@ export class PaymentService {
   public async dicrease(paymentData: CreatePaymentDto) {
     const { user, amount } = paymentData
     const User = await this.userRepo.findById(user)
-    if (!User) throw new httException(400, 'user not found')
+    if (!User) throw new HttpException(400, 'user not found')
 
     const updatedUser = await this.userRepo.findByIdAndUpdate(
       user,

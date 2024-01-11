@@ -1,5 +1,5 @@
 import { CreateFood, GetFoods, UpdateFoodDto } from '../dtos/food.dto'
-import { httException } from '@exceptions'
+import { HttpException } from '@exceptions'
 import { IFood } from '../interfaces/food.interface'
 import { foodModel, productModel, orgModel } from '@models'
 import { ProductService, ProductLogService } from '@services'
@@ -100,7 +100,7 @@ export class FoodService {
       .populate('products.product')
       .exec()
 
-    if (!Food) throw new httException(400, 'not found food')
+    if (!Food) throw new HttpException(400, 'not found food')
 
     const products = Food.products
 
@@ -126,7 +126,7 @@ export class FoodService {
       const Product = await this.products.findById(product)
 
       if (!Product)
-        throw new httException(400, `Product with ID ${product} not found`)
+        throw new HttpException(400, `Product with ID ${product} not found`)
 
       productObjects.push({ product: Product['_id'], amount: amount })
     }
@@ -154,7 +154,7 @@ export class FoodService {
   public async getById(id: string) {
     const food = await this.foods.findById(id).exec()
 
-    if (!food) throw new httException(400, `${id} id  food not found`)
+    if (!food) throw new HttpException(400, `${id} id  food not found`)
 
     return food
   }
@@ -164,11 +164,11 @@ export class FoodService {
 
     const isExist = await this.foods.findById(food)
 
-    if (!isExist) throw new httException(400, 'food not found')
+    if (!isExist) throw new HttpException(400, 'food not found')
 
     const urlPattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i
     if (!urlPattern.test(image))
-      throw new httException(400, 'image should be link')
+      throw new HttpException(400, 'image should be link')
 
     const updatedFood = await this.foods.findByIdAndUpdate(
       food,
@@ -178,7 +178,7 @@ export class FoodService {
       { new: true },
     )
 
-    if (!updatedFood) throw new httException(500, 'something went wrong')
+    if (!updatedFood) throw new HttpException(500, 'something went wrong')
 
     return {
       _id: updatedFood['_id'],
@@ -192,7 +192,7 @@ export class FoodService {
     const { id, status } = payload
     const food = await this.foods.findById(id)
 
-    if (!food) throw new httException(400, 'not found food')
+    if (!food) throw new HttpException(400, 'not found food')
 
     const updatedFood = await this.foods.findByIdAndUpdate(
       id,
@@ -220,14 +220,14 @@ export class FoodService {
 
     if (updateData.org) {
       const isExist = await this.org.findById(org)
-      if (!isExist) throw new httException(400, 'org not found')
+      if (!isExist) throw new HttpException(400, 'org not found')
     }
 
     const updatedFood = await this.foods
       .findByIdAndUpdate(food, updateData, { new: true })
       .exec()
 
-    if (!updatedFood) throw new httException(500, 'something went wrong')
+    if (!updatedFood) throw new HttpException(500, 'something went wrong')
 
     // delete updatedFood.products
 
@@ -239,17 +239,17 @@ export class FoodService {
 
     const Food = await this.foods.findById(food)
 
-    if (!Food) throw new httException(400, 'food not found')
+    if (!Food) throw new HttpException(400, 'food not found')
 
     for (let i = 0; i < products.length; i++) {
       const productWithAmount = products[i]
 
       const Product = await this.products.findById(productWithAmount.product)
-      if (!Product) throw new httException(400, 'product not found')
+      if (!Product) throw new HttpException(400, 'product not found')
       if (productWithAmount.amount == 0) {
       } else if (productWithAmount.amount > 0) {
       } else {
-        throw new httException(400, 'amount is not valid')
+        throw new HttpException(400, 'amount is not valid')
       }
     }
   }
@@ -264,7 +264,7 @@ export class FoodService {
       (item) => item.product == product.id,
     )
 
-    if (!isProductInArray) throw new httException(400, 'product not found')
+    if (!isProductInArray) throw new HttpException(400, 'product not found')
 
     const updatedFood = await this.foods.findByIdAndUpdate(
       food,
@@ -284,7 +284,7 @@ export class FoodService {
 
   public async getFoodById(id: string): Promise<IFood> {
     const Food = await this.foods.findById(id)
-    if (!Food) throw new httException(400, 'food not found')
+    if (!Food) throw new HttpException(400, 'food not found')
     return Food
   }
 }

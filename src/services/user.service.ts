@@ -1,6 +1,6 @@
 import { userModel, orgModel } from '@models'
 import { formatPhoneNumber } from '@utils'
-import { httException } from '@exceptions'
+import { HttpException } from '@exceptions'
 import { botService } from '@bot'
 import {
   ChangeOrg,
@@ -17,7 +17,7 @@ export class UserService {
   private users = userModel
   private orgs = orgModel
 
-  public async isExist(telegramID: number) {
+  public async isExist(telegramID: number):Promise<any> {
     const isExist = await this.users
       .findOne({
         telegram_id: telegramID,
@@ -161,7 +161,7 @@ export class UserService {
   public async editUser(payload: EditUserDto) {
     const { id, first_name, last_name, org } = payload
     const User = await this.users.findById(id)
-    if (!User) throw new httException(400, 'user not found')
+    if (!User) throw new HttpException(400, 'user not found')
     const updateData: {
       org?: string
       first_name?: string
@@ -170,7 +170,7 @@ export class UserService {
 
     if (org) {
       const Org = await this.orgs.findById(org)
-      if (!Org) throw new httException(400, 'org not found')
+      if (!Org) throw new HttpException(400, 'org not found')
       updateData.org = payload.org
     }
 
@@ -207,7 +207,7 @@ export class UserService {
       }
     } else {
       const Org = await this.orgs.findById(org)
-      if (Org) throw new httException(400, 'org not found')
+      if (Org) throw new HttpException(400, 'org not found')
       const users = await this.users.find({
         is_active: true,
         is_verified: true,
@@ -227,7 +227,7 @@ export class UserService {
     const { user, type } = userData
     const isExist = await this.users.findById(user)
 
-    if (!isExist) throw new httException(400, 'user not exist')
+    if (!isExist) throw new HttpException(400, 'user not exist')
     if (type == 'verify') {
       return await this.users.findOneAndUpdate(
         {
@@ -249,9 +249,9 @@ export class UserService {
     const Org = await this.orgs.findById(org)
     const User = await this.users.findById(user)
 
-    if (!User) throw new httException(400, 'user not found')
+    if (!User) throw new HttpException(400, 'user not found')
 
-    if (!Org) throw new httException(400, 'org not found')
+    if (!Org) throw new HttpException(400, 'org not found')
 
     const updatedUser = await this.users.findByIdAndUpdate(
       user,
@@ -269,7 +269,7 @@ export class UserService {
 
     const User = await this.users.findById(user)
 
-    if (!User) throw new httException(400, 'user not found')
+    if (!User) throw new HttpException(400, 'user not found')
 
     if (type == 'increase') {
       const updateduser = await this.users.findByIdAndUpdate(
@@ -281,7 +281,7 @@ export class UserService {
       )
       return updateduser
     } else if (type == 'decrease') {
-      if (User.balance < amount) throw new httException(200, 'you cant')
+      if (User.balance < amount) throw new HttpException(200, 'you cant')
       const updateduser = await this.users.findByIdAndUpdate(
         user,
         {
@@ -303,9 +303,9 @@ export class UserService {
 
     const User = await this.users.findById(user)
 
-    if (!User) throw new httException(200, 'user not found')
+    if (!User) throw new HttpException(200, 'user not found')
     if (!Object.values(UserRole).includes(role)) {
-      throw new httException(200, 'Invalid role')
+      throw new HttpException(200, 'Invalid role')
     }
 
     if (User.roles.includes(role)) {
@@ -324,11 +324,11 @@ export class UserService {
     const User = await this.users.findById(user)
 
     if (!User) {
-      throw new httException(200, 'User not found')
+      throw new HttpException(200, 'User not found')
     }
 
     if (!Object.values(UserRole).includes(role)) {
-      throw new httException(200, 'Invalid role')
+      throw new HttpException(200, 'Invalid role')
     }
 
     if (!User.roles.includes(role)) {
@@ -372,7 +372,7 @@ export class UserService {
     const re = new RegExp(data, 'i')
     console.log(re, data)
     if (data === undefined && data === '')
-      throw new httException(200, 'search word is empty')
+      throw new HttpException(200, 'search word is empty')
 
     const users = await this.users
       .find({
@@ -390,7 +390,7 @@ export class UserService {
 
   public async getTelegramIDOfClients(org: string) {
     const Org = await this.orgs.findById(org)
-    if (!Org) throw new httException(400, 'org not found')
+    if (!Org) throw new HttpException(400, 'org not found')
     const clients = await this.users
       .find({
         org: org,
@@ -406,6 +406,6 @@ export class UserService {
     const { user } = payload
     const User = await this.users.findById(user)
 
-    if (!User) throw new httException(200, 'user not found')
+    if (!User) throw new HttpException(200, 'user not found')
   }
 }

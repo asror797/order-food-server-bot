@@ -1,6 +1,6 @@
 import { lunchBaseModel, lunchModel, orgModel, productModel } from '@models'
 import { CreateLunch, LunchUpdateDto, PushProductDto } from '../dtos/lunch.dto'
-import { httException } from '@exceptions'
+import { HttpException } from '@exceptions'
 
 export class LunchService {
   public lunches = lunchModel
@@ -68,7 +68,7 @@ export class LunchService {
 
   public async deleteLunch(id: string) {
     const Lunch = await this.lunches.findById(id)
-    if (!Lunch) throw new httException(400, 'not found lunch')
+    if (!Lunch) throw new HttpException(400, 'not found lunch')
     const deletedLunch = await this.lunches
       .deleteOne(
         {
@@ -83,7 +83,7 @@ export class LunchService {
 
   public async createLunch(payload: CreateLunch) {
     const Base = await this.bases.findById(payload.base)
-    if (!Base) throw new httException(400, 'lunch base not found')
+    if (!Base) throw new HttpException(400, 'lunch base not found')
 
     console.log(payload)
 
@@ -110,17 +110,17 @@ export class LunchService {
     const updateObj: any = {}
     const Lunch = await this.lunches.findById(payload.id)
 
-    if (!Lunch) throw new httException(400, 'lunch not found')
+    if (!Lunch) throw new HttpException(400, 'lunch not found')
 
     if (payload.org) {
       const Org = await this.orgs.findById(payload.org)
-      if (!Org) throw new httException(400, 'org not found')
+      if (!Org) throw new HttpException(400, 'org not found')
       updateObj.org = payload.org
     }
 
     if (payload.base) {
       const Base = await this.bases.findById(payload.base)
-      if (!Base) throw new httException(400, 'base not found')
+      if (!Base) throw new HttpException(400, 'base not found')
       updateObj.base = payload.base
     }
     if (payload.cost) {
@@ -153,24 +153,24 @@ export class LunchService {
 
     const Lunch = await this.lunches.findById(lunch)
 
-    if (!Lunch) throw new httException(400, 'lunch not found')
+    if (!Lunch) throw new HttpException(400, 'lunch not found')
 
     for (let i = 0; i < lunchData.products.length; i++) {
       const product = lunchData.products[i]
       const Product = await this.products.findById(product.product)
-      if (!Product) throw new httException(400, 'Product not found')
+      if (!Product) throw new HttpException(400, 'Product not found')
 
       if (Lunch.products.length > 0) {
         for (let j = 0; j < Lunch.products.length; j++) {
           const jproduct = Lunch.products[j]
           console.log('j', jproduct)
           if (product.product == jproduct.product)
-            throw new httException(
+            throw new HttpException(
               400,
               `${jproduct.product} product already exist`,
             )
           if (product.amount < 0)
-            throw new httException(400, 'amount should be higher than 0')
+            throw new HttpException(400, 'amount should be higher than 0')
           addProducts.push({
             product: product.product,
             amount: product.amount,
@@ -178,7 +178,7 @@ export class LunchService {
         }
       } else {
         if (product.amount <= 0)
-          throw new httException(400, 'amount should be higher than 0')
+          throw new HttpException(400, 'amount should be higher than 0')
         let isExist: boolean = false
         addProducts.map((e) => {
           if (e.product == product.product) {
@@ -218,7 +218,7 @@ export class LunchService {
     const updatingProducts: IProducts[] = []
 
     const Lunch = await this.lunches.findById(lunch)
-    if (!Lunch) throw new httException(400, 'not found lunch')
+    if (!Lunch) throw new HttpException(400, 'not found lunch')
 
     for (let i = 0; i < payload.products.length; i++) {
       const uProduct = payload.products[i]
@@ -227,7 +227,7 @@ export class LunchService {
 
         if (uProduct.product == eProduct.product) {
           if (uProduct.amount < 0 || uProduct.amount == eProduct.amount)
-            throw new httException(400, 'amount should be valid')
+            throw new HttpException(400, 'amount should be valid')
           updatingProducts.push({
             product: uProduct.product,
             amount: uProduct.amount,
@@ -297,17 +297,17 @@ export class LunchService {
     const updateObj: any = {}
     const Lunch = await this.lunches.findById(payload.id)
 
-    if (!Lunch) throw new httException(400, 'lunch not found')
+    if (!Lunch) throw new HttpException(400, 'lunch not found')
 
     if (payload.org) {
       const Org = await this.orgs.findById(payload.org)
-      if (!Org) throw new httException(400, 'org not found')
+      if (!Org) throw new HttpException(400, 'org not found')
       updateObj.org = payload.org
     }
 
     if (payload.base) {
       const Base = await this.bases.findById(payload.base)
-      if (!Base) throw new httException(400, 'base not found')
+      if (!Base) throw new HttpException(400, 'base not found')
       updateObj.base = payload.base
     }
     if (payload.cost) {
@@ -346,7 +346,7 @@ export class LunchService {
     const updateProducts: IProducts[] = []
     const Lunch = await this.lunches.findById(lunch)
     const response: any = []
-    if (!Lunch) throw new httException(400, 'lunch not found')
+    if (!Lunch) throw new HttpException(400, 'lunch not found')
     for (let j = 0; j < payload.products.length; j++) {
       const uProduct = payload.products[j]
       for (let i = 0; i < Lunch.products.length; i++) {
@@ -358,7 +358,7 @@ export class LunchService {
               amount: uProduct.amount,
             })
           } else {
-            throw new httException(
+            throw new HttpException(
               400,
               `${uProduct.product} product amount should be higher than 0`,
             )
@@ -390,7 +390,7 @@ export class LunchService {
     const { lunch, product } = payload
 
     const Lunch = await this.lunches.findById(lunch)
-    if (!Lunch) throw new httException(400, 'not found lunch')
+    if (!Lunch) throw new HttpException(400, 'not found lunch')
 
     const updatedOrder = await this.lunches.findByIdAndUpdate(
       lunch,

@@ -1,6 +1,6 @@
 import type { CreateProductLog } from '../dtos/product-log.dto'
 import { productModel, productLogModel } from '@models'
-import { httException } from '@exceptions'
+import { HttpException } from '@exceptions'
 
 export class ProductLogService {
   public productLog = productLogModel
@@ -34,7 +34,7 @@ export class ProductLogService {
 
     const isExist = await this.products.findById(product)
 
-    if (!isExist) throw new httException(400, 'product not found')
+    if (!isExist) throw new HttpException(400, 'product not found')
 
     const updateProductAmount = await this.products.findOneAndUpdate(
       {
@@ -64,7 +64,7 @@ export class ProductLogService {
 
     const isExist = await this.products.findById(product)
 
-    if (!isExist) throw new httException(400, 'product not found')
+    if (!isExist) throw new HttpException(400, 'product not found')
 
     const newLog = await this.productLog.create({
       amount,

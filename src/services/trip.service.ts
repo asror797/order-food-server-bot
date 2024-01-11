@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import { lunchModel, orgModel, userModel, tripModel } from '@models'
 // import { botService } from '@bot'
-import { httException } from '@exceptions'
+import { HttpException } from '@exceptions'
 import { CreateTrip } from '../dtos/trip.dto'
 import { PaymentService } from '@services'
 
@@ -186,7 +186,7 @@ export class TripService {
 
     const Org = await this.org.findById(org)
 
-    if (!Org) throw new httException(400, 'org not foud')
+    if (!Org) throw new HttpException(400, 'org not foud')
 
     const latestData: any = await this.trips
       .findOne()
@@ -240,7 +240,7 @@ export class TripService {
 
     const Org = await this.org.findById(org)
 
-    if (!Org) throw new httException(400, 'org not foud')
+    if (!Org) throw new HttpException(400, 'org not foud')
 
     console.log(Org)
     const latestData: any = await this.trips
@@ -296,13 +296,13 @@ export class TripService {
       })
       .populate('org')
 
-    if (!user) throw new httException(400, 'user not found')
+    if (!user) throw new HttpException(400, 'user not found')
     const isExist = await this.trips.findById(trip)
-    if (!isExist) throw new httException(400, 'Trip not found')
+    if (!isExist) throw new HttpException(400, 'Trip not found')
     const diffrence = (Math.floor(Date.now() / 1000) - isExist.sent_at) / 60
     const Lunch = await this.lunch.findById(lunch)
 
-    if (!Lunch) throw new httException(400, 'not found lunch')
+    if (!Lunch) throw new HttpException(400, 'not found lunch')
 
     if (diffrence < (user.org?.trip_timeout || 0)) {
       const updatedTrip: any = await this.trips
@@ -316,7 +316,7 @@ export class TripService {
         .populate('meal')
         .exec()
       console.log(updatedTrip)
-      if (!updatedTrip) throw new httException(400, 'something went wrong')
+      if (!updatedTrip) throw new HttpException(400, 'something went wrong')
       const payment = await this.paymentService.dicrease({
         user: user['_id'],
         amount: Lunch.cost,
@@ -351,9 +351,9 @@ export class TripService {
       .populate('org')
     console.log(user)
 
-    if (!user) throw new httException(400, 'user not found')
+    if (!user) throw new HttpException(400, 'user not found')
     const isExist = await this.trips.findById(trip)
-    if (!isExist) throw new httException(400, 'Trip not found')
+    if (!isExist) throw new HttpException(400, 'Trip not found')
     const diffrence = (Math.floor(Date.now() / 1000) - isExist.sent_at) / 60
 
     console.log('Diffrence:', diffrence)
@@ -370,7 +370,7 @@ export class TripService {
         .populate('meal')
         .exec()
       console.log(updatedTrip)
-      if (!updatedTrip) throw new httException(400, 'something went wrong')
+      if (!updatedTrip) throw new HttpException(400, 'something went wrong')
       const payment = await this.paymentService.dicrease({
         user: user['_id'],
         amount: updatedTrip.meal.cost,
@@ -474,7 +474,7 @@ export class TripService {
       .populate('org')
     console.log(user)
 
-    if (!user) throw new httException(200, 'user not found')
+    if (!user) throw new HttpException(200, 'user not found')
     const Trip = await this.trips.findByIdAndUpdate(
       trip,
       { $pull: { agree_users: user['_id'] } },
@@ -489,9 +489,9 @@ export class TripService {
         telegram_id: Number(client),
       })
       .populate('org')
-    if (!user) throw new httException(400, 'user not found')
+    if (!user) throw new HttpException(400, 'user not found')
     const isExist = await this.trips.findById(trip)
-    if (!isExist) throw new httException(400, 'Trip not found')
+    if (!isExist) throw new HttpException(400, 'Trip not found')
     const updatedTrip = await this.trips.findByIdAndUpdate(
       trip,
       {
@@ -507,7 +507,7 @@ export class TripService {
   public async statusChecker(trip: string, client: string) {
     console.log(client)
     const isExist = await this.trips.findOne().sort('-createdAt')
-    if (!isExist) throw new httException(400, 'not found trip')
+    if (!isExist) throw new HttpException(400, 'not found trip')
     console.log(isExist)
     // const timenow = 78945612
 

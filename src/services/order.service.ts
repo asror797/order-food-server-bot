@@ -19,7 +19,7 @@ import {
   UpdateOrder,
 } from '../dtos/order.dto'
 import { foodModel, orderModel, userModel } from '@models'
-import { httException } from '@exceptions'
+import { HttpException } from '@exceptions'
 import { PaymentService, FoodService } from '@services'
 import { uz } from 'date-fns/locale'
 
@@ -103,7 +103,7 @@ export class OrderService {
 
     const user = await this.users.findById(id)
 
-    if (!user) throw new httException(400, 'user not found')
+    if (!user) throw new HttpException(400, 'user not found')
 
     const orders = await this.orders
       .find({
@@ -158,7 +158,7 @@ export class OrderService {
 
     const Client = await this.users.findById(client)
 
-    if (!Client) throw new httException(400, 'client not found')
+    if (!Client) throw new HttpException(400, 'client not found')
 
     const foodObjects = []
     let total_cost: number = 0
@@ -166,7 +166,7 @@ export class OrderService {
     for (const { food, amount } of foods) {
       const isExist = await this.foods.findById(food)
 
-      if (!isExist) throw new httException(400, `This food ${food} not found`)
+      if (!isExist) throw new HttpException(400, `This food ${food} not found`)
 
       foodObjects.push({ food: isExist['_id'], amount: amount })
       total_cost = total_cost + isExist.cost * amount
@@ -191,12 +191,12 @@ export class OrderService {
 
     const Order = await this.orders.findById(order)
 
-    if (!Order) throw new httException(400, 'order not found')
+    if (!Order) throw new HttpException(400, 'order not found')
 
     const User = await this.users.findById(Order.client)
-    if (!User) throw new httException(400, 'client id not found')
+    if (!User) throw new HttpException(400, 'client id not found')
     if (User.balance < Order.total_cost)
-      throw new httException(400, 'balansda pul mavjud emas')
+      throw new HttpException(400, 'balansda pul mavjud emas')
     const updatedOrder = await this.orders.findByIdAndUpdate(
       order,
       {
@@ -205,14 +205,14 @@ export class OrderService {
       { new: true },
     )
 
-    if (!updatedOrder) throw new httException(400, 'something went wrong')
+    if (!updatedOrder) throw new HttpException(400, 'something went wrong')
 
     const updatedUser = await this.paymentService.dicrease({
       amount: updatedOrder?.total_cost,
       user: updatedOrder?.client,
     })
 
-    if (!updatedUser) throw new httException(400, 'something wnet wrong')
+    if (!updatedUser) throw new HttpException(400, 'something wnet wrong')
 
     const populatedOrder = (await this.orders
       .findById(updatedOrder['_id'])
@@ -236,7 +236,7 @@ export class OrderService {
 
     const Order = await this.orders.findById(order)
 
-    if (!Order) throw new httException(400, 'order not found')
+    if (!Order) throw new HttpException(400, 'order not found')
 
     const updatedOrder = await this.orders.findByIdAndUpdate(
       order,
@@ -246,7 +246,7 @@ export class OrderService {
       { new: true },
     )
 
-    if (!updatedOrder) throw new httException(200, 'not found')
+    if (!updatedOrder) throw new HttpException(200, 'not found')
     const populatedOrder = await this.orders
       .findById(updatedOrder['_id'])
       .populate('client', 'first_name last_name telegram_id phone_number')
@@ -284,7 +284,7 @@ export class OrderService {
       .populate('org', 'name_org')
       .select('first_name last_name phone_number')
       .exec()
-    if (!User) throw new httException(400, 'user not found')
+    if (!User) throw new HttpException(400, 'user not found')
 
     const response: any = []
 
@@ -387,7 +387,7 @@ export class OrderService {
       .populate('org', 'name_org')
       .select('first_name last_name phone_number')
       .exec()
-    if (!User) throw new httException(400, 'user not found')
+    if (!User) throw new HttpException(400, 'user not found')
 
     const response: any = []
 
@@ -489,7 +489,7 @@ export class OrderService {
       user: user,
     })
 
-    if (!user) throw new httException(400, 'user not found')
+    if (!user) throw new HttpException(400, 'user not found')
     for (let index = 0; index < orders.length; index++) {
       // const element = orders[index]
     }

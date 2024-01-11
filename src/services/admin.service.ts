@@ -1,5 +1,5 @@
 import { AdminLoginDto, CreateAdmin } from '../dtos/admin.dto'
-import { httException } from '../exceptions/httpException'
+import { HttpException } from '../exceptions/httpException'
 import { adminModel } from '@models'
 import jwt from 'jsonwebtoken'
 
@@ -26,11 +26,11 @@ export class AdminService {
       admin = admin[0]
     }
 
-    if (!admin) throw new httException(400, 'user not found')
+    if (!admin) throw new HttpException(400, 'user not found')
 
     console.log(admin)
     if (admin.password != password) {
-      throw new httException(400, 'password or phone_number wrong')
+      throw new HttpException(400, 'password or phone_number wrong')
     }
     return {
       token: jwt.sign(JSON.stringify(admin), 'secret_key'),
@@ -46,7 +46,7 @@ export class AdminService {
 
     const Admin = await this.admins.findById(admin)
 
-    if (!Admin) throw new httException(400, 'admin is not defined')
+    if (!Admin) throw new HttpException(400, 'admin is not defined')
 
     interface IUpdate {
       fullname?: string
@@ -61,7 +61,7 @@ export class AdminService {
 
     if (newPassword) {
       if (Admin.password !== password)
-        throw new httException(400, 'old password is wrong')
+        throw new HttpException(400, 'old password is wrong')
       updatesData.password = newPassword
     }
 
