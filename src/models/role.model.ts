@@ -1,5 +1,5 @@
 import { IRole } from './../interfaces';
-import { Schema, model } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 
 const roleSchema: Schema =  new Schema(
   {
@@ -11,7 +11,8 @@ const roleSchema: Schema =  new Schema(
       type: [
         {
           uri: {
-            type: String
+            type: String,
+            required: true
           },
           permission: {
             type: Boolean,
@@ -20,7 +21,10 @@ const roleSchema: Schema =  new Schema(
           actions: {
             type: [
               {
-                uri: String,
+                uri: {
+                  type: String,
+                  required: true
+                },
                 permission: {
                   type: Boolean,
                   default: false
@@ -33,6 +37,10 @@ const roleSchema: Schema =  new Schema(
       ],
       default: []
     }
+  },
+  {
+    timestamps: true,
+    versionKey: false
   }
 )
 

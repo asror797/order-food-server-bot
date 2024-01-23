@@ -1,6 +1,6 @@
 import { NextFunction, Response } from 'express'
 import { RequestWithUser } from '../interfaces/auth.interface'
-import { httException } from '../exceptions/httpException'
+import { HttpException } from '@exceptions'
 import { verify } from 'jsonwebtoken'
 
 const authMiddleware = async (
@@ -12,7 +12,7 @@ const authMiddleware = async (
     const Authorization =
       req.header('Authorization')?.split('Bearer ')[1] || null
 
-    if (!Authorization) throw new httException(401, 'unauthorized')
+    if (!Authorization) throw new HttpException(401, 'unauthorized')
     const url = req.url
 
     if (url == '/docs' || url == '/auth/login') {
@@ -25,7 +25,7 @@ const authMiddleware = async (
           req.user = verificationResponse
           next()
         } else {
-          next(new httException(401, 'Wrong authenticaton token'))
+          next(new HttpException(401, 'Wrong authenticaton token'))
         }
       }
     }

@@ -9,7 +9,7 @@ import {
 } from '../dtos/user.dto'
 import { ParsedQs } from 'qs'
 import { PaymentService } from '@services'
-import { httException } from '@exceptions'
+import { HttpException } from '@exceptions'
 
 class UserController {
   public userService = new UserService()
@@ -203,7 +203,7 @@ class UserController {
           role,
         })
 
-        if (!updatedUser) throw new httException(500, 'somethign went wrong')
+        if (!updatedUser) throw new HttpException(500, 'somethign went wrong')
         res.json({
           _id: updatedUser['_id'],
           first_name: updatedUser.first_name,
@@ -216,7 +216,7 @@ class UserController {
           role,
         })
 
-        if (!updatedUser) throw new httException(500, 'somethign went wrong')
+        if (!updatedUser) throw new HttpException(500, 'somethign went wrong')
         res.json({
           _id: updatedUser['_id'],
           first_name: updatedUser.first_name,
@@ -224,7 +224,7 @@ class UserController {
           roles: updatedUser.roles,
         })
       } else {
-        throw new httException(400, 'invalid request')
+        throw new HttpException(400, 'invalid request')
       }
     } catch (error) {
       next(error)

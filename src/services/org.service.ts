@@ -1,6 +1,5 @@
 import { Update, UpdateGroupDto } from '../dtos/org.dto'
 import { HttpException } from '../exceptions/httpException'
-// import { IOrg } from '../interfaces/org.interface'
 import { orgModel } from '@models'
 
 export class OrgService {

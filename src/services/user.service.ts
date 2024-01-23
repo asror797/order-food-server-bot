@@ -18,15 +18,15 @@ export class UserService {
   private orgs = orgModel
 
   public async isExist(telegramID: number):Promise<any> {
-    const isExist = await this.users
+    const user = await this.users
       .findOne({
         telegram_id: telegramID,
       })
       .populate('org', 'name_org group_a_id group_b_id')
 
-    if (isExist) {
+    if (user) {
       return {
-        data: isExist,
+        data: user,
         message: 'user exist',
       }
     } else {
@@ -49,9 +49,9 @@ export class UserService {
   public async userRetrieveAll(payload: SearchPagination) {
     const { search, page, size } = payload
     if (!search || search.trim() === '') {
-      // If data is null, empty, or whitespace, return all users (no search filter)
       const users = await this.users
         .find()
+        .sort({ createdAt: -1 })
         .populate('org', 'name_org')
         .skip((page - 1) * size)
         .limit(size)

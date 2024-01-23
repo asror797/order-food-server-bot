@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import ProductService from '../services/product.service'
+import { ProductService } from '@services'
 import { ParsedQs } from 'qs'
 import {
   CreateProduct,
@@ -8,7 +8,7 @@ import {
 } from '../dtos/product.dto'
 import { RequestWithUser } from '../interfaces/auth.interface'
 import ProductLogService from '../services/product-log.service'
-import { httException } from '../exceptions/httpException'
+import { HttpException } from '@exceptions'
 
 class ProductController {
   public productService = new ProductService()
@@ -70,7 +70,7 @@ class ProductController {
           cost,
         })
 
-        if (!editedProduct) throw new httException(500, 'somethign went wrong')
+        if (!editedProduct) throw new HttpException(500, 'somethign went wrong')
 
         // const mediumPrice = Math.floor((prod?.cost * +product.amount + data.price * data.amount) / (+product.amount + data.amount) );
 
@@ -90,7 +90,7 @@ class ProductController {
           cost,
         })
 
-        if (!editedProduct) throw new httException(500, 'somethign went wrong')
+        if (!editedProduct) throw new HttpException(500, 'somethign went wrong')
 
         await this.productLogService.logCreateForStore({
           product,
@@ -115,7 +115,7 @@ class ProductController {
     try {
       const product = req.params.product
 
-      if (!product) throw new httException(400, 'product id required')
+      if (!product) throw new HttpException(400, 'product id required')
       const { name, unit } = req.body
 
       res.json(
@@ -134,7 +134,7 @@ class ProductController {
   /*  public fullUpdateProduct = async(req:Request,res:Response,:next:NextFunction) => {
     try {
       const lunchId = req.params.lunch 
-      if(!lunchId) throw new httException(400,'bad request')
+      if(!lunchId) throw new HttpException(400,'bad request')
       const { name, cost, products, percent_cook } = req.body
       res.json(await this.productService.updateProduct({}))
     } catch (error) {

@@ -13,25 +13,25 @@ export interface IModule extends Document {
 
 export interface IRole extends Document {
   title: string
-  module: IModule[]
+  modules: IModule[]
 }
 
 
-/*  */
-export interface IAction {
+/* Soft interfaces  */
+export interface Action {
   uri: string
   permission: boolean
 }
 
-export interface IModule {
+export interface Module {
   uri: string
   permission: boolean
-  actions: IAction[]
+  actions: Action[]
 }
 
-export interface IRole {
+export interface Role {
   title: string
-  module: IModule[]
+  modules: Module[]
 }
 
 export interface RoleRetrieveAllRequest {
@@ -39,6 +39,28 @@ export interface RoleRetrieveAllRequest {
   pageNumber: number
 }
 
-export interface RoleRetrieveAllResponse {
+export interface RoleList extends IRole {
+  _id: string
+}
 
+export interface RoleRetrieveAllResponse {
+  count: number
+  pageSize: number
+  pageNumber: number
+  roleList: RoleList[]
+}
+
+export interface RoleRetrieveRequest {
+  id: string
+}
+
+export interface RoleRetrieveResponse {
+  _id: string
+  title: string
+  modules: Module[]
+}
+
+export interface RoleCreateRequest {
+  title: string
+  modules: Module[]
 }

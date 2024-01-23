@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { FoodService } from '@services'
 import { ParsedQs } from 'qs'
 import { CreateFood, UpdateFoodDto } from '../dtos/food.dto'
-import { httException } from '../exceptions/httpException'
+import { HttpException } from '@exceptions'
 
 class FoodController {
   public foodService = new FoodService()
@@ -62,7 +62,7 @@ class FoodController {
     try {
       const status = req.body.status
       const id = req.params.food as string
-      if (!id) throw new httException(400, 'food on params and is required')
+      if (!id) throw new HttpException(400, 'food on params and is required')
       res.json(
         await this.foodService.changeStatus({
           id,
@@ -81,7 +81,7 @@ class FoodController {
   ) => {
     try {
       const food = req.params.food as string
-      if (!food) throw new httException(400, 'id required')
+      if (!food) throw new HttpException(400, 'id required')
       const data: Omit<UpdateFoodDto, 'food'> = req.body
       res.json(
         await this.foodService.updateFood({

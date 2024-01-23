@@ -14,7 +14,7 @@ Content-Type: application/json
 
 
 ### Get
-GET http://localhost:3000/lunch-base/lunches/652ce6b5b390f9cabe89042c
+GET http://localhost:3000/org
 Content-Type: application/json
 
 ### update user
@@ -47,9 +47,17 @@ Content-Type: application/json
 
 
 ### GET Org
-GET http://localhost:9000/product 
+GET http://localhost:3000/order 
 Content-Type: application/json
 
+
+### Create role
+POST http://localhost:3000/role 
+Content-Type: application/json
+
+{
+  "title": "Super Admin"
+}
 
 ### POST
 POST http://localhost:9000/settings/otp-info
@@ -60,6 +68,7 @@ Content-Type: application/json
   "password":"gF5rDbmX8YLP7fcpU6RRZdDeSJzkq3feb8RAwEIV"
 }
 
+### Create New Org 
 
 
 ### Create Product
@@ -87,7 +96,7 @@ Content-Type: application/json
 
 
 ### get product
-GET http://localhost:3000/product 
+GET http://localhost:3000/food 
 Content-Type: application/json
 
 
@@ -105,20 +114,20 @@ Content-Type: application/json
 
 
 ### Create Food
-POST http://localhost:9000/food 
+POST http://localhost:3000/food 
 Content-Type: application/json 
 
 {
   "name":"Snackers",
-  "org":"650001df0394e11e1233e3cb",
+  "org":"6518026691f8ff02544c4b5e",
   "cost":9000,
   "products": [
     {
-      "product":"6500470eaf2c08b6c4628a2b",
+      "product":"65422d99e7c100119bbfe787",
       "amount":1
     }
   ],
-  "category":"snacks"
+  "category":"dessert"
 }
 
 
@@ -218,6 +227,10 @@ Content-Type: application/json
   "type": true
 }
 
+### Get Org
+GET http://localhost:3000/org
+Content-Type: application/json
+
 
 ### update org
 PATCH http://localhost:3000/org/6518026691f8ff02544c4b5e
@@ -225,8 +238,8 @@ Content-Type: application/json
 
 {
   "trip_timeout":60,
-  "group_a_id": -4011058879,
-  "group_b_id": -4089696767
+  "group_a_id": -1001998831420,
+  "group_b_id": -1001998831420
 }
 
 
@@ -307,3 +320,69 @@ Content-Type: application/json
   ]
 }
 
+
+
+
+###
+GET  http://localhost:3000/org  
+Content-Type: application/json
+
+
+###
+GET http://localhost:3000/admin  
+Content-Type: application/json
+
+
+### Update role 
+PATCH http://localhost:3000/admin/651bf0cc92da6212720332cc 
+Content-Type: application/json
+
+{
+  "role":"65af95cdb2ffd52e24aba049"
+}
+
+
+###
+POST http://localhost:3000/role 
+Content-Type: application/json 
+
+{
+  "title": "super admin"
+}
+
+###
+POST http://localhost:3000/admin/create
+Content-Type: application/json 
+
+{
+  "phoneNumber": "903339973",
+  "fullname": "No'monjon oka",
+  "password": "password123",
+  "orgId": "6518025d91f8ff02544c4b5a",
+  "roleId": "65af95cdb2ffd52e24aba049"
+}
+
+
+###
+GET http://localhost:3000/role 
+Content-Type: application/json
+
+
+### Add module
+POST http://localhost:3000/role/module 
+Content-Type: application/json 
+
+{
+  "uri":"product",
+  "module_uri":"dsdsd"
+}
+
+
+### Add action 
+POST http://localhost:3000/role/action 
+Content-Type: application/json
+
+{
+  "module_uri":"test",
+  "action_uri":"get-product"
+}

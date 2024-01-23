@@ -1,12 +1,6 @@
 import { Schema, model } from 'mongoose'
 import { IAdmin } from '../interfaces/admin.interface'
 
-export enum AdminRole {
-  SUPER_ADMIN = 'admin',
-  COOK = 'cook',
-  STOREKEEPER = 'storekeeper',
-}
-
 const adminSchema: Schema = new Schema(
   {
     fullname: {
@@ -23,13 +17,9 @@ const adminSchema: Schema = new Schema(
       required: true,
     },
     role: {
-      type: [
-        {
-          type: String,
-          enum: Object.values(AdminRole),
-        },
-      ],
-      default: [AdminRole.SUPER_ADMIN],
+      type: Schema.Types.ObjectId,
+      ref: 'Role',
+      required: true
     },
     phone_number: {
       type: String,

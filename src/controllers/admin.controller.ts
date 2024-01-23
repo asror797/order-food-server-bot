@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import AdminService from '../services/admin.service'
-import { httException } from '../exceptions/httpException'
+import { HttpException } from '@exceptions'
 
 class AdminController {
   public adminService = new AdminService()
@@ -31,6 +31,15 @@ class AdminController {
     }
   }
 
+  public create = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const newAdmin = await this.adminService.create(req.body)
+      res.json(newAdmin)
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public loginAdmin = async (
     req: Request,
     res: Response,
@@ -50,7 +59,7 @@ class AdminController {
   ) => {
     try {
       const admin = req.params.admin as string
-      if (!admin) throw new httException(400, 'admin is required')
+      if (!admin) throw new HttpException(400, 'admin is required')
       const { newPassword, password, fullname } = req.body
       res.json(
         await this.adminService.updateAdmin({
@@ -62,6 +71,18 @@ class AdminController {
       )
     } catch (error) {
       next(error)
+    }
+  }
+
+
+  public updateAdminRole = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const { role } = req.body
+      const id = req.params.id as string
+
+      res.json(await this.adminService.updateAdminRole({id, role}))
+    } catch (error) {
+      next(error)      
     }
   }
 }

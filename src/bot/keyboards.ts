@@ -102,9 +102,6 @@ interface CallBack {
   cost: number
 }
 
-// function isLastElement(array: string[], index: number) {
-//   return index === array.length - 1
-// }
 
 export function formatter(data: CallBack[]) {
   const keys: any = []

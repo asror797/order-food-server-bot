@@ -3,11 +3,11 @@ import cors from 'cors'
 import errorMiddleware from './middlewares/error.middleware'
 import { Routes } from './interfaces/route.interface'
 import { connect } from 'mongoose'
-import { dbConnection } from './database'
+import { dbConnection } from '@database'
 import { botService } from '@bot'
+import { autoCancelOrder } from '@utils'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
-// require('dotenv').config()
 
 class App {
   public app: express.Application
@@ -25,6 +25,7 @@ class App {
     this.initialieErrorHandling()
     this.initializeSwagger()
     this.initializeBot()
+    // this.autoCancel()
   }
 
   private async connectToDatabase() {
@@ -76,6 +77,10 @@ class App {
 
     const specs = swaggerJSDoc(options)
     this.app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs))
+  }
+
+  private async autoCancel() {
+    setInterval(autoCancelOrder,3 * 60 * 1000)
   }
 }
 

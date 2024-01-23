@@ -13,6 +13,7 @@ import {
   SettingsRoute,
   TripRoute,
   ProductRoute,
+  RoleRoute,
 } from '@routes'
 
 const app = new App([
@@ -29,6 +30,7 @@ const app = new App([
   new ProductLogRoute(),
   new PaymentRoute(),
   new LunchBaseRoute(),
+  new RoleRoute(),
 ])
 
 app.listen()

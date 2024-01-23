@@ -242,9 +242,10 @@ export class TripService {
 
     if (!Org) throw new HttpException(400, 'org not foud')
 
-    console.log(Org)
     const latestData: any = await this.trips
-      .findOne()
+      .findOne().where({
+        org: org
+      })
       .sort({ createdAt: -1 })
       .limit(1)
 

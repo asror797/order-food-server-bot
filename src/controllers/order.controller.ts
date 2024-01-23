@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import OrderService from '../services/order.service'
 import { ParsedQs } from 'qs'
 import { CreateOrderDto } from '../dtos/order.dto'
-import { httException } from '../exceptions/httpException'
+import { HttpException } from '@exceptions'
 
 class OrderController {
   public orderService = new OrderService()
@@ -41,7 +41,7 @@ class OrderController {
   ) => {
     try {
       const id = req.params.user as string
-      if (!id) throw new httException(400, 'user id required')
+      if (!id) throw new HttpException(400, 'user id required')
       const page = parseInt(req.query.page as string) || 1
       const size = parseInt(req.query.size as string) || 10
       res.json(await this.orderService.getByUser({ id, page, size }))
@@ -57,7 +57,7 @@ class OrderController {
   ) => {
     try {
       const user = req.params.user as string
-      if (!user) throw new httException(400, 'user id not found')
+      if (!user) throw new HttpException(400, 'user id not found')
       const type = (req.query.type as string) || 'day'
       res.json(
         await this.orderService.getTotalSpent({
@@ -78,7 +78,7 @@ class OrderController {
   ) => {
     try {
       const user = req.params.user as string
-      if (!user) throw new httException(400, 'user id not found')
+      if (!user) throw new HttpException(400, 'user id not found')
       const type = (req.query.type as string) || 'day'
       res.json(
         await this.orderService.getOldAnaltics({

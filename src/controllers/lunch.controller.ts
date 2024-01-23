@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { CreateLunch } from '../dtos/lunch.dto'
 import { LunchService } from '@services'
 import { ParsedQs } from 'qs'
-import { httException } from '@exceptions'
+import { HttpException } from '@exceptions'
 
 class LunchController {
   readonly lunchService = new LunchService()
@@ -111,11 +111,11 @@ class LunchController {
   ) => {
     try {
       const lunch = req.params.lunch as string
-      if (!lunch) throw new httException(400, 'lucnh id required')
+      if (!lunch) throw new HttpException(400, 'lucnh id required')
       const paylodBody = req.body
 
       if (!paylodBody.products) {
-        throw new httException(400, 'products required')
+        throw new HttpException(400, 'products required')
       }
       res.json(
         await this.lunchService.fullUpdateProduct({
@@ -129,14 +129,10 @@ class LunchController {
     }
   }
 
-  public updateLunch = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  public updateLunch = async(req: Request,res: Response,next: NextFunction)=>{
     try {
       const lunchId = req.params.lunch
-      if (!lunchId) throw new httException(400, 'not found lunch')
+      if (!lunchId) throw new HttpException(400, 'not found lunch')
       res.json(
         await this.lunchService.fullUpdateLunch({
           ...req.body,
@@ -174,7 +170,7 @@ class LunchController {
   ) => {
     try {
       const lunch_id = req.params.id
-      if (!lunch_id) throw new httException(400, 'lunch id required')
+      if (!lunch_id) throw new HttpException(400, 'lunch id required')
 
       res.json(await this.lunchService.deleteLunch(lunch_id))
     } catch (error) {

@@ -28,14 +28,9 @@ const userSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Org',
     },
-    roles: {
-      type: [
-        {
-          type: String,
-          enum: Object.values(UserRole),
-        },
-      ],
-      default: [UserRole.USER],
+    role: {
+      type: Schema.Types.ObjectId,
+      ref:'Role',
     },
     balance: {
       type: Number,
