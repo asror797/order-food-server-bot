@@ -17,5 +17,6 @@ export class AdminRoute {
     this.router.post(`${this.path}/login`, this.adminController.loginAdmin)
     this.router.patch(`${this.path}/:admin`, this.adminController.updateAdmin)
     this.router.patch(`${this.path}/:id`,this.adminController.updateAdminRole)
+    this.router.delete(`${this.path}/:id`,this.adminController.deleteAdmin)
   }
 }

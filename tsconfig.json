@@ -16,6 +16,7 @@
     "paths": {
       "@services": ["./services"],
       "@bot": ["./bot"],
+      "@config": ["./config"],
       "@models": ["./models"],
       "@utils": ["./utils"],
       "@exceptions": ["./exceptions"],

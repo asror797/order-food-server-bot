@@ -322,9 +322,17 @@ Content-Type: application/json
 
 
 
+### Delete module
+DELETE http://localhost:3000/role/module 
+Content-Type: application/json 
+
+{
+  "module_uri":""
+}
+
 
 ###
-GET  http://localhost:3000/org  
+GET  http://localhost:3000/admin
 Content-Type: application/json
 
 
@@ -347,7 +355,7 @@ POST http://localhost:3000/role
 Content-Type: application/json 
 
 {
-  "title": "super admin"
+  "title": "cook"
 }
 
 ###
@@ -359,12 +367,17 @@ Content-Type: application/json
   "fullname": "No'monjon oka",
   "password": "password123",
   "orgId": "6518025d91f8ff02544c4b5a",
-  "roleId": "65af95cdb2ffd52e24aba049"
+  "roleId": "65afe1b7bf3229a243f4368d"
 }
 
 
 ###
-GET http://localhost:3000/role 
+GET http://localhost:3000/role   
+Content-Type: application/json
+
+
+###
+DELETE http://localhost:3000/role/65afe213bf3229a243f436b8
 Content-Type: application/json
 
 
@@ -374,7 +387,7 @@ Content-Type: application/json
 
 {
   "uri":"product",
-  "module_uri":"dsdsd"
+  "module_uri":"product"
 }
 
 
@@ -383,6 +396,10 @@ POST http://localhost:3000/role/action
 Content-Type: application/json
 
 {
-  "module_uri":"test",
-  "action_uri":"get-product"
+  "module_uri":"product",
+  "action_uri":"create-product"
 }
+
+
+###
+DELETE http://localhost:3000/admin/:id

@@ -113,6 +113,11 @@ export class AdminService {
 
     return updatedAdmin;
   }
+
+  public async deleteAdmin(payload:{ id: string }):Promise<any> {
+    const deleteAdmin = await this.admins.findByIdAndDelete(payload.id)
+    return deleteAdmin
+  }
 }
 
 export default AdminService

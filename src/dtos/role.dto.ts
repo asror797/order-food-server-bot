@@ -36,7 +36,7 @@ export class RoleCreateDto {
 export class AddModuleDto {
   @IsString()
   @IsNotEmpty()
-  uri: string
+  module_uri: string
 }
 
 export class UpdateModuleDto {

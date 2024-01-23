@@ -13,6 +13,11 @@ export class AuthService {
     },
   ]
 
+  public async accessToken() {}
+
+  public async refreshToken() {}
+  
+
   public loginAdmin(adminDto: AdminLoginDto) {
     const { phone_number, password } = adminDto
     const validatedPhoneNumber = formatPhoneNumber(phone_number)

@@ -8,6 +8,7 @@ import { botService } from '@bot'
 import { autoCancelOrder } from '@utils'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
+import { PORT } from '@config'
 
 class App {
   public app: express.Application
@@ -15,8 +16,9 @@ class App {
   public bot: any
 
   constructor(routes: Routes[]) {
+    console.log(PORT)
     this.app = express()
-    this.port = 3000
+    this.port = PORT
     this.bot = botService
 
     this.connectToDatabase()

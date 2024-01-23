@@ -95,14 +95,6 @@ export class LunchService {
       name: payload.name,
       products: payload.products ?? [],
     })
-
-    // const updatedProduct = await this.lunches.findByIdAndUpdate(newLunch['_id'],
-    //   {
-    //     $addToSet: { products: { $each: payload.products } }
-    //   },
-    //   { new: true }
-    // ).exec()
-
     return newLunch
   }
 
@@ -295,8 +287,8 @@ export class LunchService {
 
   public async fullUpdateLunch(payload: any) {
     const updateObj: any = {}
-    const Lunch = await this.lunches.findById(payload.id)
 
+    const Lunch = await this.lunches.findById(payload.id)
     if (!Lunch) throw new HttpException(400, 'lunch not found')
 
     if (payload.org) {

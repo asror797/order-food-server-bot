@@ -85,6 +85,16 @@ class AdminController {
       next(error)      
     }
   }
+
+  public deleteAdmin = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const admin_id = req.params.id 
+
+      res.json(await this.adminService.deleteAdmin({ id: admin_id }))
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default AdminController

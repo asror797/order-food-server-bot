@@ -75,7 +75,7 @@ export class RoleService {
 
   public async roleUpdate(payload: any):Promise<any> {
     const updatedRole = await this.role
-            .findByIdAndUpdate(payload.roleId, {
+            .findByIdAndUpdate(payload.id, {
               $set: {
                 title: payload.title
               },
@@ -84,7 +84,12 @@ export class RoleService {
   return updatedRole
   }
 
-  public async roleDelete(payload:any):Promise<any> {
+  public async deleteRole(payload:any):Promise<any> {
+    const deletedRole = await this.role.findByIdAndDelete(payload.id).exec()
+    return deletedRole
+  }
+
+  public async roleModuleDelete(payload:any):Promise<any> {
     const updatedRole = await this.role.findByIdAndDelete(payload.id).exec()
     return updatedRole
   }
@@ -94,13 +99,29 @@ export class RoleService {
       {},
       {
         $push: {
-          modules: payload
+          modules: { uri: payload.module_uri }
         }
       }
     ).exec()
 
     return addedModule
   }
+
+  public async updateModule() {}
+
+  public async deleteModule(payload:any):Promise<any> {
+    const deleteModule = await this.role.updateMany(
+      {},
+      {
+        $pull: {
+          uri: payload.module_uri
+        }
+      }
+    ).exec()
+
+    return deleteModule
+  }
+
 
   public async addActionToModule(payload:AddAction):Promise<any> {
     const createdAction = await this.role.updateMany(
@@ -118,5 +139,12 @@ export class RoleService {
     .exec()
 
     return createdAction
+  }
+
+
+  public async deleteAction(payload:any):Promise<any> {
+
+
+    return 
   }
 }
