@@ -9,24 +9,23 @@ const authMiddleware = async (
   next: NextFunction,
 ) => {
   try {
+    const url = req.url
+    console.log(url)
+    if (url == '/docs' || url == '/auth/login') {
+      return next()
+    }
     const Authorization =
       req.header('Authorization')?.split('Bearer ')[1] || null
 
     if (!Authorization) throw new HttpException(401, 'unauthorized')
-    const url = req.url
+    if (Authorization) {
+      const verificationResponse = verify(Authorization, 'secret_key') as any
 
-    if (url == '/docs' || url == '/auth/login') {
-      return next()
-    } else {
-      if (Authorization) {
-        const verificationResponse = verify(Authorization, 'secret_key') as any
-
-        if (verificationResponse) {
-          req.user = verificationResponse
-          next()
-        } else {
-          next(new HttpException(401, 'Wrong authenticaton token'))
-        }
+      if (verificationResponse) {
+        req.user = verificationResponse
+        next()
+      } else {
+        next(new HttpException(401, 'Wrong authenticaton token'))
       }
     }
   } catch (error) {

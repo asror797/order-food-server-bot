@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express'
-import { ProductService } from '@services'
 import { ParsedQs } from 'qs'
 import {
   CreateProduct,
@@ -7,28 +6,20 @@ import {
   UpdateAmountWithType,
 } from '../dtos/product.dto'
 import { RequestWithUser } from '../interfaces/auth.interface'
-import ProductLogService from '../services/product-log.service'
 import { HttpException } from '@exceptions'
+import { ProductLogService, ProductService } from '@services'
 
 class ProductController {
   public productService = new ProductService()
   public productLogService = new ProductLogService()
 
-  public getProducts = async (
-    req: Request<ParsedQs>,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  public getProducts = async(req: Request<ParsedQs>,res: Response,next: NextFunction) => {
     try {
       const search = req.query.search as string
       const page = parseInt(req.query.page as string) || 1
       const size = parseInt(req.query.size as string) || 10
       res.json(
-        await this.productService.getProducts({
-          page,
-          size,
-          search,
-        }),
+        await this.productService.getProducts({page,size,search,})
       )
     } catch (error) {
       console.log(error)
@@ -130,17 +121,6 @@ class ProductController {
       next(error)
     }
   }
-
-  /*  public fullUpdateProduct = async(req:Request,res:Response,:next:NextFunction) => {
-    try {
-      const lunchId = req.params.lunch 
-      if(!lunchId) throw new HttpException(400,'bad request')
-      const { name, cost, products, percent_cook } = req.body
-      res.json(await this.productService.updateProduct({}))
-    } catch (error) {
-      next(error)
-    }
-  } */
 }
 
 export default ProductController

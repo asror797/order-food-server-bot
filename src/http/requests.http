@@ -374,7 +374,7 @@ Content-Type: application/json
 ###
 GET http://localhost:3000/role   
 Content-Type: application/json
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YWZlNmVkN2I3MGQwYTM5ZmY5NThiYiIsIm1vZHVsZXMiOlt7InVyaSI6InByb2R1Y3QiLCJwZXJtaXNzaW9uIjpmYWxzZSwiX2lkIjoiNjVhZmUxZDFiZjMyMjlhMjQzZjQzNjhmIiwiYWN0aW9ucyI6W3sidXJpIjoiZ2V0LXByb2R1Y3QiLCJwZXJtaXNzaW9uIjpmYWxzZSwiX2lkIjoiNjVhZmUxZGViZjMyMjlhMjQzZjQzNjkzIn0seyJ1cmkiOiJkZWxldGUtcHJvZHVjdCIsInBlcm1pc3Npb24iOmZhbHNlLCJfaWQiOiI2NWFmZTFlY2JmMzIyOWEyNDNmNDM2OTgifSx7InVyaSI6InVwZGF0ZS1wcm9kdWN0IiwicGVybWlzc2lvbiI6ZmFsc2UsIl9pZCI6IjY1YWZlMWY2YmYzMjI5YTI0M2Y0MzY5ZSJ9LHsidXJpIjoiY3JlYXRlLXByb2R1Y3QiLCJwZXJtaXNzaW9uIjpmYWxzZSwiX2lkIjoiNjVhZmUyMDBiZjMyMjlhMjQzZjQzNmE1In1dfV0sIm9yZyI6IjY1MTgwMjVkOTFmOGZmMDI1NDRjNGI1YSIsImlhdCI6MTcwNjEwMDQxMiwiZXhwIjoxNzA2MTAwNDcyfQ.qlxetvLe65XXXqnYbpLrXTPxQxBhjkq23_146LEq2oc
 
 ###
 DELETE http://localhost:3000/role/65afe213bf3229a243f436b8
@@ -403,3 +403,14 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:3000/admin/:id
+
+
+
+###
+POST http://localhost:3000/auth/login 
+Content-Type: application/json
+
+{
+  "phoneNumber":"903339973",
+  "password":"password123"
+}

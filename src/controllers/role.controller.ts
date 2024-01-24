@@ -1,6 +1,7 @@
 import { HttpException } from "@exceptions";
 import { RoleService } from "@services";
 import { NextFunction, Request, Response } from "express";
+import { checkPermission } from "middlewares";
 
 class RoleController {
   public roleService = new RoleService()
@@ -68,7 +69,9 @@ class RoleController {
   
   public updateModule = async(req:Request,res:Response,next:NextFunction) => {
     try {
-      
+      const { module_uri, new_uri } = req.body
+      if(!module_uri || !new_uri) throw new HttpException(400,'module_uri or new_uri is empty')
+      res.json(await this.roleService.updateModule({ module_uri , new_uri}))
     } catch (error) {
       next(error)
     }
@@ -78,6 +81,16 @@ class RoleController {
     try {
       const { module_uri } = req.body
       res.json(await this.roleService.deleteModule({ module_uri }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public toggleModule = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const { module_id, role_id } = req.body
+      if(!module_id || !role_id) throw new HttpException(400,'module or role not found')
+      res.json(await this.roleService.toggleModule({ module_id: '', role_id: ''}))
     } catch (error) {
       next(error)
     }
@@ -96,6 +109,22 @@ class RoleController {
 
 
   public updateAction = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public deleteAction = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public toggleAction = async(req:Request,res:Response,next:NextFunction) => {
     try {
       
     } catch (error) {

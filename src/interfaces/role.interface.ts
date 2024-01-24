@@ -44,10 +44,7 @@ export interface RoleList extends IRole {
 }
 
 export interface RoleRetrieveAllResponse {
-  count: number
-  pageSize: number
-  pageNumber: number
-  roleList: RoleList[]
+  roles: RoleList[]
 }
 
 export interface RoleRetrieveRequest {

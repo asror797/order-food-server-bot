@@ -8,6 +8,7 @@ import {
 import { roleModel } from '@models'
 import { HttpException } from '@exceptions'
 import { AddAction, AddModuleDto } from './../dtos/role.dto'
+import { Types } from 'mongoose'
 
 export class RoleService {
   public role = roleModel
@@ -19,10 +20,7 @@ export class RoleService {
     const roles = await this.role.find().skip(skip).select('title modules')
 
     return {
-      count: 10,
-      pageNumber: payload.pageNumber,
-			pageSize: payload.pageSize,
-      roleList: roles
+      roles: roles
     }
   }
 
@@ -107,7 +105,21 @@ export class RoleService {
     return addedModule
   }
 
-  public async updateModule() {}
+  public async updateModule(payload:{ module_uri: string, new_uri: string }) {
+    const updatedModule = await this.role
+        .updateMany(
+          {
+            'modules.uri': payload.module_uri,
+          },
+          {
+            $set: {
+              'modules.$.uri': payload.new_uri,
+            },
+          },
+        ).exec()
+
+    return updatedModule
+  }
 
   public async deleteModule(payload:any):Promise<any> {
     const deleteModule = await this.role.updateMany(
@@ -122,6 +134,45 @@ export class RoleService {
     return deleteModule
   }
 
+  public async toggleModule(payload:{role_id: string,module_id: string}) {
+
+    const permission = await this.role.aggregate([
+      {
+        $match: {
+          _id: new Types.ObjectId(payload.role_id)
+        },
+      },
+      {
+        $unwind: {
+          path: '$modules'
+        }
+      },
+      {
+        $match: {
+          'modules._id': new Types.ObjectId(payload.module_id)
+        }
+      },
+      {
+        $project: {
+          permission: '$modules.permission'
+        }
+      }
+    ]).exec()
+
+    const toggleModuleResult = await this.role.updateOne(
+      {
+        'modules._id': new Types.ObjectId(payload.module_id),
+        _id: new Types.ObjectId(payload.role_id)
+      },
+      {
+        $set: {
+          'modules.$.permission': permission.length > 0 ? !permission[0].permission : false,
+        }
+      }
+    )
+
+    return toggleModuleResult
+  }
 
   public async addActionToModule(payload:AddAction):Promise<any> {
     const createdAction = await this.role.updateMany(
