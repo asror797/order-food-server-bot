@@ -132,6 +132,7 @@ class BotService {
     }
     const isExist: IisExist = await this.users.isExist(chatId)
     try {
+      console.log(isExist)
       if(chatType == 'private') this.handleClientCommands(msg)
       if(chatType == 'group' || chatType == 'supergroup') this.handleGroupCommands(msg)
 

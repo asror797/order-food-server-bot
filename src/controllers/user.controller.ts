@@ -182,8 +182,8 @@ class UserController {
 
   public addRole = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const updatedUser = await this.userService.addRole(req.body)
-      res.json(updatedUser)
+      // const updatedUser = await this.userService.addRole(req.body)
+      res.json({})
     } catch (error) {
       next(error)
     }
@@ -198,31 +198,27 @@ class UserController {
       const { user, role, type } = req.body
 
       if (type === true) {
-        const updatedUser = await this.userService.addRole({
-          user,
-          role,
-        })
+        // const updatedUser = await this.userService.addRole({
+        //   user,
+        //   role,
+        // })
 
-        if (!updatedUser) throw new HttpException(500, 'somethign went wrong')
-        res.json({
-          _id: updatedUser['_id'],
-          first_name: updatedUser.first_name,
-          last_name: updatedUser.last_name,
-          roles: updatedUser.roles,
-        })
+        // if (!updatedUser) throw new HttpException(500, 'somethign went wrong')
+        res.json({})
       } else if (type === false) {
-        const updatedUser = await this.userService.removeRole({
-          user,
-          role,
-        })
+        // const updatedUser = await this.userService.removeRole({
+        //   user,
+        //   role,
+        // })
 
-        if (!updatedUser) throw new HttpException(500, 'somethign went wrong')
-        res.json({
-          _id: updatedUser['_id'],
-          first_name: updatedUser.first_name,
-          last_name: updatedUser.last_name,
-          roles: updatedUser.roles,
-        })
+        // if (!updatedUser) throw new HttpException(500, 'somethign went wrong')
+        // res.json({
+        //   _id: updatedUser['_id'],
+        //   first_name: updatedUser.first_name,
+        //   last_name: updatedUser.last_name,
+        //   roles: updatedUser.roles,
+        // })
+        res.json({})
       } else {
         throw new HttpException(400, 'invalid request')
       }

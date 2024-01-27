@@ -510,10 +510,6 @@ export class TripService {
     const isExist = await this.trips.findOne().sort('-createdAt')
     if (!isExist) throw new HttpException(400, 'not found trip')
     console.log(isExist)
-    // const timenow = 78945612
-
-    // const diffrenceTime = 0
-
     if (trip) {
       return true
     } else {

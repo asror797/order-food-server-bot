@@ -192,10 +192,85 @@ export class RoleService {
     return createdAction
   }
 
+  public async toggleAction(payload:any):Promise<any> {
+    const permission = await this.role.aggregate([
+      {
+        $match: {
+          _id: new Types.ObjectId(payload.role_id),
+        },
+      },
+      {
+        $unwind: {
+          path: '$modules',
+        },
+      },
+      {
+        $match: {
+          'modules._id': new Types.ObjectId(payload.module_id),
+        },
+      },
+      {
+        $project: {
+          actions: '$modules.actions',
+        },
+      },
+      {
+        $unwind: {
+          path: '$actions',
+        },
+      },
+      {
+        $match: {
+          'actions._id': new Types.ObjectId(payload.action_id),
+        },
+      },
+      {
+        $project: {
+          permission: '$actions.permission',
+        },
+      },
+    ])
+
+    const toggleActionOfModuleResult = await this.role
+      .updateOne(
+        {
+          _id: new Types.ObjectId(payload.role_id),
+          modules: {
+            $elemMatch: {
+              _id: new Types.ObjectId(payload.module_id),
+              'actions._id': new Types.ObjectId(payload.action_id),
+            },
+          },
+        },
+        {
+          $set: {
+            'modules.$.actions.$[act].permission': permission.length > 0 ? !permission[0].permission : false,
+          },
+        },
+        {
+          arrayFilters: [{ 'act._id': payload.action_id }],
+        },
+      )
+      .exec()
+    return toggleActionOfModuleResult
+  }
 
   public async deleteAction(payload:any):Promise<any> {
+    const updatedActionResult = await this.role
+      .updateMany(
+        {
+          'modules.uri': payload.module_uri,
+        },
+        {
+          $pull: {
+            'modules.0.actions': {
+              uri: payload.action_uri,
+            },
+          },
+        },
+      )
+      .exec()
 
-
-    return 
+    return updatedActionResult
   }
 }

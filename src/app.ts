@@ -9,7 +9,7 @@ import { autoCancelOrder } from '@utils'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
 import { PORT } from '@config'
-import authMiddleware from 'middlewares/auth.middleware'
+import authMiddleware from './middlewares/auth.middleware'
 
 class App {
   public app: express.Application
@@ -50,7 +50,7 @@ class App {
     this.app.use(cors())
     this.app.use(express.json())
     this.app.use('/uploads', express.static('uploads'))
-    this.app.use(authMiddleware)
+    // this.app.use(authMiddleware)
   }
 
   private initializeRoutes(routes: Routes[]) {

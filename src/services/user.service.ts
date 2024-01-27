@@ -116,6 +116,12 @@ export class UserService {
     }
   }
 
+  public async userRetrieveOne(payload: {telegramId: number} ) {
+    const user = await this.users.findOne({ telegram_id: payload.telegramId }).populate('org',' group_a_id').exec()
+
+    return user
+  }
+
   public async getBalance(telegramID: number): Promise<IUser | null> {
     const user = await this.users.findOne({
       telegram_id: telegramID,
@@ -298,51 +304,51 @@ export class UserService {
     }
   }
 
-  public async addRole(userData: any) {
-    const { user, role } = userData
+  // public async addRole(userData: any) {
+  //   const { user, role } = userData
 
-    const User = await this.users.findById(user)
+  //   const User = await this.users.findById(user)
 
-    if (!User) throw new HttpException(200, 'user not found')
-    if (!Object.values(UserRole).includes(role)) {
-      throw new HttpException(200, 'Invalid role')
-    }
+  //   if (!User) throw new HttpException(200, 'user not found')
+  //   if (!Object.values(UserRole).includes(role)) {
+  //     throw new HttpException(200, 'Invalid role')
+  //   }
 
-    if (User.roles.includes(role)) {
-      throw new Error('User already has this role')
-    }
+  //   if (User.roles.includes(role)) {
+  //     throw new Error('User already has this role')
+  //   }
 
-    User.roles.push(role)
+  //   User.roles.push(role)
 
-    const updatedUser = await User.save()
+  //   const updatedUser = await User.save()
 
-    return updatedUser
-  }
+  //   return updatedUser
+  // }
 
-  public async removeRole(userData: any) {
-    const { user, role } = userData
-    const User = await this.users.findById(user)
+  // public async removeRole(userData: any) {
+  //   const { user, role } = userData
+  //   const User = await this.users.findById(user)
 
-    if (!User) {
-      throw new HttpException(200, 'User not found')
-    }
+  //   if (!User) {
+  //     throw new HttpException(200, 'User not found')
+  //   }
 
-    if (!Object.values(UserRole).includes(role)) {
-      throw new HttpException(200, 'Invalid role')
-    }
+  //   if (!Object.values(UserRole).includes(role)) {
+  //     throw new HttpException(200, 'Invalid role')
+  //   }
 
-    if (!User.roles.includes(role)) {
-      throw new Error('User does not have this role')
-    }
+  //   if (!User.roles.includes(role)) {
+  //     throw new Error('User does not have this role')
+  //   }
 
-    console.log(User)
+  //   console.log(User)
 
-    User.roles = User.roles.filter((e: string) => e !== role)
+  //   User.roles = User.roles.filter((e: string) => e !== role)
 
-    const updatedUser = await User.save()
+  //   const updatedUser = await User.save()
 
-    return updatedUser
-  }
+  //   return updatedUser
+  // }
 
   public async transaction(userData: any) {
     const { telegram_id, type, amount } = userData
@@ -355,18 +361,6 @@ export class UserService {
     } else if (type == false) {
     }
   }
-
-  // public async searchUser(userData:any) {
-  //   const { text , org } = userData;
-  //   const users = await this.users.find({
-  //     $or: [
-  //       { first_name: { $regex: new RegExp(text, 'i') } }, // Case-insensitive regex for first_name
-  //       { last_name: { $regex: new RegExp(text, 'i') } },   // Case-insensitive regex for last_name
-  //       { phone_number: { $regex: new RegExp(text, 'i') } } // Case-insensitive regex for phone_number
-  //     ]
-  //   }).limit(7).exec();
-  //   return users;
-  // }
 
   public async searchUser(data: string) {
     const re = new RegExp(data, 'i')
