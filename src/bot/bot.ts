@@ -1222,7 +1222,7 @@ class BotService {
   }
 }
 
-// const token = '5903607123:AAFYVouBA0EtGRuefEHc6HzxhIFI5IIp_00'
-const test_token = '6823735522:AAGR_BT2SFHnADxA19yJppOSnMqjsjK3h1g'
+const token = '5903607123:AAFYVouBA0EtGRuefEHc6HzxhIFI5IIp_00'
+// const test_token = '6823735522:AAGR_BT2SFHnADxA19yJppOSnMqjsjK3h1g'
 
-export const botService = new BotService(test_token)
+export const botService = new BotService(token)
