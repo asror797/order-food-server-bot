@@ -12,7 +12,9 @@ export class LunchService {
     const skip = (page - 1) * size
 
     const Lunches = await this.lunches
-      .find()
+      .find().where({
+        is_active: true
+      })
       .select('-updatedAt')
       .skip(skip)
       .limit(size)
@@ -27,7 +29,7 @@ export class LunchService {
       currentPage: page,
       totalPages,
       totalLunches,
-      productsOnPage: Lunches.length,
+      lunchesOnPage: Lunches.length,
     }
   }
 
@@ -391,5 +393,14 @@ export class LunchService {
     )
 
     return updatedOrder
+  }
+
+  public async toggleStatusLunch(payload: { id: string }) {
+    const lunch = await this.lunches.findById(payload.id).exec()
+    if(!lunch) {
+      throw new HttpException(400,'Not found lunch')
+    }
+    const updatedLunch = await this.lunches.findByIdAndUpdate(payload.id,{ is_active: lunch.is_active }, { new: true })
+    return updatedLunch
   }
 }

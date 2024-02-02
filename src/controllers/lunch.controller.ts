@@ -201,6 +201,15 @@ class LunchController {
       next(error)
     }
   }
+
+  public toggleStatus = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const lunchId: string  = req.params.id 
+      res.json(await this.lunchService.toggleStatusLunch({ id: lunchId }))
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default LunchController

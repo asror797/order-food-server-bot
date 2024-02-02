@@ -165,13 +165,14 @@ export class UserService {
   }
 
   public async editUser(payload: EditUserDto) {
-    const { id, first_name, last_name, org } = payload
+    const { id, first_name, last_name, org, role } = payload
     const User = await this.users.findById(id)
     if (!User) throw new HttpException(400, 'user not found')
     const updateData: {
       org?: string
       first_name?: string
       last_name?: string
+      role?: string
     } = {}
 
     if (org) {
@@ -186,6 +187,10 @@ export class UserService {
 
     if (last_name) {
       updateData.last_name = last_name
+    }
+
+    if(role && (role == 'user' || 'cook')) {
+      updateData.role = payload.role
     }
 
     const updateduser = await this.users.findByIdAndUpdate(id, updateData, {
@@ -303,52 +308,6 @@ export class UserService {
       }
     }
   }
-
-  // public async addRole(userData: any) {
-  //   const { user, role } = userData
-
-  //   const User = await this.users.findById(user)
-
-  //   if (!User) throw new HttpException(200, 'user not found')
-  //   if (!Object.values(UserRole).includes(role)) {
-  //     throw new HttpException(200, 'Invalid role')
-  //   }
-
-  //   if (User.roles.includes(role)) {
-  //     throw new Error('User already has this role')
-  //   }
-
-  //   User.roles.push(role)
-
-  //   const updatedUser = await User.save()
-
-  //   return updatedUser
-  // }
-
-  // public async removeRole(userData: any) {
-  //   const { user, role } = userData
-  //   const User = await this.users.findById(user)
-
-  //   if (!User) {
-  //     throw new HttpException(200, 'User not found')
-  //   }
-
-  //   if (!Object.values(UserRole).includes(role)) {
-  //     throw new HttpException(200, 'Invalid role')
-  //   }
-
-  //   if (!User.roles.includes(role)) {
-  //     throw new Error('User does not have this role')
-  //   }
-
-  //   console.log(User)
-
-  //   User.roles = User.roles.filter((e: string) => e !== role)
-
-  //   const updatedUser = await User.save()
-
-  //   return updatedUser
-  // }
 
   public async transaction(userData: any) {
     const { telegram_id, type, amount } = userData

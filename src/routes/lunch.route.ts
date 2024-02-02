@@ -39,5 +39,6 @@ export class LunchRoute {
       this.lunchController.deleteProducts,
     )
     this.router.delete(`${this.path}/:id`, this.lunchController.deleteLunch)
+    this.router.patch(`${this.path}/:id`,this.lunchController.toggleStatus)
   }
 }

@@ -134,7 +134,7 @@ export class RoleService {
     return deleteModule
   }
 
-  public async toggleModule(payload:{role_id: string,module_id: string}) {
+  public async toggleModule(payload:{ role_id: string, module_id: string }) {
 
     const permission = await this.role.aggregate([
       {
@@ -192,7 +192,7 @@ export class RoleService {
     return createdAction
   }
 
-  public async toggleAction(payload:any):Promise<any> {
+  public async toggleAction(payload:{ role_id: string, module_id: string, action_id: string }):Promise<any> {
     const permission = await this.role.aggregate([
       {
         $match: {
@@ -255,7 +255,28 @@ export class RoleService {
     return toggleActionOfModuleResult
   }
 
-  public async deleteAction(payload:any):Promise<any> {
+  public async updateAction(payload: { module_uri: string, new_uri: string, action_uri: string}):Promise<any> {
+
+    const updatedActionResult = await this.role
+      .updateMany(
+        {
+          'modules.uri': payload.module_uri,
+        },
+        {
+          $set: {
+            'modules.$.actions.$[act].uri': payload.new_uri,
+          },
+        },
+        {
+          arrayFilters: [{ 'act.uri': payload.action_uri }],
+        },
+      )
+      .exec()
+
+    return updatedActionResult
+  }
+
+  public async deleteAction(payload:{ module_uri: string, action_uri: string }):Promise<any> {
     const updatedActionResult = await this.role
       .updateMany(
         {

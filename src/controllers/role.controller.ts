@@ -90,7 +90,7 @@ class RoleController {
     try {
       const { module_id, role_id } = req.body
       if(!module_id || !role_id) throw new HttpException(400,'module or role not found')
-      res.json(await this.roleService.toggleModule({ module_id: '', role_id: ''}))
+      res.json(await this.roleService.toggleModule({ module_id: module_id, role_id: role_id}))
     } catch (error) {
       next(error)
     }
@@ -110,7 +110,11 @@ class RoleController {
 
   public updateAction = async(req:Request,res:Response,next:NextFunction) => {
     try {
-      
+      const { module_uri, new_uri, action_uri } = req.body
+      if(!module_uri || !new_uri || !action_uri) {
+      throw new HttpException(400,'module_uri or action_uri or new_uri is empty')
+      }
+      res.json(await this.roleService.updateAction({module_uri, action_uri, new_uri}))
     } catch (error) {
       next(error)
     }
@@ -118,7 +122,11 @@ class RoleController {
 
   public deleteAction = async(req:Request,res:Response,next:NextFunction) => {
     try {
-      
+      const { module_uri, action_uri } = req.body
+      if(!module_uri || !action_uri ) {
+        throw new HttpException(400,'action_uri and module_uri is required')
+      }
+      res.json(await this.roleService.deleteModule({action_uri, module_uri}))
     } catch (error) {
       next(error)
     }
@@ -126,7 +134,11 @@ class RoleController {
 
   public toggleAction = async(req:Request,res:Response,next:NextFunction) => {
     try {
-      
+      const { role_id, module_id, action_id } = req.body
+      if(!role_id || !module_id || !action_id) {
+        new HttpException(400,'role_id or module_id or action_id is required')
+      }
+      res.json(await this.roleService.toggleAction({role_id,module_id,action_id}))
     } catch (error) {
       next(error)
     }

@@ -190,45 +190,54 @@ export class OrderService {
     const { order } = orderData
 
     const Order = await this.orders.findById(order)
-
     if (!Order) throw new HttpException(400, 'order not found')
 
     const User = await this.users.findById(Order.client)
     if (!User) throw new HttpException(400, 'client id not found')
-    if (User.balance < Order.total_cost)
-      throw new HttpException(400, 'balansda pul mavjud emas')
-    const updatedOrder = await this.orders.findByIdAndUpdate(
-      order,
-      {
-        is_accepted: true,
-      },
-      { new: true },
-    )
 
-    if (!updatedOrder) throw new HttpException(400, 'something went wrong')
-
-    const updatedUser = await this.paymentService.dicrease({
-      amount: updatedOrder?.total_cost,
-      user: updatedOrder?.client,
-    })
-
-    if (!updatedUser) throw new HttpException(400, 'something wnet wrong')
-
-    const populatedOrder = (await this.orders
-      .findById(updatedOrder['_id'])
-      .populate('client', 'first_name last_name telegram_id phone_number')
-      .populate('foods.food', 'name cost')
-      .populate('org', 'name_org group_a_id group_b_id')) || { foods: [] }
-
-    for (let i = 0; i < populatedOrder.foods.length; i++) {
-      const { food, amount } = populatedOrder.foods[i]
-      await this.foodService.DecreaseProductsOfFood({
-        amount: amount,
-        food: food,
+    if (Order.is_canceled == true) {
+      return {
+        message: 'cancelled'
+      }
+    } else if(User.balance < Order.total_cost) {
+      return {
+        message: 'InfluenceBalance'
+      }
+    } else {
+      const updatedOrder = await this.orders.findByIdAndUpdate(
+        order,
+        {
+          is_accepted: true,
+        },
+        { new: true },
+      )
+  
+      if (!updatedOrder) throw new HttpException(400, 'something went wrong')
+  
+      const updatedUser = await this.paymentService.dicrease({
+        amount: updatedOrder?.total_cost,
+        user: updatedOrder?.client,
+        org: updatedOrder.org
       })
+  
+      if (!updatedUser) throw new HttpException(400, 'something wnet wrong')
+  
+      const populatedOrder = (await this.orders
+        .findById(updatedOrder['_id'])
+        .populate('client', 'first_name last_name telegram_id phone_number')
+        .populate('foods.food', 'name cost')
+        .populate('org', 'name_org group_a_id group_b_id')) || { foods: [] }
+  
+      for (let i = 0; i < populatedOrder.foods.length; i++) {
+        const { food, amount } = populatedOrder.foods[i]
+        await this.foodService.DecreaseProductsOfFood({
+          amount: amount,
+          food: food,
+        })
+      }
+      console.log('Order', populatedOrder)
+      return populatedOrder
     }
-    console.log('Order', populatedOrder)
-    return populatedOrder
   }
 
   public async cancelOrder(orderData: UpdateOrder) {

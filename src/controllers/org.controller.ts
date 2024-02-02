@@ -21,11 +21,7 @@ class OrgController {
     }
   }
 
-  public createOrg = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  public createOrg = async (req: Request,res: Response,next: NextFunction,) => {
     try {
       const newOrg = await this.orgService.createOrg(req.body.name_org)
       res.json({

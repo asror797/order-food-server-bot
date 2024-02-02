@@ -119,4 +119,8 @@ export class EditUserDto {
   @IsMongoId()
   @IsOptional()
   org: string
+
+  @IsOptional()
+  @IsString()
+  role?: string
 }

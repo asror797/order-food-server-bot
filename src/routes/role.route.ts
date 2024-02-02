@@ -17,12 +17,12 @@ export class RoleRoute {
 
     this.router.post(`${this.path}/module`,this.roleController.addModule)
     this.router.patch(`${this.path}/module`,this.roleController.updateModule)
-    this.router.delete(`${this.path}/module`,this.roleController.deleteModule)
+    this.router.post(`${this.path}/module/delete`,this.roleController.deleteModule)
     this.router.patch(`${this.path}/module/toggle`,this.roleController.toggleModule)
 
     this.router.post(`${this.path}/action`,this.roleController.addAction)
     this.router.patch(`${this.path}/action`,this.roleController.updateAction)
-    this.router.delete(`${this.path}/action`,this.roleController.deleteModule)
+    this.router.post(`${this.path}/action/delete`,this.roleController.deleteAction)
     this.router.patch(`${this.path}/action/toggle`,this.roleController.toggleAction)
 
     this.router.patch(`${this.path}/:id`,this.roleController.updateRole)

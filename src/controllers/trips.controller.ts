@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { TripService } from '@services'
 import { ParsedQs } from 'qs'
+import { HttpException } from '@exceptions'
 // import { CreateTrip } from '../dtos/trip.dto'
 
 class TripController {
@@ -45,5 +46,19 @@ class TripController {
       next(error)
     }
   }
+
+  public retrieveSpent = async(req: Request<ParsedQs>,res:Response,next:NextFunction) => {
+    try {
+      const { userId , startDate , endDate } = req.query
+      console.log(req.params)
+      if(!userId) {
+        throw new HttpException(400,'userId is empty')
+      }
+      res.json(await this.tripService.getTotalSpentsOfUser({userId: userId,startDate,endDate}))
+    } catch (error) {
+      next(error)
+    }
+  }
+  
 }
 export default TripController

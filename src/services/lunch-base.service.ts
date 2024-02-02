@@ -55,6 +55,7 @@ export class LunchBaseService {
       (await this.lunchbase.find({
         where: {
           base: id,
+          is_active: true
         },
       })) || []
 
@@ -73,6 +74,18 @@ export class LunchBaseService {
     const base = await this.lunchbase.findById(id).select('name org createdAt')
     if (!base) throw new HttpException(400, 'lunch-base not found')
     return base
+  }
+
+  public async toggleStatus(payload: { id: string }) {
+    const base = await this.lunchbase.findById(payload.id).select('name is_active').exec()
+
+    if(!base) {
+      throw new HttpException(400,'not found base')
+    }
+
+    const updatedBase = await this.lunchbase.findByIdAndUpdate(payload.id,{ is_active: !base.is_active },{ new: true })
+
+    return updatedBase
   }
 
   async createLunchBase(payload: CreateLunchBaseDto) {

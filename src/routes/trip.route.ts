@@ -13,5 +13,6 @@ export class TripRoute {
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.tripController.getTrips)
     this.router.get(`${this.path}/latest`, this.tripController.tripRetrieveOne)
+    this.router.get(`${this.path}/spent`,this.tripController.retrieveSpent)
   }
 }

@@ -21,5 +21,6 @@ export class LunchBaseRoute {
     )
     this.router.post(`${this.path}`, this.lunchBaseController.lunchBaseCreate)
     this.router.get(`${this.path}/:lunch`, this.lunchBaseController.getByBase)
+    this.router.patch(`${this.path}/:id`,this.lunchBaseController.toggleStatusBase)
   }
 }

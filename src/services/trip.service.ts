@@ -4,6 +4,7 @@ import { lunchModel, orgModel, userModel, tripModel } from '@models'
 import { HttpException } from '@exceptions'
 import { CreateTrip } from '../dtos/trip.dto'
 import { PaymentService } from '@services'
+import { endOfMonth, startOfMonth } from 'date-fns'
 
 export class TripService {
   public trips = tripModel
@@ -505,8 +506,53 @@ export class TripService {
     return updatedTrip
   }
 
+  public async getTotalSpentsOfUser(payload:any) {
+    const startDate = payload.startDate ?  payload.startDate : startOfMonth(new Date())
+    const endDate = payload.endDate ? payload.endDate : endOfMonth(new Date())
+    const pipeline = [
+      {
+        $match: {
+          'createdAt': { $gte: startDate, $lte: endDate },
+          'candidates.user': new mongoose.Types.ObjectId(payload.userId)
+        }
+      },
+      {
+        $unwind: '$candidates'
+      },
+      {
+        $match: {
+          'candidates.user': new mongoose.Types.ObjectId(payload.userId) 
+        }
+      },
+      {
+        $lookup: {
+          from: 'lunches', 
+          localField: 'candidates.lunch',
+          foreignField: '_id',
+          as: 'lunch' 
+        }
+      },
+      {
+        $project: {
+          '_id': 0,
+          'attendedUser': '$candidates.user', 
+          'lunch': { $arrayElemAt: ['$lunch', 0] },
+          'total': '$candidates.total' 
+        }
+      },
+      {
+        $limit: 70
+      }
+    ];
+
+    const result = await this.trips.aggregate(pipeline);
+
+    console.log(result)
+
+    return result
+  }
+
   public async statusChecker(trip: string, client: string) {
-    console.log(client)
     const isExist = await this.trips.findOne().sort('-createdAt')
     if (!isExist) throw new HttpException(400, 'not found trip')
     console.log(isExist)

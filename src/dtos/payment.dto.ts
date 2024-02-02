@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator'
+import { IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class CreatePaymentDto {
   @IsString()
@@ -6,4 +6,8 @@ export class CreatePaymentDto {
 
   @IsNumber()
   amount: number
+
+  @IsString()
+  @IsOptional()
+  org?: string
 }

@@ -33,7 +33,7 @@ export class PaymentService {
   }
 
   public async increase(paymentData: CreatePaymentDto) {
-    const { user, amount } = paymentData
+    const { user, amount, org } = paymentData
     const User = await this.userRepo.findById(user)
     if (!User) throw new HttpException(400, 'user not found')
 
@@ -47,7 +47,7 @@ export class PaymentService {
 
     botService.sendText(
       User.telegram_id,
-      `🟢 Hisobingizga ${amount} s*m pul tushurildi`,
+      `🟢 Hisobingizga ${amount} so'm pul tushurildi`,
     )
     await this.paymentRepo.create({
       type: true,
@@ -60,7 +60,7 @@ export class PaymentService {
   }
 
   public async dicrease(paymentData: CreatePaymentDto) {
-    const { user, amount } = paymentData
+    const { user, amount, org } = paymentData
     const User = await this.userRepo.findById(user)
     if (!User) throw new HttpException(400, 'user not found')
 
@@ -74,14 +74,14 @@ export class PaymentService {
 
     await this.paymentRepo.create({
       type: false,
-      org: User.org,
+      org: User.org || org,
       client: User['_id'],
       amount,
     })
 
     botService.sendText(
       User.telegram_id,
-      `🔴 Hisobdan ${amount} s*m pul yechib olindi`,
+      `🔴 Hisobdan ${amount} so'm pul yechib olindi`,
     )
 
     return updatedUser

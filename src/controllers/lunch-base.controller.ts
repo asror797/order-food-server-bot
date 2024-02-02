@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { LunchBaseService } from '@services'
 import { ParsedQs } from 'qs'
+import { HttpException } from '@exceptions'
 
 class LunchBaseController {
   readonly service = new LunchBaseService()
@@ -40,6 +41,18 @@ class LunchBaseController {
     try {
       const lunchBase = req.params.base as string
       res.json(await this.service.retrieveLunches(lunchBase))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public toggleStatusBase = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const baseId: string = req.params.id as string
+      if(!baseId) {
+        throw new HttpException(400,'baseId is required')
+      }
+      res.json(await this.service.toggleStatus({ id: baseId }))
     } catch (error) {
       next(error)
     }
