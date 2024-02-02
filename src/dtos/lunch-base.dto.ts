@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 export class GetLunchBaseDto {
   @IsInt()
@@ -12,9 +12,7 @@ export class GetLunchBaseDto {
   @IsString()
   @IsOptional()
   search?: string
-
 }
-
 
 export class CreateLunchBaseDto {
   @IsString()
@@ -26,9 +24,7 @@ export class CreateLunchBaseDto {
   org: string
 }
 
-
 export class UpdateLunchBaseDto {
-
   @IsString()
   @IsNotEmpty()
   id: string

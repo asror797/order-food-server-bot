@@ -1,8 +1,7 @@
-import { Router } from "express"
-import OrderController from "../controllers/order.controller"
+import { Router } from 'express'
+import OrderController from '../controllers/order.controller'
 
-
-class OrderRoute {
+export class OrderRoute {
   public path = '/order'
   public router = Router()
   public orderController = new OrderController()
@@ -12,13 +11,19 @@ class OrderRoute {
   }
 
   public initializeRoutes() {
-    this.router.get(`${this.path}`,this.orderController.getWithPagination)
-    this.router.post(`${this.path}`,this.orderController.createOrder)
-    this.router.get(`${this.path}/user/:user`,this.orderController.getOrderByUser)
-    this.router.get(`${this.path}/spent/:user`,this.orderController.getSpentsByUser)
-    this.router.get(`${this.path}/old-analitics/:user`,this.orderController.getOldAnalitics)
+    this.router.get(`${this.path}`, this.orderController.getWithPagination)
+    this.router.post(`${this.path}`, this.orderController.createOrder)
+    this.router.get(
+      `${this.path}/user/:user`,
+      this.orderController.getOrderByUser,
+    )
+    this.router.get(
+      `${this.path}/spent/:user`,
+      this.orderController.getSpentsByUser,
+    )
+    this.router.get(
+      `${this.path}/old-analitics/:user`,
+      this.orderController.getOldAnalitics,
+    )
   }
 }
-
-
-export default OrderRoute;

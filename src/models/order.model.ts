@@ -1,55 +1,50 @@
-import { Document, Schema, model } from "mongoose";
-import { IOrder } from "../interfaces/order.interface";
+import { Document, Schema, model } from 'mongoose'
+import { IOrder } from '../interfaces/order.interface'
 
-
-
-const orderSchema:Schema = new Schema(
+const orderSchema: Schema = new Schema(
   {
     total_cost: {
       type: Number,
-      required: true
+      required: true,
     },
     client: {
       type: Schema.Types.ObjectId,
-      ref:'User',
-      required: true
+      ref: 'User',
+      required: true,
     },
     foods: {
       type: [
         {
           food: {
             type: Schema.Types.ObjectId,
-            ref:'Food',
-            required: true
+            ref: 'Food',
+            required: true,
           },
           amount: {
             type: Number,
-            default: 1
-          }
-        }
-      ]
+            default: 1,
+          },
+        },
+      ],
     },
     is_canceled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     is_accepted: {
       type: Boolean,
-      default: false
+      default: false,
     },
     org: {
       type: Schema.Types.ObjectId,
-      ref:'Org',
-      required: true
-    }
+      ref: 'Org',
+      required: true,
+    },
   },
   {
     versionKey: false,
-    timestamps: true
-  }
-);
+    timestamps: true,
+  },
+)
 
-
-const orderModel = model<IOrder & Document>('Order',orderSchema);
-
-export default orderModel;
+export const orderModel = model<IOrder & Document>('Order', orderSchema)

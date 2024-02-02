@@ -1,10 +1,8 @@
-import { Router } from "express"
-import PaymentController from "../controllers/payment.controller"
+import { Router } from 'express'
+import PaymentController from '../controllers/payment.controller'
 
-
-
-class PaymentRoute {
-  public path: string  = '/payment'
+export class PaymentRoute {
+  public path: string = '/payment'
   public router = Router()
   public paymentController = new PaymentController()
 
@@ -13,7 +11,6 @@ class PaymentRoute {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}`,this.paymentController.paymentRetrieveAll)
+    this.router.get(`${this.path}`, this.paymentController.paymentRetrieveAll)
   }
 }
-export default PaymentRoute

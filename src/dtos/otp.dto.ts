@@ -1,10 +1,8 @@
-import { IsString } from "class-validator";
-
-
+import { IsString } from 'class-validator'
 
 export class OtpInfo {
   @IsString()
-  email: string;
+  email: string
 
   @IsString()
   password: string

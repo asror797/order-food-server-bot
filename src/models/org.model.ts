@@ -1,39 +1,36 @@
-import { Schema, model } from "mongoose";
-import { IOrg } from "../interfaces/org.interface";
-
+import { Schema, model } from 'mongoose'
+import { IOrg } from '../interfaces/org.interface'
 
 const orgSchema: Schema = new Schema(
   {
     name_org: {
-      type: String
+      type: String,
     },
     is_active: {
       type: Boolean,
-      default: true
+      default: true,
     },
     is_deleted: {
       type: Boolean,
-      default: false
+      default: false,
     },
     group_a_id: {
       type: Number,
-      default: null
+      default: null,
     },
     group_b_id: {
       type: Number,
-      default: null
+      default: null,
     },
     trip_timeout: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
   {
     versionKey: false,
-    timestamps: true
-  }
-);
+    timestamps: true,
+  },
+)
 
-const orgModel = model<IOrg & Document>('Org',orgSchema);
-
-export default orgModel;
+export const orgModel = model<IOrg & Document>('Org', orgSchema)

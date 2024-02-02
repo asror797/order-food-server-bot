@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator'
 
 export class CreateLunch {
   @IsString()
@@ -21,15 +27,14 @@ export class CreateLunch {
   products?: []
 }
 
-
 export class LunchUpdateDto {
   @IsString()
   @IsNotEmpty()
-  id:string
-  
+  id: string
+
   @IsString()
   @IsOptional()
-  name?:string
+  name?: string
 
   @IsNumber()
   @IsOptional()
@@ -37,17 +42,16 @@ export class LunchUpdateDto {
 
   @IsString()
   @IsOptional()
-  base?:string
+  base?: string
 
   @IsString()
   @IsOptional()
-  org?:string
+  org?: string
 
   @IsNumber()
   @IsOptional()
   percent_cook?: number
 }
-
 
 export class ProductWithAmountDto {
   @IsString()

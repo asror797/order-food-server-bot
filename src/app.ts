@@ -1,23 +1,25 @@
-import express from "express"
-import cors from "cors"
-import errorMiddleware from "./middlewares/error.middleware";
-import { Routes } from "./interfaces/route.interface";
-import { connect } from "mongoose";
-import { dbConnection } from "./database/database";
-import botService from "./bot/bot";
-import swaggerUi from "swagger-ui-express"
-import swaggerJSDoc from "swagger-jsdoc";
-
-
+import express from 'express'
+import cors from 'cors'
+import errorMiddleware from './middlewares/error.middleware'
+import { Routes } from './interfaces/route.interface'
+import { connect } from 'mongoose'
+import { dbConnection } from '@database'
+import { botService } from '@bot'
+import { autoCancelOrder } from '@utils'
+import swaggerUi from 'swagger-ui-express'
+import swaggerJSDoc from 'swagger-jsdoc'
+import { PORT } from '@config'
+import authMiddleware from './middlewares/auth.middleware'
 
 class App {
   public app: express.Application
   public port: number
   public bot: any
 
-  constructor(routes:Routes[]) {
+  constructor(routes: Routes[]) {
+    console.log(PORT)
     this.app = express()
-    this.port = 9070
+    this.port = PORT
     this.bot = botService
 
     this.connectToDatabase()
@@ -26,12 +28,12 @@ class App {
     this.initialieErrorHandling()
     this.initializeSwagger()
     this.initializeBot()
-
+    // this.autoCancel()
   }
 
   private async connectToDatabase() {
     try {
-      await connect(dbConnection.url,dbConnection.options)
+      await connect(dbConnection.url, dbConnection.options)
       console.log('Connected to database')
     } catch (error) {
       console.log(error)
@@ -39,21 +41,21 @@ class App {
   }
 
   public listen() {
-    this.app.listen(this.port,() => {
-      console.log(`Server is runing at ${this.port}`);
+    this.app.listen(this.port, () => {
+      console.log(`Server is runing at ${this.port}`)
     })
   }
 
   private initializeMiddlewares() {
     this.app.use(cors())
     this.app.use(express.json())
-    this.app.use('/uploads',express.static('uploads'))
+    this.app.use('/uploads', express.static('uploads'))
+    // this.app.use(authMiddleware)
   }
 
-
   private initializeRoutes(routes: Routes[]) {
-    routes.forEach(route => {
-      this.app.use('/',route.router)
+    routes.forEach((route) => {
+      this.app.use('/', route.router)
     })
   }
 
@@ -78,9 +80,12 @@ class App {
     }
 
     const specs = swaggerJSDoc(options)
-    this.app.use('/docs',swaggerUi.serve,swaggerUi.setup(specs))
+    this.app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs))
+  }
+
+  private async autoCancel() {
+    setInterval(autoCancelOrder,0.5 * 60 * 1000)
   }
 }
 
-
-export default App;
+export default App

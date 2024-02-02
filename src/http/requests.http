@@ -8,6 +8,14 @@ Content-Type: application/json
 }
 
 
+### Get
+GET http://localhost:3000/user/search-pagination 
+Content-Type: application/json
+
+
+### Get
+GET http://localhost:3000/org
+Content-Type: application/json
 
 ### update user
 GET http://localhost:3000/user/search?search=asror
@@ -18,7 +26,7 @@ Content-Type: application/json
   "org":"650012d462949f8744859129"
 }
 ### Get 
-GET http://localhost:3000/org
+GET http://localhost:3000/trip
 Content-Type: application/json
 
 
@@ -34,14 +42,22 @@ Content-Type: application/json
 }
 
 ### GET User
-GET http://localhost:9000/user 
+GET http://localhost:3000/user 
 Content-Type: application/json
 
 
 ### GET Org
-GET http://localhost:9000/product 
+GET http://localhost:3000/order 
 Content-Type: application/json
 
+
+### Create role
+POST http://localhost:3000/role 
+Content-Type: application/json
+
+{
+  "title": "Super Admin"
+}
 
 ### POST
 POST http://localhost:9000/settings/otp-info
@@ -52,6 +68,7 @@ Content-Type: application/json
   "password":"gF5rDbmX8YLP7fcpU6RRZdDeSJzkq3feb8RAwEIV"
 }
 
+### Create New Org 
 
 
 ### Create Product
@@ -79,7 +96,7 @@ Content-Type: application/json
 
 
 ### get product
-GET http://localhost:3000/org 
+GET http://localhost:3000/food 
 Content-Type: application/json
 
 
@@ -97,20 +114,20 @@ Content-Type: application/json
 
 
 ### Create Food
-POST http://localhost:9000/food 
+POST http://localhost:3000/food 
 Content-Type: application/json 
 
 {
   "name":"Snackers",
-  "org":"650001df0394e11e1233e3cb",
+  "org":"6518026691f8ff02544c4b5e",
   "cost":9000,
   "products": [
     {
-      "product":"6500470eaf2c08b6c4628a2b",
+      "product":"65422d99e7c100119bbfe787",
       "amount":1
     }
   ],
-  "category":"snacks"
+  "category":"dessert"
 }
 
 
@@ -210,6 +227,10 @@ Content-Type: application/json
   "type": true
 }
 
+### Get Org
+GET http://localhost:3000/org
+Content-Type: application/json
+
 
 ### update org
 PATCH http://localhost:3000/org/6518026691f8ff02544c4b5e
@@ -217,6 +238,179 @@ Content-Type: application/json
 
 {
   "trip_timeout":60,
-  "group_a_id": -4011058879,
-  "group_b_id": -4089696767
+  "group_a_id": -1001998831420,
+  "group_b_id": -1001998831420
+}
+
+
+
+### GET
+GET http://localhost:3000/food 
+Content-Type: application/json
+
+### update food
+PATCH http://localhost:3000/food/update/651802dd91f8ff02544c4ba6 
+Content-Type: application/json 
+
+{
+  "name":"Кола 1 л.т",
+  "cost":2000,
+  "is_deleted": true
+}
+
+
+### Delete Lunch
+DELETE http://localhost:3000/lunch/:id
+Content-Type: application/json
+
+
+### Get
+GET http://localhost:3000/lunch
+Content-Type: application/json
+
+
+### Create Lunch Base
+POST http://localhost:3000/lunch-base 
+Content-Type: application/json
+
+{
+  "name":"Samarqand Osh",
+  "org":"6518025d91f8ff02544c4b5a"
+}
+
+
+
+### Org
+GET http://localhost:3000/trip
+Content-Type: application/json
+
+
+
+### Lunch
+GET http://localhost:3000/trip?page=4
+Content-Type: application/json
+
+### Create Lunch
+POST http://localhost:3000/lunch/652fa1af0263ddb32aa6b224
+Content-Type: application/json
+
+{
+  "name":"0.7",
+  "cost":19000
+}
+
+
+
+### Get By Lunch
+GET http://localhost:3000/lunch/652fa1af0263ddb32aa6b224
+Content-Type: application/json
+
+
+
+### Add product
+POST http://localhost:3000/lunch/product/652fa2227a912e88edcab492
+Content-Type: application/json
+
+{
+  "products": [
+    {
+      "product":"651bffbfa04aec1f51b56a7b",
+      "amount":1
+    }
+  ]
+}
+
+
+
+### Delete module
+DELETE http://localhost:3000/role/module 
+Content-Type: application/json 
+
+{
+  "module_uri":""
+}
+
+
+###
+GET  http://localhost:3000/admin
+Content-Type: application/json
+
+
+###
+GET http://localhost:3000/admin  
+Content-Type: application/json
+
+
+### Update role 
+PATCH http://localhost:3000/admin/651bf0cc92da6212720332cc 
+Content-Type: application/json
+
+{
+  "role":"65af95cdb2ffd52e24aba049"
+}
+
+
+###
+POST http://localhost:3000/role 
+Content-Type: application/json 
+
+{
+  "title": "cook"
+}
+
+###
+POST http://localhost:3000/admin/create
+Content-Type: application/json 
+
+{
+  "phoneNumber": "903339973",
+  "fullname": "No'monjon oka",
+  "password": "password123",
+  "orgId": "6518025d91f8ff02544c4b5a",
+  "roleId": "65afe1b7bf3229a243f4368d"
+}
+
+
+###
+GET http://localhost:3000/role   
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YWZlNmVkN2I3MGQwYTM5ZmY5NThiYiIsIm1vZHVsZXMiOlt7InVyaSI6InByb2R1Y3QiLCJwZXJtaXNzaW9uIjpmYWxzZSwiX2lkIjoiNjVhZmUxZDFiZjMyMjlhMjQzZjQzNjhmIiwiYWN0aW9ucyI6W3sidXJpIjoiZ2V0LXByb2R1Y3QiLCJwZXJtaXNzaW9uIjpmYWxzZSwiX2lkIjoiNjVhZmUxZGViZjMyMjlhMjQzZjQzNjkzIn0seyJ1cmkiOiJkZWxldGUtcHJvZHVjdCIsInBlcm1pc3Npb24iOmZhbHNlLCJfaWQiOiI2NWFmZTFlY2JmMzIyOWEyNDNmNDM2OTgifSx7InVyaSI6InVwZGF0ZS1wcm9kdWN0IiwicGVybWlzc2lvbiI6ZmFsc2UsIl9pZCI6IjY1YWZlMWY2YmYzMjI5YTI0M2Y0MzY5ZSJ9LHsidXJpIjoiY3JlYXRlLXByb2R1Y3QiLCJwZXJtaXNzaW9uIjpmYWxzZSwiX2lkIjoiNjVhZmUyMDBiZjMyMjlhMjQzZjQzNmE1In1dfV0sIm9yZyI6IjY1MTgwMjVkOTFmOGZmMDI1NDRjNGI1YSIsImlhdCI6MTcwNjEwMDQxMiwiZXhwIjoxNzA2MTAwNDcyfQ.qlxetvLe65XXXqnYbpLrXTPxQxBhjkq23_146LEq2oc
+
+###
+DELETE http://localhost:3000/role/65afe213bf3229a243f436b8
+Content-Type: application/json
+
+
+### Add module
+POST http://localhost:3000/role/module 
+Content-Type: application/json 
+
+{
+  "uri":"product",
+  "module_uri":"product"
+}
+
+
+### Add action 
+POST http://localhost:3000/role/action 
+Content-Type: application/json
+
+{
+  "module_uri":"product",
+  "action_uri":"create-product"
+}
+
+
+###
+DELETE http://localhost:3000/admin/:id
+
+
+
+###
+POST http://localhost:3000/auth/login 
+Content-Type: application/json
+
+{
+  "phoneNumber":"903339973",
+  "password":"password123"
 }

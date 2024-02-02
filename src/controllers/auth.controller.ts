@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response } from "express";
-import AuthService from "../services/auth.service";
-import { AdminLoginDto } from "../dtos/admin.dto";
-
+import { NextFunction, Request, Response } from 'express'
+import { AuthService } from '@services'
+import { AdminLoginDto } from '../dtos/admin.dto'
+import { HttpException } from '@exceptions'
 
 class AuthController {
-  private authService = new AuthService();
+  private authService = new AuthService()
 
   // public sendOtp = (req:Request,res:Response,next:NextFunction) => {
   //   try {
@@ -15,7 +15,11 @@ class AuthController {
   //   }
   // }
 
-  public LoginSuperAdmin = (req:Request,res:Response,next:NextFunction) => {
+  public LoginSuperAdmin = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const adminData: AdminLoginDto = req.body
       res.json(this.authService.loginAdmin(adminData))
@@ -23,6 +27,16 @@ class AuthController {
       next(error)
     }
   }
+
+  public loginAdmin = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const { phoneNumber, password } = req.body
+      if(!phoneNumber || !password ) throw new HttpException(400,'phoneNumber or password is wrong')
+      res.json(await this.authService.login({phoneNumber,password}))
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
-export default AuthController;
+export default AuthController

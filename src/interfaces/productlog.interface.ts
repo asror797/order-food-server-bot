@@ -1,5 +1,4 @@
-import { Document } from "mongoose";
-
+import { Document } from 'mongoose'
 
 export interface IProductLog extends Document {
   amount: number

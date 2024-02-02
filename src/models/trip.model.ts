@@ -1,47 +1,41 @@
-import { Document, Schema, model } from "mongoose";
-import { ITrip } from "../interfaces/trip.interface";
+import { Document, Schema, model } from 'mongoose'
+import { ITrip } from '../interfaces/trip.interface'
 
-
-
-const attendedUserSchema:Schema = new Schema({
+const attendedUserSchema: Schema = new Schema({
   lunch: {
     type: Schema.Types.ObjectId,
-    ref:'Lunch'
+    ref: 'Lunch',
   },
   total: {
     type: Number,
-    default: 0
+    default: 0,
   },
   user: {
     type: Schema.Types.ObjectId,
-    ref:'User'
-  }
-});
+    ref: 'User',
+  },
+})
 
 const tripSchema: Schema = new Schema(
   {
     meal: {
       type: Schema.Types.ObjectId,
-      ref: 'LunchBase'
+      ref: 'LunchBase',
     },
     sent_at: {
       type: Number,
-      required: true
+      required: true,
     },
     org: {
       type: Schema.Types.ObjectId,
-      ref:'Org'
+      ref: 'Org',
     },
-    candidates: [attendedUserSchema]
+    candidates: [attendedUserSchema],
   },
   {
     timestamps: true,
-    versionKey: false
-  }
-);
+    versionKey: false,
+  },
+)
 
-
-const tripModel = model<ITrip & Document>('Trip',tripSchema);
-
-
-export default tripModel;
+export const tripModel = model<ITrip & Document>('Trip', tripSchema)

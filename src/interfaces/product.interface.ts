@@ -1,7 +1,5 @@
-import { Document } from "mongoose";
-import { IOrg } from "./org.interface";
-
-
+import { Document } from 'mongoose'
+import { IOrg } from './org.interface'
 
 export enum Units {
   KILOGRAM = 'kilogram',
@@ -10,9 +8,9 @@ export enum Units {
 }
 
 export interface IProduct extends Document {
-  name: string;
-  amount: number;
-  cost: number;
-  org: IOrg['_id'];
+  name: string
+  amount: number
+  cost: number
+  org: IOrg['_id']
   unit: Units
 }

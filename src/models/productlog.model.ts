@@ -1,37 +1,38 @@
-import { Document, Schema, model } from "mongoose";
-import { IProductLog } from "../interfaces/productlog.interface";
+import { Document, Schema, model } from 'mongoose'
+import { IProductLog } from '../interfaces/productlog.interface'
 
 const productLog: Schema = new Schema(
-  { 
+  {
     product: {
       type: Schema.Types.ObjectId,
       ref: 'Product',
-      required: true
+      required: true,
     },
     org: {
       type: Schema.Types.ObjectId,
-      ref:'Org',
-      required: true
+      ref: 'Org',
+      required: true,
     },
     amount: {
       type: Number,
-      required: true
+      required: true,
     },
     cost: {
       type: Number,
-      required: true
+      required: true,
     },
     type: {
       type: Boolean,
-      required: true
-    }
+      required: true,
+    },
   },
   {
     versionKey: false,
-    timestamps: true
-  }
-);
+    timestamps: true,
+  },
+)
 
-const productLogModel = model<IProductLog & Document>('ProductLog',productLog);
-
-export default productLogModel;
+export const productLogModel = model<IProductLog & Document>(
+  'ProductLog',
+  productLog,
+)
