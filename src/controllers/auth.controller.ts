@@ -31,7 +31,10 @@ class AuthController {
   public loginAdmin = async(req:Request,res:Response,next:NextFunction) => {
     try {
       const { phoneNumber, password } = req.body
-      if(!phoneNumber || !password ) throw new HttpException(400,'phoneNumber or password is wrong')
+      console.log(req.body)
+      if(!phoneNumber || !password ) {
+        throw new HttpException(400,'phoneNumber or password is wrong 1')
+      }
       res.json(await this.authService.login({phoneNumber,password}))
     } catch (error) {
       next(error)

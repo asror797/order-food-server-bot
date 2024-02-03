@@ -5,7 +5,7 @@ export async function autoCancelOrder() {
   try {
     const expiredOrders = await orderModel.find({
       is_canceled: false,
-      createdAt: { $lt: new Date(Date.now() - 0.5 * 60 * 1000) },
+      createdAt: { $lt: new Date(Date.now() - 20 * 60 * 1000) },
     }).select('is_canceled').populate('client','telegram_id').exec()
 
 

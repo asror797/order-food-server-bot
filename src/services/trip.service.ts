@@ -139,24 +139,6 @@ export class TripService {
     }
 
     const productCount: IProductCount[] | any = {}
-
-    // for(let i =0;i<Object.keys(countProduct).length;i++){ // ["1","0.7"]
-    //   console.log(countProduct[Object.keys(countProduct)[i]])
-    //   for(let a=0;a<countProduct[Object.keys(countProduct)[i]].products.length;a++){
-    //     productCount[countProduct[Object.keys(countProduct)[i]].products[a].product._id]
-    //     if(Object.keys(productCount).includes(countProduct[Object.keys(countProduct)[i]].products[a].product._id)){
-
-    //       productCount[countProduct[Object.keys(countProduct)[i]].products[a].product._id].amount =
-    //             productCount[countProduct[Object.keys(countProduct)[i]].products[a].product._id] + countProduct[Object.keys(countProduct)[i]].products[a].amount * countProduct[Object.keys(countProduct)[i]].amount
-    //     } else {
-    //       productCount[countProduct[Object.keys(countProduct)[i]].products[a].product._id] = {
-    //          name:countProduct[Object.keys(countProduct)[i]].products[a].product.name,
-    //          unit:countProduct[Object.keys(countProduct)[i]].products[a].product.unit,
-    //          amount:  countProduct[Object.keys(countProduct)[i]].products[a].amount * countProduct[Object.keys(countProduct)[i]].amount}
-    //     }
-    //   }
-    // }
-
     Object.keys(countProduct).forEach((orderId) => {
       countProduct[orderId].products.forEach((product) => {
         const productId = product.product._id
@@ -237,10 +219,7 @@ export class TripService {
 
   public async createTrip(tripData: CreateTrip) {
     const { meal, org, sent_at } = tripData
-    console.log(sent_at)
-
     const Org = await this.org.findById(org)
-
     if (!Org) throw new HttpException(400, 'org not foud')
 
     const latestData: any = await this.trips

@@ -342,17 +342,19 @@ export class UserService {
   }
 
   public async getTelegramIDOfClients(org: string) {
-    const Org = await this.orgs.findById(org)
-    if (!Org) throw new HttpException(400, 'org not found')
     const clients = await this.users
       .find({
-        org: org,
-        $and: [{ roles: 'user' }, { roles: { $nin: ['cook'] } }],
+        is_active: true,
+        is_verified: true,
+        role: 'user',
       })
-      .select('telegram_id roles')
+      .select('telegram_id roles').populate('org','name_org')
       .exec()
 
-    return clients
+
+      const clientsWithOrg = clients.filter(client => client.org !== null)
+
+    return clientsWithOrg
   }
 
   public async revenueOfUser(payload: any) {

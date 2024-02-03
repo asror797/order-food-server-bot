@@ -1,7 +1,7 @@
 import { config } from 'dotenv'
 config({ path: `.env` })
 
-export const PORT = Number(process.env.PORT || 3000)
+export const PORT = Number(process.env.PORT || 9070)
 
 export const { 
   ORDER_CANCEL_TIME,
