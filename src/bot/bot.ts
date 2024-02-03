@@ -165,7 +165,7 @@ class BotService {
           }
         })
       } else {
-        if(isExist.data && isExist.data.is_active == true && isExist.data.is_verified == true) {
+        if(isExist.data && isExist.data.is_active == true && isExist.data.is_verified == true && isExist.data.org?.name_org) {
           if(isExist.data.role == 'user') {
             if(chatType == 'private') this.handleClientCommands(msg)
             if(chatType == 'group' || chatType == 'supergroup') this.handleGroupCommands(msg) 
@@ -187,29 +187,38 @@ class BotService {
                   ])
               })
     
-              this.bot.sendMessage(chatId,"Taomni tanlang: ",{ reply_markup: {
+              this.bot.sendMessage(chatId,"Ovqatni tanlang: ",{ reply_markup: {
                 inline_keyboard: [
                  ...keys
                 ]
               }})
     
+            } else if(messageText == "Buyurtmalarni ko'rish") {
+              const trip = await this.tripService.tripRetrieveOne(chatId)
+              if (trip.status) console.log(trip.data)
+              let outputStr = '\nSarflanadigan Mahsulotlar:\n\n'
+              let countLunch = ''
+
+              console.log(trip.count)
+              if (trip.count) {
+                Object.keys(trip.count).forEach((lunch, e) => {
+                  countLunch += `${e + 1}. ${lunch} - ${trip.count[lunch].amount} kishi\n`
+                })
+              }
+
+              Object.keys(trip.productCount).forEach((product, e) => {
+                outputStr += `${e + 1}. ${trip.productCount[product].name} - ${
+                  trip.productCount[product].amount
+                } ${trip.productCount[product].unit}\n`
+              })
+
+              this.bot.sendMessage(
+                chatId,
+                `${trip.data.meal.name}\n${trip.data.candidates.length} ta hohlaydi.\n\nShundan:\n${countLunch} ${outputStr}`,
+              )
             }
           }
-        } else if(!isExist.data) {
-          this.bot.sendMessage(chatId,"Siz ro'yhatdan o'tmagansiz\n telfon raqamingizni yuboring",{
-            reply_markup: {
-              keyboard: [
-                [
-                  {
-                    text:"Telfon raqami yuborish",
-                    request_contact: true
-                  }
-                ],
-              ],
-              resize_keyboard: true
-            }
-          })
-        } else if(isExist.data && isExist.data.is_verified == false) {
+        } else if((isExist.data && isExist.data.is_verified == false) || !isExist.data.org?.name_org) {
           this.bot.sendMessage(chatId,'<b>Siz tasdiqlanmagansiz!</b> \nIltimos admin tomonidan tasdiqlanishingizni kuting',{ 
             parse_mode:'HTML',
             reply_markup: {
@@ -531,48 +540,48 @@ class BotService {
         console.log(ID)
 
         this.bot.sendMessage(chatId, 'ok')
-        // const Trip = await this.tripService.agreeClient(ID,chatId)
+        const Trip = await this.tripService.agreeClient(ID,chatId)
 
-        // if(Trip.status && Trip.data) {
-        //   const {  user ,trip , org} = Trip.data
-        //   console.log('User',user)
-        //   console.log('Trip',trip)
-        //   console.log('Org',org)
-        //   if(user) {
-        //     this.bot.sendMessage(chatId,`${trip?.meal?.name} Qabul qilindi`,{
-        //       reply_markup: {
-        //         inline_keyboard: [
-        //           [
-        //             {
-        //               text:'Olish uchun keldim',
-        //               callback_data:`ask-${trip['_id']}-${user['_id']}`
-        //             }
-        //           ]
-        //         ]
-        //       }
-        //     })
-        //     this.bot.sendMessage(org.group_b_id,`Kimga: \n👤: ${user?.first_name} ${user?.last_name}\n📞: +998${user?.phone_number} \n`,{
-        //       reply_markup: {
-        //         inline_keyboard: [
-        //           [
-        //             {
-        //               text:'Bajarish ✅',
-        //               callback_data:'remove'
-        //             }
-        //           ],
-        //           [
-        //             {
-        //               text:'Bekor qilish ❌',
-        //               callback_data:`canceltrip-${trip['_id']}-${chatId}`
-        //             }
-        //           ]
-        //         ]
-        //       }
-        //     })
-        //   }
-        // } else {
-        //   this.bot.sendMessage(chatId,'Vaqt tugadi.')
-        // }
+        if(Trip.status && Trip.data) {
+          const {  user ,trip , org} = Trip.data
+          console.log('User',user)
+          console.log('Trip',trip)
+          console.log('Org',org)
+          if(user) {
+            this.bot.sendMessage(chatId,`${trip?.meal?.name} Qabul qilindi`,{
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text:'Olish uchun keldim',
+                      callback_data:`ask-${trip['_id']}-${user['_id']}`
+                    }
+                  ]
+                ]
+              }
+            })
+            this.bot.sendMessage(org.group_b_id,`Kimga: \n👤: ${user?.first_name} ${user?.last_name}\n📞: +998${user?.phone_number} \n`,{
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text:'Bajarish ✅',
+                      callback_data:'remove'
+                    }
+                  ],
+                  [
+                    {
+                      text:'Bekor qilish ❌',
+                      callback_data:`canceltrip-${trip['_id']}-${chatId}`
+                    }
+                  ]
+                ]
+              }
+            })
+          }
+        } else {
+          this.bot.sendMessage(chatId,'Vaqt tugadi.')
+        }
       } else if (splited == 'disagree' && chatId && callbackQuery.message && ID) {
         await this.bot.deleteMessage(chatId, callbackQuery.message?.message_id)
         const trip = await this.tripService.disagreeClient(ID, chatId)
@@ -658,7 +667,7 @@ class BotService {
       if (splited == 'newtrip' && chatId && data && callbackQuery.message) {
         await this.bot.deleteMessage(chatId, callbackQuery.message?.message_id)
         const User = await this.users.isExist(chatId)
-        if (User.data?.roles) {
+        if (User.data?.role == 'cook') {
           console.log(User.data)
           const newTrip: any = await this.tripService.createTrip({
             meal: data.split('-')[1],
@@ -688,6 +697,8 @@ class BotService {
             const clients = await this.users.getTelegramIDOfClients(
               User.data.org['_id'],
             )
+
+            console.log(clients)
             clients.map((e: any) => {
               this.bot.sendMessage(
                 e.telegram_id,
@@ -731,7 +742,7 @@ class BotService {
             )
             this.bot.sendMessage(
               chatId,
-              `Tanlangan taom:\nnomi: ${Lunch.name}`,
+              `Tanlangan ovqat:\nnomi: ${Lunch.name}`,
               {
                 reply_markup: {
                   inline_keyboard: [

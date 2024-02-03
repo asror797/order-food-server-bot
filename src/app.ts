@@ -19,7 +19,7 @@ class App {
   constructor(routes: Routes[]) {
     console.log(PORT)
     this.app = express()
-    this.port = PORT
+    this.port = 9070 || PORT
     this.bot = botService
 
     this.connectToDatabase()
@@ -28,7 +28,7 @@ class App {
     this.initialieErrorHandling()
     this.initializeSwagger()
     this.initializeBot()
-    // this.autoCancel()
+    this.autoCancel()
   }
 
   private async connectToDatabase() {
@@ -84,7 +84,7 @@ class App {
   }
 
   private async autoCancel() {
-    setInterval(autoCancelOrder,0.5 * 60 * 1000)
+    setInterval(autoCancelOrder,20 * 60 * 1000)
   }
 }
 
