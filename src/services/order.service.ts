@@ -18,9 +18,9 @@ import {
   OrderRetrieveByUserDto,
   UpdateOrder,
 } from '../dtos/order.dto'
-import { foodModel, orderModel, userModel } from '@models'
+import { foodModel, orderModel, orgModel, userModel } from '@models'
 import { HttpException } from '@exceptions'
-import { PaymentService, FoodService } from '@services'
+import { PaymentService, FoodService, TripService } from '@services'
 import { uz } from 'date-fns/locale'
 
 export class OrderService {
@@ -385,6 +385,68 @@ export class OrderService {
     return {
       user: User,
       data: response,
+    }
+  }
+
+  public async getSpentMoney(payload: { userId: string, startDate?: string, endDate?: string, org?: string }) {
+    interface IOrg {
+      id: string
+      name: string
+    }
+
+    let options:any = {}
+   
+    const UserOrg:IOrg = { id: '', name: ''}
+    const User = await this.users.findById(payload.userId).exec()
+    if(!User) {
+      throw new HttpException(400,'User not found')
+    }
+
+    if(payload.org) {
+      const Org = await orgModel.findById(payload.org).exec()
+      if(!Org) throw new HttpException(400,'org not found')
+      UserOrg.id = Org['_id']
+      UserOrg.name = Org.name_org
+      options.org = Org['_id']
+    }
+
+    interface Order { id: number , data: any, label: string}
+    let allOrders:Order[] = []
+    const start = payload.startDate ? new Date(payload.startDate) : startOfMonth(new Date())
+    const end = payload.endDate ?  new Date(payload.endDate) : endOfMonth(new Date())
+
+    const daysOfTimeSequance = eachDayOfInterval({
+      start: new Date(start),
+      end: new Date(end)
+    })
+
+    if(daysOfTimeSequance.length > 62) {
+      throw new HttpException(200,'too long date')
+    } else {
+      await Promise.all(daysOfTimeSequance.map(async(day,i:number) => {
+        const orders = await this.orders.find({
+          ...options,
+          client: payload.userId,
+          is_accepted: true,
+          createdAt: {
+            $gte: startOfDay(day),
+            $lte: endOfDay(day)
+          }
+        }).select('total_cost')
+        allOrders.push({
+          id: i,
+          data: orders.reduce((accumulator, currentValue) => accumulator + currentValue.total_cost ,0),
+          label: format(day, 'MMMM d', { locale: uz })
+        })
+      }))
+  
+      allOrders.sort((a, b) => a.id - b.id)
+  
+      return {
+        user: { id: User['_id'], fullName: `${User.first_name} ${User.last_name}`, phoneNumber: User.phone_number},
+        org: UserOrg,
+        data: allOrders
+      }
     }
   }
 

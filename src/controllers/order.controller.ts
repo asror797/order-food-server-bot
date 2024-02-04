@@ -71,6 +71,28 @@ class OrderController {
     }
   }
 
+  public  getAllSpentUser = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
+    try {
+      const user = req.query.user as string | undefined
+      const org = req.query.org as string | undefined
+      const start = req.query.start as string | undefined
+      const end = req.query.end as string | undefined
+
+      if(!user) {
+        throw new HttpException(400,'userId is required')
+      }
+
+      res.json(await this.orderService.getSpentMoney({
+        userId: user,
+        endDate: end,
+        startDate: start,
+        org: org
+      }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public getOldAnalitics = async (
     req: Request<ParsedQs>,
     res: Response,
