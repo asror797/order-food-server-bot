@@ -135,7 +135,7 @@ export class PaymentService {
       totalSum: allPayments.reduce((accumlator, current) => accumlator + current.data , 0),
       startDate: format(start,'d MMMM yyyy', { locale: uz}),
       endDate: format(end,'d MMMM yyyy', { locale: uz}),
-      data: allPayments
+      data: allPayments.sort((a, b) => a.id - b.id)
     }
   }
 }
