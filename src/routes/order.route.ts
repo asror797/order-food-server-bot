@@ -25,5 +25,6 @@ export class OrderRoute {
       `${this.path}/old-analitics/:user`,
       this.orderController.getOldAnalitics,
     )
+    this.router.get(`${this.path}/total-spent`,this.orderController.getAllSpentUser)
   }
 }
