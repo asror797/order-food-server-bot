@@ -2,6 +2,8 @@ import { botService } from '@bot'
 import { userModel, paymentModel } from '@models'
 import { CreatePaymentDto } from '../dtos/payment.dto'
 import { HttpException } from '@exceptions'
+import { eachDayOfInterval, endOfDay, endOfMonth, format, startOfDay, startOfMonth } from 'date-fns'
+import { uz } from 'date-fns/locale'
 
 export class PaymentService {
   private userRepo = userModel
@@ -85,5 +87,55 @@ export class PaymentService {
     )
 
     return updatedUser
+  }
+
+  public async calculateSpents(payload: {user: string , org?: string, start?: string, end?: string }) {
+    const User = await this.userRepo.findById(payload.user)
+    if (!User) throw new HttpException(400, 'user not found')
+
+    const options: any = {}
+    if(payload.org) {
+      options.org = payload.org
+    }
+    const start = payload.start ? new Date(payload.start) : startOfMonth(new Date())
+    const end = payload.end ?  new Date(payload.end) : endOfMonth(new Date())
+
+    const daysOfTimeSequance = eachDayOfInterval({
+      start: new Date(start),
+      end: new Date(end)
+    })
+    
+    interface IPayment {
+      id: number
+      data: number
+      label: string
+    }
+    const allPayments:IPayment[] = []
+    await Promise.all(daysOfTimeSequance.map(async(day,i:number) => {
+
+      const payments = await this.paymentRepo.find({
+        ...options,
+        client: payload.user,
+        type: false,
+        createdAt: {
+          $gte: startOfDay(day),
+          $lte: endOfDay(day)
+        }
+      }).select('amount')
+
+
+      allPayments.push({
+        id: i,
+        data: payments.reduce((accumulator, currentValue) => accumulator + currentValue.amount ,0),
+        label: format(day, 'MMMM d', { locale: uz })
+      })
+
+    }))
+    return {
+      totalSum: allPayments.reduce((accumlator, current) => accumlator + current.data , 0),
+      startDate: format(start,'d MMMM yyyy', { locale: uz}),
+      endDate: format(end,'d MMMM yyyy', { locale: uz}),
+      data: allPayments
+    }
   }
 }
