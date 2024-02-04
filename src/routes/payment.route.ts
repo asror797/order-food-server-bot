@@ -12,5 +12,6 @@ export class PaymentRoute {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.paymentController.paymentRetrieveAll)
+    this.router.get(`${this.path}/spents`,this.paymentController.calculateSpents)
   }
 }
