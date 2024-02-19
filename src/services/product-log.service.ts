@@ -6,6 +6,12 @@ export class ProductLogService {
   public productLog = productLogModel
   public products = productModel
 
+  public async productLogRetrieveAll(): Promise<any> {}
+  public async productLogRetrieveOne(): Promise<any> {}
+  public async productLogCreate(): Promise<any> {}
+  public async productLogUpdate(): Promise<any> {}
+  public async productLogDelete(): Promise<any> {}
+
   public async getLog(page: number, size: number) {
     const skip = (page - 1) * size
     const products = await this.productLog
@@ -25,7 +31,7 @@ export class ProductLogService {
       currentPage: page,
       totalPages,
       totalProductLog,
-      productLogsOnPage: products.length,
+      productLogsOnPage: products.length
     }
   }
 
@@ -38,12 +44,12 @@ export class ProductLogService {
 
     const updateProductAmount = await this.products.findOneAndUpdate(
       {
-        _id: product,
+        _id: product
       },
       {
-        amount: type ? isExist.amount + amount : isExist.amount - amount,
+        amount: type ? isExist.amount + amount : isExist.amount - amount
       },
-      { new: true },
+      { new: true }
     )
 
     console.log(updateProductAmount)
@@ -53,7 +59,7 @@ export class ProductLogService {
       type,
       cost,
       product,
-      org,
+      org
     })
 
     return newLog
@@ -71,7 +77,7 @@ export class ProductLogService {
       type,
       cost,
       product,
-      org,
+      org
     })
 
     return newLog

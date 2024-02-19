@@ -5,7 +5,7 @@ import {
   EditUserDto,
   Payment,
   SendMessae,
-  UpdateUserDto,
+  UpdateUserDto
 } from '../dtos/user.dto'
 import { ParsedQs } from 'qs'
 import { PaymentService } from '@services'
@@ -18,7 +18,7 @@ class UserController {
   public getUsers = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const search = req.query.search as string
@@ -29,8 +29,8 @@ class UserController {
         await this.userService.userRetrieveAll({
           search,
           page,
-          size,
-        }),
+          size
+        })
       )
     } catch (error) {
       console.log(error)
@@ -50,7 +50,7 @@ class UserController {
   public createUser = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const userData: CreateUserDto = req.body
@@ -65,7 +65,7 @@ class UserController {
   public verifyUser = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const userData: string = req.params.user
@@ -77,8 +77,8 @@ class UserController {
           type: 'verify',
           is_active: true,
           is_verified: true,
-          org: '',
-        }),
+          org: ''
+        })
       )
     } catch (error) {
       next(error)
@@ -88,7 +88,7 @@ class UserController {
   public updateStatus = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       interface Status {
@@ -104,8 +104,8 @@ class UserController {
           last_name: '',
           type: 'status',
           org: '',
-          is_active: userStatus.is_active,
-        }),
+          is_active: userStatus.is_active
+        })
       )
     } catch (error) {
       next(error)
@@ -115,7 +115,7 @@ class UserController {
   public updateOrg = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const user: string = req.params.user as string
@@ -138,7 +138,7 @@ class UserController {
   public updateInfoUser = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const userData: UpdateUserDto = req.body
@@ -151,7 +151,7 @@ class UserController {
   public sendMessage = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const msgData: SendMessae = req.body
@@ -164,7 +164,7 @@ class UserController {
   public transitPayment = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const user = req.params.user as string
@@ -172,8 +172,8 @@ class UserController {
       res.json(
         await this.userService.transitPayment({
           ...paymentData,
-          user,
-        }),
+          user
+        })
       )
     } catch (error) {
       next(error)
@@ -192,7 +192,7 @@ class UserController {
   public updateUserRole = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const { user, role, type } = req.body
@@ -237,7 +237,7 @@ class UserController {
       } else {
         res.json({
           message: 'bad request',
-          status: 400,
+          status: 400
         })
       }
     } catch (error) {
@@ -248,7 +248,7 @@ class UserController {
   public SearchUser = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       console.log(req.query.search)

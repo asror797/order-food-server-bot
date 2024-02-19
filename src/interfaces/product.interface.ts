@@ -4,7 +4,7 @@ import { IOrg } from './org.interface'
 export enum Units {
   KILOGRAM = 'kilogram',
   LITR = 'litr',
-  DONA = 'dona',
+  DONA = 'dona'
 }
 
 export interface IProduct extends Document {

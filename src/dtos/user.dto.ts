@@ -5,7 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsPositive,
-  IsString,
+  IsString
 } from 'class-validator'
 
 export class CreateUserDto {

@@ -4,7 +4,7 @@ import { IOrg } from './org.interface'
 export enum Category {
   DRINKS = 'drinks',
   SNAKCS = 'snacks',
-  DESSERT = 'dessert',
+  DESSERT = 'dessert'
 }
 
 export interface ProductWithAmount {

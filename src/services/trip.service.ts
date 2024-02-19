@@ -13,6 +13,7 @@ export class TripService {
   public lunch = lunchModel
   public paymentService = new PaymentService()
 
+
   public async getTrips(page: number, size: number) {
     const skip = (page - 1) * size
 
@@ -29,7 +30,7 @@ export class TripService {
         //   model: 'Product',
         //   select:'name '
         // },
-        select: 'name cost',
+        select: 'name cost'
       })
       .populate('org', 'name_org')
       .populate('meal', 'name')
@@ -41,7 +42,7 @@ export class TripService {
       currentPage: page,
       totalPages,
       totalTrips,
-      tripsOnPage: trips.length,
+      tripsOnPage: trips.length
     }
   }
 
@@ -50,16 +51,16 @@ export class TripService {
       .findById(id)
       .populate(
         'candidates.user',
-        'first_name last_name phone_number telegram_id',
+        'first_name last_name phone_number telegram_id'
       )
       .populate({
         path: 'candidates.lunch',
         populate: {
           path: 'products.product',
           model: 'Product',
-          select: 'name ',
+          select: 'name '
         },
-        select: 'name cost',
+        select: 'name cost'
       })
       .exec()
 
@@ -70,13 +71,13 @@ export class TripService {
 
   public async tripRetrieveOne(client: number) {
     const cook = await this.users.findOne({
-      telegram_id: client,
+      telegram_id: client
     })
 
     if (!cook || !cook?.org) {
       return {
         status: false,
-        data: {},
+        data: {}
       }
     }
 
@@ -90,8 +91,8 @@ export class TripService {
         populate: {
           path: 'products.product',
           model: 'Product',
-          select: 'name unit',
-        },
+          select: 'name unit'
+        }
       })
       .populate('meal', 'name')
       .select('-createdAt -updatedAt')
@@ -108,7 +109,7 @@ export class TripService {
               unit: string
             }
             amount: number
-          },
+          }
         ]
         amount: number
       }
@@ -123,7 +124,7 @@ export class TripService {
       if (!countProduct[lunch.name]) {
         countProduct[lunch.name] = {
           products: lunch.products,
-          amount: 1,
+          amount: 1
         }
       } else {
         countProduct[lunch.name].amount++
@@ -150,7 +151,7 @@ export class TripService {
           productCount[productId] = {
             name: product.product.name,
             unit: product.product.unit,
-            amount: product.amount * countProduct[orderId].amount,
+            amount: product.amount * countProduct[orderId].amount
           }
         }
       })
@@ -160,7 +161,7 @@ export class TripService {
       status: true,
       data: latestData,
       count: countProduct,
-      productCount: productCount,
+      productCount: productCount
     }
   }
 
@@ -184,35 +185,35 @@ export class TripService {
         const newTrip = await this.trips.create({
           sent_at: Math.floor(Date.now() / 1000),
           meal: base,
-          org: org,
+          org: org
         })
 
         return {
           status: true,
           data: await this.trips
             .findById(newTrip['_id'])
-            .populate('meal', 'name cost'),
+            .populate('meal', 'name cost')
         }
       } else {
         return {
           status: false,
           data: {
-            diffrence: Org.trip_timeout - diffrence,
-          },
+            diffrence: Org.trip_timeout - diffrence
+          }
         }
       }
     } else {
       const newTrip = await this.trips.create({
         sent_at: Math.floor(Date.now() / 1000),
         meal: base,
-        org: org,
+        org: org
       })
 
       return {
         status: true,
         data: await this.trips
           .findById(newTrip['_id'])
-          .populate('meal', 'name cost'),
+          .populate('meal', 'name cost')
       }
     }
   }
@@ -223,7 +224,8 @@ export class TripService {
     if (!Org) throw new HttpException(400, 'org not foud')
 
     const latestData: any = await this.trips
-      .findOne().where({
+      .findOne()
+      .where({
         org: org
       })
       .sort({ createdAt: -1 })
@@ -237,35 +239,35 @@ export class TripService {
         const newTrip = await this.trips.create({
           sent_at: Math.floor(Date.now() / 1000),
           meal: meal,
-          org: org,
+          org: org
         })
 
         return {
           status: true,
           data: await this.trips
             .findById(newTrip['_id'])
-            .populate('meal', 'name cost'),
+            .populate('meal', 'name cost')
         }
       } else {
         return {
           status: false,
           data: {
-            diffrence: Org.trip_timeout - diffrence,
-          },
+            diffrence: Org.trip_timeout - diffrence
+          }
         }
       }
     } else {
       const newTrip = await this.trips.create({
         sent_at: Math.floor(Date.now() / 1000),
         meal: meal,
-        org: org,
+        org: org
       })
 
       return {
         status: true,
         data: await this.trips
           .findById(newTrip['_id'])
-          .populate('meal', 'name cost'),
+          .populate('meal', 'name cost')
       }
     }
   }
@@ -273,7 +275,7 @@ export class TripService {
   public async pushUser(trip: string, client: number, lunch: string) {
     const user = await this.users
       .findOne({
-        telegram_id: Number(client),
+        telegram_id: Number(client)
       })
       .populate('org')
 
@@ -290,9 +292,9 @@ export class TripService {
         .findByIdAndUpdate(
           trip,
           {
-            $push: { candidates: { user: user['_id'], lunch: lunch } },
+            $push: { candidates: { user: user['_id'], lunch: lunch } }
           },
-          { new: true },
+          { new: true }
         )
         .populate('meal')
         .exec()
@@ -300,7 +302,7 @@ export class TripService {
       if (!updatedTrip) throw new HttpException(400, 'something went wrong')
       const payment = await this.paymentService.dicrease({
         user: user['_id'],
-        amount: Lunch.cost,
+        amount: Lunch.cost
       })
       console.log('Payment', payment)
 
@@ -311,15 +313,15 @@ export class TripService {
           trip: updatedTrip,
           type: true,
           user: user,
-          lunch: Lunch,
-        },
+          lunch: Lunch
+        }
       }
     } else {
       return {
         status: false,
         data: {
-          diffrence: user.org?.trip_timeout - diffrence,
-        },
+          diffrence: user.org?.trip_timeout - diffrence
+        }
       }
     }
   }
@@ -327,7 +329,7 @@ export class TripService {
   public async agreeClient(trip: string, client: number) {
     const user = await this.users
       .findOne({
-        telegram_id: Number(client),
+        telegram_id: Number(client)
       })
       .populate('org')
     console.log(user)
@@ -344,9 +346,9 @@ export class TripService {
         .findByIdAndUpdate(
           trip,
           {
-            $push: { agree_users: user['_id'] },
+            $push: { agree_users: user['_id'] }
           },
-          { new: true },
+          { new: true }
         )
         .populate('meal')
         .exec()
@@ -354,7 +356,7 @@ export class TripService {
       if (!updatedTrip) throw new HttpException(400, 'something went wrong')
       const payment = await this.paymentService.dicrease({
         user: user['_id'],
-        amount: updatedTrip.meal.cost,
+        amount: updatedTrip.meal.cost
       })
       console.log('Payment', payment)
 
@@ -364,15 +366,15 @@ export class TripService {
           org: user.org,
           trip: updatedTrip,
           type: true,
-          user: user,
-        },
+          user: user
+        }
       }
     } else {
       return {
         status: false,
         data: {
-          diffrence: user.org?.trip_timeout - diffrence,
-        },
+          diffrence: user.org?.trip_timeout - diffrence
+        }
       }
     }
   }
@@ -393,47 +395,47 @@ export class TripService {
         {
           $match: {
             _id: new mongoose.Types.ObjectId(trip),
-            'candidates.user': new mongoose.Types.ObjectId(user),
-          },
+            'candidates.user': new mongoose.Types.ObjectId(user)
+          }
         },
         {
-          $unwind: '$candidates',
+          $unwind: '$candidates'
         },
         {
           $match: {
-            'candidates.user': new mongoose.Types.ObjectId(user),
-          },
+            'candidates.user': new mongoose.Types.ObjectId(user)
+          }
         },
         {
           $lookup: {
             from: 'users', // Assuming the user collection is named 'users'
             localField: 'candidates.user',
             foreignField: '_id',
-            as: 'attendedUser.user',
-          },
+            as: 'attendedUser.user'
+          }
         },
         {
           $lookup: {
             from: 'lunches', // Assuming the lunch collection is named 'lunches'
             localField: 'candidates.lunch',
             foreignField: '_id',
-            as: 'attendedUser.lunch',
-          },
+            as: 'attendedUser.lunch'
+          }
         },
         {
           $project: {
             'attendedUser.user': { $arrayElemAt: ['$attendedUser.user', 0] },
             'attendedUser.lunch': { $arrayElemAt: ['$attendedUser.lunch', 0] },
             'attendedUser.total': '$candidates.total',
-            'attendedUser._id': '$candidates._id',
-          },
-        },
+            'attendedUser._id': '$candidates._id'
+          }
+        }
       ])
       .exec()
 
     const Order = await this.trips
       .findOne({
-        _id: trip,
+        _id: trip
       })
       .populate('meal', 'name')
       .populate('org', 'group_a_id group_b_id')
@@ -442,7 +444,7 @@ export class TripService {
     return {
       meal: Order?.meal,
       org: Order?.org,
-      candidates: [userByTrip[0].attendedUser],
+      candidates: [userByTrip[0].attendedUser]
     }
   }
 
@@ -450,7 +452,7 @@ export class TripService {
     const { trip, client } = payload
     const user = await this.users
       .findOne({
-        telegram_id: Number(client),
+        telegram_id: Number(client)
       })
       .populate('org')
     console.log(user)
@@ -459,7 +461,7 @@ export class TripService {
     const Trip = await this.trips.findByIdAndUpdate(
       trip,
       { $pull: { agree_users: user['_id'] } },
-      { new: true },
+      { new: true }
     )
     console.log(Trip)
   }
@@ -467,7 +469,7 @@ export class TripService {
   public async disagreeClient(trip: string, client: number) {
     const user = await this.users
       .findOne({
-        telegram_id: Number(client),
+        telegram_id: Number(client)
       })
       .populate('org')
     if (!user) throw new HttpException(400, 'user not found')
@@ -476,22 +478,24 @@ export class TripService {
     const updatedTrip = await this.trips.findByIdAndUpdate(
       trip,
       {
-        $push: { disagree_users: user['_id'] },
+        $push: { disagree_users: user['_id'] }
       },
-      { new: true },
+      { new: true }
     )
     console.log(updatedTrip)
 
     return updatedTrip
   }
 
-  public async getTotalSpentsOfUser(payload:any) {
-    const startDate = payload.startDate ?  payload.startDate : startOfMonth(new Date())
+  public async getTotalSpentsOfUser(payload: any) {
+    const startDate = payload.startDate
+      ? payload.startDate
+      : startOfMonth(new Date())
     const endDate = payload.endDate ? payload.endDate : endOfMonth(new Date())
     const pipeline = [
       {
         $match: {
-          'createdAt': { $gte: startDate, $lte: endDate },
+          createdAt: { $gte: startDate, $lte: endDate },
           'candidates.user': new mongoose.Types.ObjectId(payload.userId)
         }
       },
@@ -500,31 +504,31 @@ export class TripService {
       },
       {
         $match: {
-          'candidates.user': new mongoose.Types.ObjectId(payload.userId) 
+          'candidates.user': new mongoose.Types.ObjectId(payload.userId)
         }
       },
       {
         $lookup: {
-          from: 'lunches', 
+          from: 'lunches',
           localField: 'candidates.lunch',
           foreignField: '_id',
-          as: 'lunch' 
+          as: 'lunch'
         }
       },
       {
         $project: {
-          '_id': 0,
-          'attendedUser': '$candidates.user', 
-          'lunch': { $arrayElemAt: ['$lunch', 0] },
-          'total': '$candidates.total' 
+          _id: 0,
+          attendedUser: '$candidates.user',
+          lunch: { $arrayElemAt: ['$lunch', 0] },
+          total: '$candidates.total'
         }
       },
       {
         $limit: 70
       }
-    ];
+    ]
 
-    const result = await this.trips.aggregate(pipeline);
+    const result = await this.trips.aggregate(pipeline)
 
     console.log(result)
 

@@ -5,6 +5,12 @@ import { orgModel } from '@models'
 export class OrgService {
   private orgs = orgModel
 
+  public async orgRetrieveAll(): Promise<any> {}
+  public async orgRetrieveOne(): Promise<any> {}
+  public async orgCreate(): Promise<any> {}
+  public async orgUpdate(): Promise<any> {}
+  public async orgDelete(): Promise<any> {}
+
   public async get(page: number, size: number) {
     const skip = (page - 1) * size
 
@@ -21,13 +27,13 @@ export class OrgService {
       currentPage: page,
       totalPages,
       totalOrgs,
-      orgsOnPage: org.length,
+      orgsOnPage: org.length
     }
   }
 
   public async createOrg(name: string) {
     const newOrg = await this.orgs.create({
-      name_org: name,
+      name_org: name
     })
 
     return newOrg
@@ -67,9 +73,9 @@ export class OrgService {
     const updatedOrg = await this.orgs.findByIdAndUpdate(
       org,
       {
-        trip_timeout: Number(time),
+        trip_timeout: Number(time)
       },
-      { new: true },
+      { new: true }
     )
 
     console.log(updatedOrg)
@@ -91,7 +97,7 @@ export class OrgService {
       newOrgField.group_b_id = Number(group_b_id)
     }
     const updatedGroup = await this.orgs.findByIdAndUpdate(org, newOrgField, {
-      new: true,
+      new: true
     })
     console.log(updatedGroup)
     return updatedGroup

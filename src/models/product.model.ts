@@ -5,35 +5,35 @@ const productSchema: Schema = new Schema(
   {
     amount: {
       type: Number,
-      default: 0,
+      default: 0
     },
     name: {
       type: String,
-      required: true,
+      required: true
     },
     min_amount: {
       type: Number,
-      default: 0,
+      default: 0
     },
     cost: {
       type: Number,
-      default: 0,
+      default: 0
     },
     unit: {
       type: String,
       enum: Object.values(Units),
-      required: true,
+      required: true
     },
     org: {
       type: Schema.Types.ObjectId,
       ref: 'Org',
-      required: true,
-    },
+      required: true
+    }
   },
   {
     versionKey: false,
-    timestamps: true,
-  },
+    timestamps: true
+  }
 )
 
 export const productModel = model<IProduct & Document>('Product', productSchema)

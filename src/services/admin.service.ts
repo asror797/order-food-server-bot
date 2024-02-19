@@ -9,7 +9,11 @@ export class AdminService {
   public org = orgModel
 
   public async getAdmins() {
-    return await this.admins.find().populate({ path: 'org',select: ' name_org'}).populate({ path: 'role', select: 'title module'}).exec()
+    return await this.admins
+      .find()
+      .populate({ path: 'org', select: ' name_org' })
+      .populate({ path: 'role', select: 'title module' })
+      .exec()
   }
 
   public async createAdmin(adminData: CreateAdmin) {
@@ -17,12 +21,12 @@ export class AdminService {
     return newAdmin
   }
 
-  public async create(payload:any) {
+  public async create(payload: any) {
     const role = await this.role.findById(payload.roleId)
     const org = await this.org.findById(payload.orgId)
 
-    if(!org || !role ) {
-      throw new HttpException(400,'Role or Org not found')
+    if (!org || !role) {
+      throw new HttpException(400, 'Role or Org not found')
     }
 
     const newAdmin = await this.admins.create({
@@ -40,7 +44,7 @@ export class AdminService {
     const { password, phone_number } = adminData
 
     let admin: any = await this.admins.find({
-      phone_number: phone_number,
+      phone_number: phone_number
     })
 
     if (admin.length >= 0) {
@@ -57,8 +61,8 @@ export class AdminService {
       token: jwt.sign(JSON.stringify(admin), 'secret_key'),
       admin: {
         fullname: admin.fullname,
-        role: admin.role,
-      },
+        role: admin.role
+      }
     }
   }
 
@@ -88,33 +92,37 @@ export class AdminService {
 
     const updatedAdmin = await this.admins.findOneAndUpdate(
       {
-        _id: admin,
+        _id: admin
       },
       { ...updatesData },
-      { new: true },
+      { new: true }
     )
 
     return updatedAdmin
   }
 
-  public async updateAdminRole(payload:any) {
-    const { id, role, } = payload
+  public async updateAdminRole(payload: any) {
+    const { id, role } = payload
 
     const Admin = await this.admins.findById(id).exec()
-    if(!Admin) {
-      throw new HttpException(400,'Admin Not Found')
+    if (!Admin) {
+      throw new HttpException(400, 'Admin Not Found')
     }
     const Role = await this.role.findById(role).exec()
-    if(!Role) {
-      throw new HttpException(400,'Not Found Role')
+    if (!Role) {
+      throw new HttpException(400, 'Not Found Role')
     }
 
-    const updatedAdmin = await this.admins.findOneAndUpdate({ _id: id },{ $set: { role: role } }, { returnDocument: 'after'})
+    const updatedAdmin = await this.admins.findOneAndUpdate(
+      { _id: id },
+      { $set: { role: role } },
+      { returnDocument: 'after' }
+    )
 
-    return updatedAdmin;
+    return updatedAdmin
   }
 
-  public async deleteAdmin(payload:{ id: string }):Promise<any> {
+  public async deleteAdmin(payload: { id: string }): Promise<any> {
     const deleteAdmin = await this.admins.findByIdAndDelete(payload.id)
     return deleteAdmin
   }

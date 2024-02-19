@@ -5,12 +5,12 @@ const orderSchema: Schema = new Schema(
   {
     total_cost: {
       type: Number,
-      required: true,
+      required: true
     },
     client: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: true
     },
     foods: {
       type: [
@@ -18,33 +18,33 @@ const orderSchema: Schema = new Schema(
           food: {
             type: Schema.Types.ObjectId,
             ref: 'Food',
-            required: true,
+            required: true
           },
           amount: {
             type: Number,
-            default: 1,
-          },
-        },
-      ],
+            default: 1
+          }
+        }
+      ]
     },
     is_canceled: {
       type: Boolean,
-      default: false,
+      default: false
     },
     is_accepted: {
       type: Boolean,
-      default: false,
+      default: false
     },
     org: {
       type: Schema.Types.ObjectId,
       ref: 'Org',
-      required: true,
-    },
+      required: true
+    }
   },
   {
     versionKey: false,
-    timestamps: true,
-  },
+    timestamps: true
+  }
 )
 
 export const orderModel = model<IOrder & Document>('Order', orderSchema)

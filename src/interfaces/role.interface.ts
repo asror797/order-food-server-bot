@@ -16,7 +16,6 @@ export interface IRole extends Document {
   modules: IModule[]
 }
 
-
 /* Soft interfaces  */
 export interface Action {
   uri: string

@@ -10,85 +10,85 @@ export const ShareContact: ReplyKeyboardMarkup = {
     [
       {
         text: 'Telefon raqam yuborish 📞',
-        request_contact: true,
-      },
-    ],
+        request_contact: true
+      }
+    ]
   ],
   resize_keyboard: true,
-  one_time_keyboard: true,
+  one_time_keyboard: true
 }
 
 export const MainMenu: ReplyKeyboardMarkup = {
   keyboard: [
     [
       {
-        text: '🍽 Menu',
+        text: '🍽 Menu'
       },
       {
-        text: '💰 Balans',
-      },
+        text: '💰 Balans'
+      }
     ],
     [
       {
-        text: '✍️Izoh qoldirish',
+        text: '✍️Izoh qoldirish'
       },
       {
-        text: 'Buyurtmalarim',
-      },
-    ],
+        text: 'Buyurtmalarim'
+      }
+    ]
   ],
-  resize_keyboard: true,
+  resize_keyboard: true
 }
 
 export const FoodMenu: ReplyKeyboardMarkup = {
   keyboard: [
     [
       {
-        text: 'Asosiy menu',
+        text: 'Asosiy menu'
       },
       {
-        text: '🛒 Savat',
-      },
+        text: '🛒 Savat'
+      }
     ],
     [
       {
-        text: '🍰 Desert',
+        text: '🍰 Desert'
       },
       {
-        text: '🥤Ichimlik',
-      },
+        text: '🥤Ichimlik'
+      }
     ],
     [
       {
-        text: '🌮 Gazaklar',
-      },
-    ],
+        text: '🌮 Gazaklar'
+      }
+    ]
   ],
-  resize_keyboard: true,
+  resize_keyboard: true
 }
 
 export const SendNote: ReplyKeyboardMarkup = {
   keyboard: [
     [
       {
-        text: 'Yuborish',
-      },
-    ],
-  ],
+        text: 'Yuborish'
+      }
+    ]
+  ]
 }
 
 export const CookMenu: ReplyKeyboardMarkup = {
   keyboard: [
     [
       {
-        text: 'Yangi Buyurtma',
+        text: 'Yangi Buyurtma'
       },
       {
-        text: "Buyurtmalarni ko'rish",
-      },
-    ],
+        text: "Buyurtmalarni ko'rish"
+      }
+    ]
   ],
-  resize_keyboard: true,
+  resize_keyboard: true
 }
 
 interface TextCallBack {
@@ -102,7 +102,6 @@ interface CallBack {
   cost: number
 }
 
-
 export function formatter(data: CallBack[]) {
   const keys: any = []
 
@@ -110,8 +109,8 @@ export function formatter(data: CallBack[]) {
     keys.push([
       {
         text: `${e.name} - ${e.cost} so'm`,
-        callback_data: `food-${e.id}`,
-      },
+        callback_data: `food-${e.id}`
+      }
     ])
   })
 
@@ -125,7 +124,7 @@ export function KeyboardInline(data: string[]) {
     data.map((e: any) => {
       keys.push({
         tex: `${e.name}`,
-        callback_data: `lunch-${e['_id']}`,
+        callback_data: `lunch-${e['_id']}`
       })
     })
   }
@@ -142,8 +141,8 @@ export function KeyboardFormatter(current: number, pageData: string[]) {
       row.push([
         {
           text: `${i + 1}`,
-          callback_data: `food-${e}`,
-        },
+          callback_data: `food-${e}`
+        }
       ])
     })
     keys.push(row)
@@ -155,7 +154,7 @@ export function KeyboardFormatter(current: number, pageData: string[]) {
     pageData.map((e, i) => {
       row.push({
         text: `${i + 1}`,
-        callback_data: `food-${e}`,
+        callback_data: `food-${e}`
       })
       if (row.length == 5) {
         keys.push(row)

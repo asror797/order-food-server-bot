@@ -6,10 +6,16 @@ import { Update, UpdateGroupDto } from '../dtos/org.dto'
 class OrgController {
   public orgService = new OrgService()
 
+  public orgRetrieveAll = () => {}
+  public orgRetrieveOne = () => {}
+  public orgCreate = () => {}
+  public orgUpdate = () => {}
+  public orgDelete = () => {}
+
   public get = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const page = parseInt(req.query.page as string) || 1
@@ -21,12 +27,16 @@ class OrgController {
     }
   }
 
-  public createOrg = async (req: Request,res: Response,next: NextFunction,) => {
+  public createOrg = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const newOrg = await this.orgService.createOrg(req.body.name_org)
       res.json({
         _id: newOrg['_id'],
-        name_org: newOrg.name_org,
+        name_org: newOrg.name_org
       })
     } catch (error) {
       console.log(error)
@@ -37,7 +47,7 @@ class OrgController {
   public updateOrg = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const orgData: UpdateGroupDto = req.body
@@ -60,15 +70,15 @@ class OrgController {
   public updateTime = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const orgData: any = req.body
       res.json(
         await this.orgService.updateOrg({
           org: orgData.Org,
-          time: orgData.time,
-        }),
+          time: orgData.time
+        })
       )
     } catch (error) {
       next(error)

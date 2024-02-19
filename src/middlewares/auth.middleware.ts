@@ -6,7 +6,7 @@ import { verify } from 'jsonwebtoken'
 const authMiddleware = async (
   req: RequestWithUser,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     const url = req.url

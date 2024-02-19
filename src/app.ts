@@ -73,10 +73,10 @@ class App {
         info: {
           title: 'REST API',
           version: '1.0.0',
-          description: 'Woodline Kitchen Bot REST Api',
-        },
+          description: 'Woodline Kitchen Bot REST Api'
+        }
       },
-      apis: ['swagger.yaml'],
+      apis: ['swagger.yaml']
     }
 
     const specs = swaggerJSDoc(options)
@@ -84,7 +84,7 @@ class App {
   }
 
   private async autoCancel() {
-    setInterval(autoCancelOrder,20 * 60 * 1000)
+    setInterval(autoCancelOrder, 20 * 60 * 1000)
   }
 }
 

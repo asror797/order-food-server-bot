@@ -8,7 +8,7 @@ class ProductLogController {
   public getLogs = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const page = parseInt(req.query.page as string) || 1

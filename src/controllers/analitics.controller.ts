@@ -4,7 +4,7 @@ class AnaliticsController {
   public getTotalSale = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
     } catch (error) {
@@ -15,7 +15,7 @@ class AnaliticsController {
   public getBenifit = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
     } catch (error) {

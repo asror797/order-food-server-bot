@@ -10,25 +10,53 @@ import {
   startOfDay,
   startOfMonth,
   startOfWeek,
-  startOfYear,
+  startOfYear
 } from 'date-fns'
 import {
   CreateOrderDto,
   OrderRetrieveAllDto,
   OrderRetrieveByUserDto,
-  UpdateOrder,
+  UpdateOrder
 } from '../dtos/order.dto'
 import { foodModel, orderModel, orgModel, userModel } from '@models'
 import { HttpException } from '@exceptions'
-import { PaymentService, FoodService, TripService } from '@services'
+import { PaymentService, FoodService } from '@services'
 import { uz } from 'date-fns/locale'
+import { OrderRetrieveAllRequest, OrderRetrieveAllResponse } from 'interfaces'
 
 export class OrderService {
-  public orders = orderModel
-  public foods = foodModel
-  public users = userModel
+  private orders = orderModel
+  private foods = foodModel
+  private users = userModel
   public paymentService = new PaymentService()
   public foodService = new FoodService()
+
+  public async orderRetrieveAll(
+    payload: OrderRetrieveAllRequest
+  ): Promise<OrderRetrieveAllResponse> {
+    console.log(payload)
+    const orderList = await this.orders
+      .find()
+      .skip((payload.pageNumber - 1) * payload.pageSize)
+      .limit(payload.pageSize)
+      .exec()
+    const orderCount = await this.orders.countDocuments().exec()
+    return {
+      count: orderCount,
+      pageCount: 5,
+      pageNumber: 5,
+      pageSize: 5,
+      orderList: orderList
+    }
+  }
+
+  public async orderRetrieveOne(): Promise<any> {
+    const orderList = await this.orders.find().exec()
+    console.log(orderList)
+  }
+  public async orderCreate(): Promise<any> {}
+  public async orderUpdate(): Promise<any> {}
+  public async orderDelete(): Promise<any> {}
 
   public async getOrders(page: number, size: number) {
     const skip = (page - 1) * size
@@ -54,19 +82,19 @@ export class OrderService {
       if (e.is_accepted == true && e.is_canceled == false) {
         orderWithStatus.push({
           ...newObj,
-          status: 'accepted',
+          status: 'accepted'
         })
         // canceled
       } else if (e.is_accepted == false && e.is_canceled == true) {
         orderWithStatus.push({
           ...newObj,
-          status: 'canceled',
+          status: 'canceled'
         })
         // pending
       } else {
         orderWithStatus.push({
           ...newObj,
-          status: 'pending',
+          status: 'pending'
         })
       }
     })
@@ -75,7 +103,7 @@ export class OrderService {
       currentPage: page,
       totalPages,
       totalOrders,
-      ordersOnPage: orders.length,
+      ordersOnPage: orders.length
     }
   }
 
@@ -84,7 +112,7 @@ export class OrderService {
     const skip = (page - 1) * 10
     const Orders = await this.orders
       .find({
-        client: client,
+        client: client
       })
       .select('-updatedAt')
       .skip(skip)
@@ -107,7 +135,7 @@ export class OrderService {
 
     const orders = await this.orders
       .find({
-        client: id,
+        client: id
       })
       .select('-updatedAt')
       .sort({ createdAt: -1 })
@@ -127,19 +155,19 @@ export class OrderService {
       if (e.is_accepted == true && e.is_canceled == false) {
         orderWithStatus.push({
           ...newObj,
-          status: 'accepted',
+          status: 'accepted'
         })
         // canceled
       } else if (e.is_accepted == false && e.is_canceled == true) {
         orderWithStatus.push({
           ...newObj,
-          status: 'canceled',
+          status: 'canceled'
         })
         // pending
       } else {
         orderWithStatus.push({
           ...newObj,
-          status: 'pending',
+          status: 'pending'
         })
       }
     })
@@ -149,7 +177,7 @@ export class OrderService {
       currentPage: page,
       totalPages,
       totalOrders,
-      ordersOnPage: orders.length,
+      ordersOnPage: orders.length
     }
   }
 
@@ -176,7 +204,7 @@ export class OrderService {
       client,
       org,
       total_cost,
-      foods: foodObjects,
+      foods: foodObjects
     })
 
     const Order = await this.orders
@@ -199,7 +227,7 @@ export class OrderService {
       return {
         message: 'cancelled'
       }
-    } else if(User.balance < Order.total_cost) {
+    } else if (User.balance < Order.total_cost) {
       return {
         message: 'InfluenceBalance'
       }
@@ -207,32 +235,32 @@ export class OrderService {
       const updatedOrder = await this.orders.findByIdAndUpdate(
         order,
         {
-          is_accepted: true,
+          is_accepted: true
         },
-        { new: true },
+        { new: true }
       )
-  
+
       if (!updatedOrder) throw new HttpException(400, 'something went wrong')
-  
+
       const updatedUser = await this.paymentService.dicrease({
         amount: updatedOrder?.total_cost,
         user: updatedOrder?.client,
         org: updatedOrder.org
       })
-  
+
       if (!updatedUser) throw new HttpException(400, 'something wnet wrong')
-  
+
       const populatedOrder = (await this.orders
         .findById(updatedOrder['_id'])
         .populate('client', 'first_name last_name telegram_id phone_number')
         .populate('foods.food', 'name cost')
         .populate('org', 'name_org group_a_id group_b_id')) || { foods: [] }
-  
+
       for (let i = 0; i < populatedOrder.foods.length; i++) {
         const { food, amount } = populatedOrder.foods[i]
         await this.foodService.DecreaseProductsOfFood({
           amount: amount,
-          food: food,
+          food: food
         })
       }
       console.log('Order', populatedOrder)
@@ -250,9 +278,9 @@ export class OrderService {
     const updatedOrder = await this.orders.findByIdAndUpdate(
       order,
       {
-        is_canceled: true,
+        is_canceled: true
       },
-      { new: true },
+      { new: true }
     )
 
     if (!updatedOrder) throw new HttpException(200, 'not found')
@@ -300,7 +328,7 @@ export class OrderService {
     if (type == 'day') {
       const daysOfWeek = eachDayOfInterval({
         start: startOfWeek(new Date(), { weekStartsOn: 1 }),
-        end: endOfWeek(new Date(), { weekStartsOn: 1 }),
+        end: endOfWeek(new Date(), { weekStartsOn: 1 })
       })
       await Promise.all(
         daysOfWeek.map(async (day) => {
@@ -310,24 +338,24 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfDay(day),
-                $lte: endOfDay(day),
-              },
+                $lte: endOfDay(day)
+              }
             })
             .select('total_cost')
           response.push({
             label: format(day, 'eeee', { locale: uz }),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     if (type == 'week') {
       const weekOfMonth = eachWeekOfInterval({
         start: startOfMonth(new Date()),
-        end: endOfMonth(new Date()),
+        end: endOfMonth(new Date())
       })
 
       await Promise.all(
@@ -338,8 +366,8 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfWeek(week),
-                $lte: endOfWeek(week),
-              },
+                $lte: endOfWeek(week)
+              }
             })
             .select('total_cost')
 
@@ -348,16 +376,16 @@ export class OrderService {
             label: format(week, 'd MMMM'),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     if (type == 'month') {
       const monthOfYear = eachMonthOfInterval({
         start: startOfYear(new Date()),
-        end: endOfYear(new Date()),
+        end: endOfYear(new Date())
       })
 
       await Promise.all(
@@ -368,82 +396,107 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfMonth(month),
-                $lte: endOfMonth(month),
-              },
+                $lte: endOfMonth(month)
+              }
             })
             .select('total_cost')
           response.push({
             label: format(month, 'd MMMM'),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     return {
       user: User,
-      data: response,
+      data: response
     }
   }
 
-  public async getSpentMoney(payload: { userId: string, startDate?: string, endDate?: string, org?: string }) {
+  public async getSpentMoney(payload: {
+    userId: string
+    startDate?: string
+    endDate?: string
+    org?: string
+  }) {
     interface IOrg {
       id: string
       name: string
     }
 
-    let options:any = {}
-   
-    const UserOrg:IOrg = { id: '', name: ''}
+    const options: any = {}
+
+    const UserOrg: IOrg = { id: '', name: '' }
     const User = await this.users.findById(payload.userId).exec()
-    if(!User) {
-      throw new HttpException(400,'User not found')
+    if (!User) {
+      throw new HttpException(400, 'User not found')
     }
 
-    if(payload.org) {
+    if (payload.org) {
       const Org = await orgModel.findById(payload.org).exec()
-      if(!Org) throw new HttpException(400,'org not found')
+      if (!Org) throw new HttpException(400, 'org not found')
       UserOrg.id = Org['_id']
       UserOrg.name = Org.name_org
       options.org = Org['_id']
     }
 
-    interface Order { id: number , data: any, label: string}
-    let allOrders:Order[] = []
-    const start = payload.startDate ? new Date(payload.startDate) : startOfMonth(new Date())
-    const end = payload.endDate ?  new Date(payload.endDate) : endOfMonth(new Date())
+    interface Order {
+      id: number
+      data: any
+      label: string
+    }
+    const allOrders: Order[] = []
+    const start = payload.startDate
+      ? new Date(payload.startDate)
+      : startOfMonth(new Date())
+    const end = payload.endDate
+      ? new Date(payload.endDate)
+      : endOfMonth(new Date())
 
     const daysOfTimeSequance = eachDayOfInterval({
       start: new Date(start),
       end: new Date(end)
     })
 
-    if(daysOfTimeSequance.length > 62) {
-      throw new HttpException(200,'too long date')
+    if (daysOfTimeSequance.length > 62) {
+      throw new HttpException(200, 'too long date')
     } else {
-      await Promise.all(daysOfTimeSequance.map(async(day,i:number) => {
-        const orders = await this.orders.find({
-          ...options,
-          client: payload.userId,
-          is_accepted: true,
-          createdAt: {
-            $gte: startOfDay(day),
-            $lte: endOfDay(day)
-          }
-        }).select('total_cost')
-        allOrders.push({
-          id: i,
-          data: orders.reduce((accumulator, currentValue) => accumulator + currentValue.total_cost ,0),
-          label: format(day, 'MMMM d', { locale: uz })
+      await Promise.all(
+        daysOfTimeSequance.map(async (day, i: number) => {
+          const orders = await this.orders
+            .find({
+              ...options,
+              client: payload.userId,
+              is_accepted: true,
+              createdAt: {
+                $gte: startOfDay(day),
+                $lte: endOfDay(day)
+              }
+            })
+            .select('total_cost')
+          allOrders.push({
+            id: i,
+            data: orders.reduce(
+              (accumulator, currentValue) =>
+                accumulator + currentValue.total_cost,
+              0
+            ),
+            label: format(day, 'MMMM d', { locale: uz })
+          })
         })
-      }))
-  
+      )
+
       allOrders.sort((a, b) => a.id - b.id)
-  
+
       return {
-        user: { id: User['_id'], fullName: `${User.first_name} ${User.last_name}`, phoneNumber: User.phone_number},
+        user: {
+          id: User['_id'],
+          fullName: `${User.first_name} ${User.last_name}`,
+          phoneNumber: User.phone_number
+        },
         org: UserOrg,
         data: allOrders
       }
@@ -465,7 +518,7 @@ export class OrderService {
     if (type == 'day') {
       const daysOfWeek = eachDayOfInterval({
         start: startOfWeek(new Date(2023, 11, 29), { weekStartsOn: 1 }),
-        end: endOfWeek(new Date(2023, 11, 29), { weekStartsOn: 1 }),
+        end: endOfWeek(new Date(2023, 11, 29), { weekStartsOn: 1 })
       })
       await Promise.all(
         daysOfWeek.map(async (day) => {
@@ -475,24 +528,24 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfDay(day),
-                $lte: endOfDay(day),
-              },
+                $lte: endOfDay(day)
+              }
             })
             .select('total_cost')
           response.push({
             label: format(day, 'eeee yyyy', { locale: uz }),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     if (type == 'week') {
       const weekOfMonth = eachWeekOfInterval({
         start: startOfMonth(new Date(2023, 11, 29)),
-        end: endOfMonth(new Date(2023, 11, 29)),
+        end: endOfMonth(new Date(2023, 11, 29))
       })
 
       await Promise.all(
@@ -503,8 +556,8 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfWeek(week),
-                $lte: endOfWeek(week),
-              },
+                $lte: endOfWeek(week)
+              }
             })
             .select('total_cost')
 
@@ -513,16 +566,16 @@ export class OrderService {
             label: format(week, 'd MMMM yyyy'),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     if (type == 'month') {
       const monthOfYear = eachMonthOfInterval({
         start: startOfYear(new Date(2023, 11, 29)),
-        end: endOfYear(new Date(2023, 11, 29)),
+        end: endOfYear(new Date(2023, 11, 29))
       })
 
       await Promise.all(
@@ -533,23 +586,23 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfMonth(month),
-                $lte: endOfMonth(month),
-              },
+                $lte: endOfMonth(month)
+              }
             })
             .select('total_cost')
           response.push({
             label: format(month, 'MMMM yyyy'),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     return {
       user: User,
-      data: response,
+      data: response
     }
   }
 
@@ -557,7 +610,7 @@ export class OrderService {
     const { user } = payload
 
     const orders = await this.orders.find({
-      user: user,
+      user: user
     })
 
     if (!user) throw new HttpException(400, 'user not found')

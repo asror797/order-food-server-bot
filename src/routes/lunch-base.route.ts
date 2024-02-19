@@ -13,14 +13,17 @@ export class LunchBaseRoute {
   private initializeRoutes() {
     this.router.get(
       `${this.path}`,
-      this.lunchBaseController.lunchBaseRetrieveAll,
+      this.lunchBaseController.lunchBaseRetrieveAll
     )
     this.router.get(
       `${this.path}/lunches/:base`,
-      this.lunchBaseController.retrieveBase,
+      this.lunchBaseController.retrieveBase
     )
     this.router.post(`${this.path}`, this.lunchBaseController.lunchBaseCreate)
     this.router.get(`${this.path}/:lunch`, this.lunchBaseController.getByBase)
-    this.router.patch(`${this.path}/:id`,this.lunchBaseController.toggleStatusBase)
+    this.router.patch(
+      `${this.path}/:id`,
+      this.lunchBaseController.toggleStatusBase
+    )
   }
 }

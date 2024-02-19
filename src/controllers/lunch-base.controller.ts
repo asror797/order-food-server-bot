@@ -6,10 +6,13 @@ import { HttpException } from '@exceptions'
 class LunchBaseController {
   readonly service = new LunchBaseService()
 
+  public lunchBaseRetrieveOne = () => {}
+  public lunchBaseDelete = () => {}
+
   public lunchBaseRetrieveAll = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const page = parseInt(req.query.page as string) || 1
@@ -24,7 +27,7 @@ class LunchBaseController {
   public lunchBaseCreate = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       res.json(await this.service.createLunchBase(req.body))
@@ -36,7 +39,7 @@ class LunchBaseController {
   public retrieveBase = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const lunchBase = req.params.base as string
@@ -46,11 +49,15 @@ class LunchBaseController {
     }
   }
 
-  public toggleStatusBase = async(req:Request,res:Response,next:NextFunction) => {
+  public toggleStatusBase = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const baseId: string = req.params.id as string
-      if(!baseId) {
-        throw new HttpException(400,'baseId is required')
+      if (!baseId) {
+        throw new HttpException(400, 'baseId is required')
       }
       res.json(await this.service.toggleStatus({ id: baseId }))
     } catch (error) {
@@ -61,7 +68,7 @@ class LunchBaseController {
   public lunchBaseUpdate = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
     } catch (error) {
@@ -72,7 +79,7 @@ class LunchBaseController {
   public getByBase = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const id = req.params.lunch as string

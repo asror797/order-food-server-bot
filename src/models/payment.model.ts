@@ -6,26 +6,26 @@ const paymentSchema: Schema = new Schema(
     client: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: true
     },
     org: {
       type: Schema.Types.ObjectId,
       ref: 'Org',
-      required: true,
+      required: true
     },
     amount: {
       type: Number,
-      defaul: 0,
+      defaul: 0
     },
     type: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   {
     timestamps: true,
-    versionKey: false,
-  },
+    versionKey: false
+  }
 )
 
 export const paymentModel = model<IPayment & Document>('Payment', paymentSchema)

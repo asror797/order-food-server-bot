@@ -9,30 +9,31 @@ import {
   EditUserDto,
   SearchPagination,
   SendMessae,
-  UpdateUserDto,
+  UpdateUserDto
 } from '../dtos/user.dto'
-import { IUser, UserRole } from '../interfaces/user.interface'
+import { IUser } from '../interfaces/user.interface'
 
 export class UserService {
   private users = userModel
   private orgs = orgModel
 
-  public async isExist(telegramID: number):Promise<any> {
+
+  public async isExist(telegramID: number): Promise<any> {
     const user = await this.users
       .findOne({
-        telegram_id: telegramID,
+        telegram_id: telegramID
       })
       .populate('org', 'name_org group_a_id group_b_id')
 
     if (user) {
       return {
         data: user,
-        message: 'user exist',
+        message: 'user exist'
       }
     } else {
       return {
         data: null,
-        message: 'user not found',
+        message: 'user not found'
       }
     }
   }
@@ -41,7 +42,7 @@ export class UserService {
     const phone_number = formatPhoneNumber(userData.phone_number)
     const newUser = await this.users.create({
       ...userData,
-      phone_number,
+      phone_number
     })
     return newUser
   }
@@ -64,7 +65,7 @@ export class UserService {
         currentPage: page,
         totalPages,
         totalUsers,
-        usersOnPage: users.length,
+        usersOnPage: users.length
       }
     }
 
@@ -76,8 +77,8 @@ export class UserService {
         $or: [
           { phone_number: { $regex: re } },
           { first_name: { $regex: re } },
-          { last_name: { $regex: re } },
-        ],
+          { last_name: { $regex: re } }
+        ]
       })
       .populate('org', 'name_org')
       .skip(skip)
@@ -91,7 +92,7 @@ export class UserService {
       currentPage: page,
       totalPages,
       totalUsers,
-      usersOnPage: users.length,
+      usersOnPage: users.length
     }
   }
 
@@ -112,19 +113,22 @@ export class UserService {
       currentPage: page,
       totalPages,
       totalUsers,
-      usersOnPage: users.length,
+      usersOnPage: users.length
     }
   }
 
-  public async userRetrieveOne(payload: {telegramId: number} ) {
-    const user = await this.users.findOne({ telegram_id: payload.telegramId }).populate('org',' group_a_id').exec()
+  public async userRetrieveOne(payload: { telegramId: number }) {
+    const user = await this.users
+      .findOne({ telegram_id: payload.telegramId })
+      .populate('org', ' group_a_id')
+      .exec()
 
     return user
   }
 
   public async getBalance(telegramID: number): Promise<IUser | null> {
     const user = await this.users.findOne({
-      telegram_id: telegramID,
+      telegram_id: telegramID
     })
     return user
   }
@@ -136,7 +140,7 @@ export class UserService {
       const updatedUser = await this.users.findByIdAndUpdate(
         userData['_id'],
         { is_verified: true, is_active: true },
-        { new: true },
+        { new: true }
       )
 
       return updatedUser
@@ -145,20 +149,20 @@ export class UserService {
         const updateUser = await this.users.findByIdAndUpdate(
           _id,
           { is_active: true },
-          { new: true },
+          { new: true }
         )
         return updateUser
       } else if (is_active == false) {
         const updateUser = await this.users.findByIdAndUpdate(
           _id,
           { is_active: false },
-          { new: true },
+          { new: true }
         )
         return updateUser
       } else {
         return {
           message: 'ok',
-          status: 200,
+          status: 200
         }
       }
     }
@@ -189,12 +193,12 @@ export class UserService {
       updateData.last_name = last_name
     }
 
-    if(role && (role == 'user' || 'cook')) {
+    if (role && (role == 'user' || 'cook')) {
       updateData.role = payload.role
     }
 
     const updateduser = await this.users.findByIdAndUpdate(id, updateData, {
-      new: true,
+      new: true
     })
 
     return updateduser
@@ -206,7 +210,7 @@ export class UserService {
     if (org == 'all' || org == null) {
       const users = await this.users.find({
         is_active: true,
-        is_verified: true,
+        is_verified: true
       })
       users.map((e) => {
         botService.sendText(e.telegram_id, message)
@@ -214,7 +218,7 @@ export class UserService {
 
       return {
         message: 'sent',
-        status: 200,
+        status: 200
       }
     } else {
       const Org = await this.orgs.findById(org)
@@ -222,14 +226,14 @@ export class UserService {
       const users = await this.users.find({
         is_active: true,
         is_verified: true,
-        org: org,
+        org: org
       })
       users.map((e) => {
         botService.sendText(e.telegram_id, message)
       })
       return {
         message: 'ok',
-        status: 'ok',
+        status: 'ok'
       }
     }
   }
@@ -242,12 +246,12 @@ export class UserService {
     if (type == 'verify') {
       return await this.users.findOneAndUpdate(
         {
-          _id: user,
+          _id: user
         },
         {
           is_active: true,
-          is_verified: true,
-        },
+          is_verified: true
+        }
       )
     } else {
       return {}
@@ -267,9 +271,9 @@ export class UserService {
     const updatedUser = await this.users.findByIdAndUpdate(
       user,
       {
-        org: org,
+        org: org
       },
-      { new: true },
+      { new: true }
     )
 
     return updatedUser
@@ -286,9 +290,9 @@ export class UserService {
       const updateduser = await this.users.findByIdAndUpdate(
         user,
         {
-          balance: User.balance + Number(amount),
+          balance: User.balance + Number(amount)
         },
-        { new: true },
+        { new: true }
       )
       return updateduser
     } else if (type == 'decrease') {
@@ -296,15 +300,15 @@ export class UserService {
       const updateduser = await this.users.findByIdAndUpdate(
         user,
         {
-          balance: User.balance - Number(amount),
+          balance: User.balance - Number(amount)
         },
-        { new: true },
+        { new: true }
       )
       return updateduser
     } else {
       return {
         message: 'something is missing',
-        status: 200,
+        status: 200
       }
     }
   }
@@ -312,7 +316,7 @@ export class UserService {
   public async transaction(userData: any) {
     const { telegram_id, type, amount } = userData
     const user = await this.users.findOne({
-      telegram_id: telegram_id,
+      telegram_id: telegram_id
     })
     if (!user) throw new Error('user not found')
     if (user.balance < amount && type == false) throw new Error('')
@@ -332,35 +336,12 @@ export class UserService {
         $or: [
           { phone_number: { $regex: re } },
           { first_name: { $regex: re } },
-          { last_name: { $regex: re } },
-        ],
+          { last_name: { $regex: re } }
+        ]
       })
       .populate('org', 'name_org')
       .limit(5)
       .exec()
     return users
-  }
-
-  public async getTelegramIDOfClients(org: string) {
-    const clients = await this.users
-      .find({
-        is_active: true,
-        is_verified: true,
-        role: 'user',
-      })
-      .select('telegram_id roles').populate('org','name_org')
-      .exec()
-
-
-      const clientsWithOrg = clients.filter(client => client.org !== null)
-
-    return clientsWithOrg
-  }
-
-  public async revenueOfUser(payload: any) {
-    const { user } = payload
-    const User = await this.users.findById(user)
-
-    if (!User) throw new HttpException(200, 'user not found')
   }
 }

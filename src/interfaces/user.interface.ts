@@ -4,7 +4,7 @@ import { IOrg } from './org.interface'
 export enum UserRole {
   ADMIN = 'admin',
   COOK = 'cook',
-  USER = 'user',
+  USER = 'user'
 }
 
 export interface IUser extends Document {

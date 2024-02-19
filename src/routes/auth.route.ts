@@ -12,6 +12,6 @@ export class AuthRoute {
 
   private initializeRoutes() {
     this.router.post(`${this.path}`, this.authController.LoginSuperAdmin)
-    this.router.post(`${this.path}/login`,this.authController.loginAdmin)
+    this.router.post(`${this.path}/login`, this.authController.loginAdmin)
   }
 }

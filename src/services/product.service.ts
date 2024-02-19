@@ -1,9 +1,68 @@
 import { CreateProduct, UpdateAmount } from '../dtos/product.dto'
 import { HttpException } from '@exceptions'
 import { productModel } from '@models'
+import {
+  ProductCreateRequest,
+  ProductCreateResponse,
+  ProductRetrieveAllRequest,
+  ProductRetrieveAllResponse,
+  ProductRetrieveOneRequest,
+  ProductRetrieveOneResponse
+} from './../interfaces'
 
 export class ProductService {
-  public products = productModel
+  private products = productModel
+
+  public async productRetrieveAll(
+    payload: ProductRetrieveAllRequest
+  ): Promise<ProductRetrieveAllResponse> {
+    const productList = await this.products
+      .find()
+      .skip((payload.pageNumber - 1) * payload.pageSize)
+      .limit(payload.pageSize)
+      .populate('org', 'name_org')
+      .exec()
+
+    return {
+      count: 1,
+      pageCount: 4,
+      pageNumber: 1,
+      pageSize: 10,
+      productList: productList
+    }
+  }
+
+  public async productRetrieveOne(
+    payload: ProductRetrieveOneRequest
+  ): Promise<ProductRetrieveOneResponse> {
+    const product = await this.products.findById(payload.id)
+    if (!product) throw new HttpException(400, 'notFoundprod')
+
+    return product
+  }
+
+  public async productCreate(
+    payload: ProductCreateRequest
+  ): Promise<ProductCreateResponse> {
+    await this.#_checkProductName({ name: payload.name, org: payload.org })
+    const product = await this.products.create({
+      name: payload.name,
+      org: payload.name,
+      cost: ''
+    })
+    return product
+  }
+
+  public async productUpdate() {}
+  public async productDelete() {}
+
+  async #_checkProductName(payload: {
+    name: string
+    org: string
+  }): Promise<any> {
+    console.log(payload)
+    return true
+  }
 
   public async getProducts(payload: any) {
     const { page, size, search } = payload
@@ -24,14 +83,14 @@ export class ProductService {
         currentPage: page,
         totalPages,
         totalProducts,
-        productsOnPage: products.length,
+        productsOnPage: products.length
       }
     }
 
     const re = new RegExp(search, 'i')
     const products = await this.products
       .find({
-        $or: [{ name: { $regex: re } }],
+        $or: [{ name: { $regex: re } }]
       })
       .populate('org', 'name_org')
       .skip(skip)
@@ -45,7 +104,7 @@ export class ProductService {
       currentPage: page,
       totalPages,
       totalProducts,
-      productsOnPage: products.length,
+      productsOnPage: products.length
     }
   }
 
@@ -67,9 +126,9 @@ export class ProductService {
       product,
       {
         amount: Number(isExist.amount) + Number(amount),
-        cost: cost,
+        cost: cost
       },
-      { new: true },
+      { new: true }
     )
 
     return updatedproduct
@@ -99,9 +158,9 @@ export class ProductService {
         payload.product,
         {
           name: payload.name,
-          unit: payload.unit,
+          unit: payload.unit
         },
-        { new: true },
+        { new: true }
       )
       .exec()
 
@@ -121,7 +180,7 @@ export class ProductService {
     const updatedProduct = await this.products.findByIdAndUpdate(
       product,
       { amount: Number(isExist.amount) - Number(amount) },
-      { new: true },
+      { new: true }
     )
 
     return updatedProduct

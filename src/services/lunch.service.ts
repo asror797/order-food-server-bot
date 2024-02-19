@@ -8,11 +8,18 @@ export class LunchService {
   public products = productModel
   public bases = lunchBaseModel
 
+  public async lunchRetrieveAll(): Promise<any> {}
+  public async lunchRetrieveOne(): Promise<any> {}
+  public async lunchCreate(): Promise<any> {}
+  public async lunchUpdate(): Promise<any> {}
+  public async lunchDelete(): Promise<any> {}
+
   public async getLunches(page: number, size: number) {
     const skip = (page - 1) * size
 
     const Lunches = await this.lunches
-      .find().where({
+      .find()
+      .where({
         is_active: true
       })
       .select('-updatedAt')
@@ -29,7 +36,7 @@ export class LunchService {
       currentPage: page,
       totalPages,
       totalLunches,
-      lunchesOnPage: Lunches.length,
+      lunchesOnPage: Lunches.length
     }
   }
 
@@ -39,7 +46,7 @@ export class LunchService {
 
   public async getByOrg(org: string) {
     const lunches = await this.lunches.find({
-      org: org,
+      org: org
     })
 
     return lunches
@@ -48,7 +55,7 @@ export class LunchService {
   public async getByBase(base: string) {
     const lunches = await this.lunches
       .find({
-        base: base,
+        base: base
       })
       .populate('products.product', 'name cost')
       .select('name cost percent_cook products.amount')
@@ -59,7 +66,7 @@ export class LunchService {
   public async getLunchByBase(lunch: string) {
     const Lunch = await this.lunches
       .findById({
-        _id: lunch,
+        _id: lunch
       })
       .populate('products.product', 'name cost')
       .populate('base', 'name')
@@ -74,9 +81,9 @@ export class LunchService {
     const deletedLunch = await this.lunches
       .deleteOne(
         {
-          _id: Lunch['_id'],
+          _id: Lunch['_id']
         },
-        { new: true },
+        { new: true }
       )
       .exec()
 
@@ -95,7 +102,7 @@ export class LunchService {
       org: Base.org,
       cost: payload.cost,
       name: payload.name,
-      products: payload.products ?? [],
+      products: payload.products ?? []
     })
     return newLunch
   }
@@ -131,7 +138,7 @@ export class LunchService {
     const updatedLunch = await this.bases.findByIdAndUpdate(
       payload.id,
       updateObj,
-      { new: true },
+      { new: true }
     )
 
     return updatedLunch
@@ -161,13 +168,13 @@ export class LunchService {
           if (product.product == jproduct.product)
             throw new HttpException(
               400,
-              `${jproduct.product} product already exist`,
+              `${jproduct.product} product already exist`
             )
           if (product.amount < 0)
             throw new HttpException(400, 'amount should be higher than 0')
           addProducts.push({
             product: product.product,
-            amount: product.amount,
+            amount: product.amount
           })
         }
       } else {
@@ -183,7 +190,7 @@ export class LunchService {
         if (!isExist) {
           addProducts.push({
             product: product.product,
-            amount: product.amount,
+            amount: product.amount
           })
         }
       }
@@ -193,9 +200,9 @@ export class LunchService {
       .findByIdAndUpdate(
         lunch,
         {
-          $addToSet: { products: { $each: addProducts } },
+          $addToSet: { products: { $each: addProducts } }
         },
-        { new: true },
+        { new: true }
       )
       .exec()
 
@@ -224,7 +231,7 @@ export class LunchService {
             throw new HttpException(400, 'amount should be valid')
           updatingProducts.push({
             product: uProduct.product,
-            amount: uProduct.amount,
+            amount: uProduct.amount
           })
         }
       }
@@ -243,7 +250,7 @@ export class LunchService {
       }
       if (isExist == false) {
         addingPorducts.push({
-          ...aProduct,
+          ...aProduct
         })
       }
     }
@@ -256,9 +263,9 @@ export class LunchService {
         .findByIdAndUpdate(
           lunch,
           {
-            $addToSet: { products: { $each: addingPorducts } },
+            $addToSet: { products: { $each: addingPorducts } }
           },
-          { new: true },
+          { new: true }
         )
         .exec()
     }
@@ -268,11 +275,11 @@ export class LunchService {
         .updateOne(
           {
             _id: lunch,
-            'products.product': UProduct.product,
+            'products.product': UProduct.product
           },
           {
-            $set: { 'products.$.amount': UProduct.amount },
-          },
+            $set: { 'products.$.amount': UProduct.amount }
+          }
         )
         .exec()
 
@@ -283,7 +290,7 @@ export class LunchService {
 
     return {
       added: addedProducts.products,
-      updated: response,
+      updated: response
     }
   }
 
@@ -318,13 +325,13 @@ export class LunchService {
     const updatedLunch = await this.bases.findByIdAndUpdate(
       payload.id,
       updateObj,
-      { new: true },
+      { new: true }
     )
 
     if (payload.products) {
       await this.pushProduct({
         lunch: payload.id,
-        products: payload.products,
+        products: payload.products
       })
     }
 
@@ -349,12 +356,12 @@ export class LunchService {
           if (uProduct.amount > 0) {
             updateProducts.push({
               product: uProduct.product,
-              amount: uProduct.amount,
+              amount: uProduct.amount
             })
           } else {
             throw new HttpException(
               400,
-              `${uProduct.product} product amount should be higher than 0`,
+              `${uProduct.product} product amount should be higher than 0`
             )
           }
         }
@@ -365,11 +372,11 @@ export class LunchService {
         .updateOne(
           {
             _id: lunch,
-            'products.product': UProduct.product,
+            'products.product': UProduct.product
           },
           {
-            $set: { 'products.$.amount': UProduct.amount },
-          },
+            $set: { 'products.$.amount': UProduct.amount }
+          }
         )
         .exec()
 
@@ -389,7 +396,7 @@ export class LunchService {
     const updatedOrder = await this.lunches.findByIdAndUpdate(
       lunch,
       { $pull: { products: { product: product } } },
-      { new: true },
+      { new: true }
     )
 
     return updatedOrder
@@ -397,10 +404,14 @@ export class LunchService {
 
   public async toggleStatusLunch(payload: { id: string }) {
     const lunch = await this.lunches.findById(payload.id).exec()
-    if(!lunch) {
-      throw new HttpException(400,'Not found lunch')
+    if (!lunch) {
+      throw new HttpException(400, 'Not found lunch')
     }
-    const updatedLunch = await this.lunches.findByIdAndUpdate(payload.id,{ is_active: lunch.is_active }, { new: true })
+    const updatedLunch = await this.lunches.findByIdAndUpdate(
+      payload.id,
+      { is_active: lunch.is_active },
+      { new: true }
+    )
     return updatedLunch
   }
 }

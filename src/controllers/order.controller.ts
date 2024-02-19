@@ -7,10 +7,75 @@ import { HttpException } from '@exceptions'
 class OrderController {
   public orderService = new OrderService()
 
+  public orderRetrieveAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('ok')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public orderRetrieveOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('ok')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public orderCreate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('ok')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public orderUpdate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('ok')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public orderDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('ok')
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public getWithPagination = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const page = parseInt(req.query.page as string) || 1
@@ -24,7 +89,7 @@ class OrderController {
   public createOrder = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const orderData: CreateOrderDto = req.body
@@ -37,7 +102,7 @@ class OrderController {
   public getOrderByUser = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const id = req.params.user as string
@@ -53,7 +118,7 @@ class OrderController {
   public getSpentsByUser = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const user = req.params.user as string
@@ -62,8 +127,8 @@ class OrderController {
       res.json(
         await this.orderService.getTotalSpent({
           user: user,
-          type: type,
-        }),
+          type: type
+        })
       )
     } catch (error) {
       console.log(error)
@@ -71,23 +136,29 @@ class OrderController {
     }
   }
 
-  public  getAllSpentUser = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
+  public getAllSpentUser = async (
+    req: Request<ParsedQs>,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const user = req.query.user as string | undefined
       const org = req.query.org as string | undefined
       const start = req.query.start as string | undefined
       const end = req.query.end as string | undefined
 
-      if(!user) {
-        throw new HttpException(400,'userId is required')
+      if (!user) {
+        throw new HttpException(400, 'userId is required')
       }
 
-      res.json(await this.orderService.getSpentMoney({
-        userId: user,
-        endDate: end,
-        startDate: start,
-        org: org
-      }))
+      res.json(
+        await this.orderService.getSpentMoney({
+          userId: user,
+          endDate: end,
+          startDate: start,
+          org: org
+        })
+      )
     } catch (error) {
       next(error)
     }
@@ -96,7 +167,7 @@ class OrderController {
   public getOldAnalitics = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const user = req.params.user as string
@@ -105,8 +176,8 @@ class OrderController {
       res.json(
         await this.orderService.getOldAnaltics({
           user: user,
-          type: type,
-        }),
+          type: type
+        })
       )
     } catch (error) {
       console.log(error)

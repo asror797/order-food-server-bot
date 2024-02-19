@@ -1,11 +1,12 @@
 // auth.middleware.ts
-import { Request, Response, NextFunction } from 'express';
-import { HttpException } from '@exceptions';
-import { RequestWithUser } from './../interfaces/auth.interface';
+import { Response, NextFunction } from 'express'
+// import { HttpException } from '@exceptions'
+import { RequestWithUser } from './../interfaces/auth.interface'
 
 export const checkPermission = (requiredPermission: string) => {
   return (req: RequestWithUser, res: Response, next: NextFunction) => {
     console.log(req.user)
+    console.log(requiredPermission)
     /*
     user.modules 
 

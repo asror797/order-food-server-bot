@@ -41,11 +41,13 @@ export class StoreService {
     }
   }
 
-  public async getStoreByOrg(payload:GetStoreByOrg) {
+  public async getStoreByOrg(payload: GetStoreByOrg) {
     try {
-      const store = await this.redisService.getValue(`${payload.chatId}/${payload.org}`)
+      const store = await this.redisService.getValue(
+        `${payload.chatId}/${payload.org}`
+      )
       console.log(`${payload.chatId}/${payload.org}`)
-      if(store == null) {
+      if (store == null) {
         return []
       } else {
         return JSON.parse(store)
@@ -55,24 +57,30 @@ export class StoreService {
     }
   }
 
-  public async saveToStoreByOrg(payload:SaveToStoreByOrg) {
+  public async saveToStoreByOrg(payload: SaveToStoreByOrg) {
     try {
       const Food = await this.foods.findById(payload.food)
-      if(!Food) throw new Error('not found food')
-      const store: any = await this.getStoreByOrg({ chatId: payload.chatId,org: payload.org })
-      console.log(`${payload.chatId}/${payload.org}`,payload.org)
-      console.log(payload,'payload')
-      const stored = await this.redisService.setValue(`${payload.chatId}/${payload.org}`,JSON.stringify([
-        ...store,
-        {
-          food: {
-            id: payload.food,
-            food: Food.name,
-            cost: Food.cost
-          },
-          amount: payload.amount
-        }
-      ]))
+      if (!Food) throw new Error('not found food')
+      const store: any = await this.getStoreByOrg({
+        chatId: payload.chatId,
+        org: payload.org
+      })
+      console.log(`${payload.chatId}/${payload.org}`, payload.org)
+      console.log(payload, 'payload')
+      const stored = await this.redisService.setValue(
+        `${payload.chatId}/${payload.org}`,
+        JSON.stringify([
+          ...store,
+          {
+            food: {
+              id: payload.food,
+              food: Food.name,
+              cost: Food.cost
+            },
+            amount: payload.amount
+          }
+        ])
+      )
 
       return stored
     } catch (error) {
@@ -93,11 +101,11 @@ export class StoreService {
             food: {
               id: Food['_id'],
               food: Food.name,
-              cost: Food.cost,
+              cost: Food.cost
             },
-            amount: amount,
-          },
-        ]),
+            amount: amount
+          }
+        ])
       )
 
       console.log(stored)
@@ -109,10 +117,12 @@ export class StoreService {
     }
   }
 
-
-  public async clearStoreByOrg(payload:{ chat: number, org: string}) {
+  public async clearStoreByOrg(payload: { chat: number; org: string }) {
     try {
-      const response = await this.redisService.setValue(`${payload.chat}/${payload.org}`,JSON.stringify([]))
+      const response = await this.redisService.setValue(
+        `${payload.chat}/${payload.org}`,
+        JSON.stringify([])
+      )
       return response
     } catch (error) {
       throw error
@@ -123,7 +133,7 @@ export class StoreService {
     try {
       const response = await this.redisService.setValue(
         `${id}`,
-        JSON.stringify([]),
+        JSON.stringify([])
       )
       console.log(response)
 

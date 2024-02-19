@@ -10,7 +10,7 @@ class FoodController {
   public getFoods = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const page = parseInt(req.query.page as string) || 1
@@ -20,7 +20,7 @@ class FoodController {
       const foods = await this.foodService.getFoods({
         page,
         size,
-        search,
+        search
       })
       res.json(foods)
     } catch (error) {
@@ -31,7 +31,7 @@ class FoodController {
   public createFood = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const foodData: CreateFood = req.body
@@ -44,7 +44,7 @@ class FoodController {
   public updateFoodPic = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const foodData = req.body
@@ -57,7 +57,7 @@ class FoodController {
   public changeStatus = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const status = req.body.status
@@ -66,8 +66,8 @@ class FoodController {
       res.json(
         await this.foodService.changeStatus({
           id,
-          status,
-        }),
+          status
+        })
       )
     } catch (error) {
       next(error)
@@ -77,7 +77,7 @@ class FoodController {
   public updateFood = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const food = req.params.food as string
@@ -86,8 +86,8 @@ class FoodController {
       res.json(
         await this.foodService.updateFood({
           food,
-          ...data,
-        }),
+          ...data
+        })
       )
     } catch (error) {
       next(error)
@@ -97,7 +97,7 @@ class FoodController {
   public deleteProduct = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const food = req.params.food as string

@@ -1,20 +1,19 @@
-import { IsInt, IsNotEmpty, IsPositive, IsString } from "class-validator";
-
+import { IsInt, IsNotEmpty, IsPositive, IsString } from 'class-validator'
 
 export class RoleDTO {
-  title: string;
-  modules: ModuleDTO[];
+  title: string
+  modules: ModuleDTO[]
 }
 
 export class ModuleDTO {
-  uri: string;
-  permission: boolean;
-  actions: ActionDTO[];
+  uri: string
+  permission: boolean
+  actions: ActionDTO[]
 }
 
 export class ActionDTO {
-  uri: string;
-  permission: boolean;
+  uri: string
+  permission: boolean
 }
 
 export class RoleRetrieveDto {
@@ -49,7 +48,6 @@ export class UpdateModuleDto {
   new_uri: string
 }
 
-
 export class ToggleModuleDto {
   @IsString()
   @IsNotEmpty()
@@ -70,7 +68,5 @@ export class AddAction {
   action_uri: string
 }
 
-export class UpdateAction {
-
-}
+export class UpdateAction {}
 export class ToggleAction {}

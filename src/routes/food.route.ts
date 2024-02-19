@@ -16,7 +16,7 @@ export class FoodRoute {
     this.router.patch(`${this.path}`, this.foodController.updateFoodPic)
     this.router.patch(
       `${this.path}/update/:food`,
-      this.foodController.updateFood,
+      this.foodController.updateFood
     )
     this.router.patch(`${this.path}/:food`, this.foodController.changeStatus)
   }

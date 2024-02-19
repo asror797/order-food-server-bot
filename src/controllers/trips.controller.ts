@@ -10,7 +10,7 @@ class TripController {
   public getTrips = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const page = parseInt(req.query.page as string) || 1
@@ -25,7 +25,7 @@ class TripController {
   public createTrip = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       // const tripData: CreateTrip = req.body
@@ -38,7 +38,7 @@ class TripController {
   public tripRetrieveOne = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       res.json(await this.tripService.tripRetrieveOne(6526893061))
@@ -47,18 +47,27 @@ class TripController {
     }
   }
 
-  public retrieveSpent = async(req: Request<ParsedQs>,res:Response,next:NextFunction) => {
+  public retrieveSpent = async (
+    req: Request<ParsedQs>,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      const { userId , startDate , endDate } = req.query
+      const { userId, startDate, endDate } = req.query
       console.log(req.params)
-      if(!userId) {
-        throw new HttpException(400,'userId is empty')
+      if (!userId) {
+        throw new HttpException(400, 'userId is empty')
       }
-      res.json(await this.tripService.getTotalSpentsOfUser({userId: userId,startDate,endDate}))
+      res.json(
+        await this.tripService.getTotalSpentsOfUser({
+          userId: userId,
+          startDate,
+          endDate
+        })
+      )
     } catch (error) {
       next(error)
     }
   }
-  
 }
 export default TripController

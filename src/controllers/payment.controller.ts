@@ -9,7 +9,7 @@ class PaymentController {
   public paymentRetrieveAll = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const page = parseInt(req.query.page as string) || 1
@@ -20,23 +20,29 @@ class PaymentController {
     }
   }
 
-  public calculateSpents = async(req:Request<ParsedQs>,res:Response,next:NextFunction) => {
+  public calculateSpents = async (
+    req: Request<ParsedQs>,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const user = req.query.user as string | undefined
-      const start = req.query.start  as string | undefined
+      const start = req.query.start as string | undefined
       const end = req.query.end as string | undefined
       const org = req.query.org as string | undefined
 
-      if(!user) {
-        throw new HttpException(400,'userId is required')
+      if (!user) {
+        throw new HttpException(400, 'userId is required')
       }
 
-      res.json(await this.paymentService.calculateSpents({
-        user,
-        org,
-        start,
-        end
-      }))
+      res.json(
+        await this.paymentService.calculateSpents({
+          user,
+          org,
+          start,
+          end
+        })
+      )
     } catch (error) {
       next(error)
     }

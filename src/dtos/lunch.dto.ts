@@ -3,7 +3,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  ValidateNested,
+  ValidateNested
 } from 'class-validator'
 
 export class CreateLunch {

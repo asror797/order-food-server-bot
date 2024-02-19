@@ -1,7 +1,7 @@
 import {
   CreateLunchBaseDto,
   GetLunchBaseDto,
-  UpdateLunchBaseDto,
+  UpdateLunchBaseDto
 } from '../dtos/lunch-base.dto'
 import { HttpException } from '@exceptions'
 import { lunchBaseModel, lunchModel, orgModel } from '@models'
@@ -10,6 +10,12 @@ export class LunchBaseService {
   readonly lunchbase = lunchBaseModel
   readonly orgs = orgModel
   public lunches = lunchModel
+
+  public async lunchBaseRetrieveAll(): Promise<any> {}
+  public async lunchBaseRetrieveOne(): Promise<any> {}
+  public async lunchBaseCreate(): Promise<any> {}
+  public async lunchBaseUpdate(): Promise<any> {}
+  public async lunchBaseDelete(): Promise<any> {}
 
   async retrieveAllLunchBases(payload: GetLunchBaseDto) {
     const skip = (payload.page - 1) * payload.size
@@ -34,13 +40,13 @@ export class LunchBaseService {
       currentPage: payload.page,
       totalPages,
       totalLunchBases,
-      lunchBasesOnPage: org.length,
+      lunchBasesOnPage: org.length
     }
   }
 
   public async getByOrg(org: string) {
     const lunches = await this.lunchbase.find({
-      org: org,
+      org: org
     })
 
     return lunches
@@ -56,7 +62,7 @@ export class LunchBaseService {
         where: {
           base: id,
           is_active: true
-        },
+        }
       })) || []
 
     return lunches
@@ -64,7 +70,7 @@ export class LunchBaseService {
 
   public async retrieveLunches(id: string) {
     const lunches = await this.lunches.find({
-      base: id,
+      base: id
     })
 
     return lunches
@@ -77,27 +83,34 @@ export class LunchBaseService {
   }
 
   public async toggleStatus(payload: { id: string }) {
-    const base = await this.lunchbase.findById(payload.id).select('name is_active').exec()
+    const base = await this.lunchbase
+      .findById(payload.id)
+      .select('name is_active')
+      .exec()
 
-    if(!base) {
-      throw new HttpException(400,'not found base')
+    if (!base) {
+      throw new HttpException(400, 'not found base')
     }
 
-    const updatedBase = await this.lunchbase.findByIdAndUpdate(payload.id,{ is_active: !base.is_active },{ new: true })
+    const updatedBase = await this.lunchbase.findByIdAndUpdate(
+      payload.id,
+      { is_active: !base.is_active },
+      { new: true }
+    )
 
     return updatedBase
   }
 
   async createLunchBase(payload: CreateLunchBaseDto) {
     const Org = await this.orgs.findById({
-      _id: payload.org,
+      _id: payload.org
     })
 
     if (!Org) throw new HttpException(400, 'org not found')
 
     const createdBase = await this.lunchbase.create({
       name: payload.name,
-      org: payload.org,
+      org: payload.org
     })
 
     return createdBase
@@ -112,7 +125,7 @@ export class LunchBaseService {
     }
     if (payload.org) {
       const Org = await this.orgs.findById({
-        _id: payload.org,
+        _id: payload.org
       })
 
       if (!Org) throw new HttpException(400, 'org not found')
@@ -123,7 +136,7 @@ export class LunchBaseService {
     const updatedAtBase = await this.lunchbase.findByIdAndUpdate(
       payload.id,
       updateField,
-      { new: true },
+      { new: true }
     )
     return updatedAtBase
   }

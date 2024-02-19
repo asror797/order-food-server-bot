@@ -17,8 +17,8 @@ export class AnaliticsService {
         const allOrders = await this.orders.find({
           createdat: {
             $gte: startDate,
-            $lte: endDate,
-          },
+            $lte: endDate
+          }
         })
 
         return allOrders
@@ -30,8 +30,8 @@ export class AnaliticsService {
         const allOrders = await this.orders.find({
           createdat: {
             $gte: startDate,
-            $lte: endDate,
-          },
+            $lte: endDate
+          }
         })
 
         return allOrders

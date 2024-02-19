@@ -7,10 +7,15 @@ import { HttpException } from '@exceptions'
 class LunchController {
   readonly lunchService = new LunchService()
 
+  public lunchRetrieveAll = () => {}
+  public lunchRetrieveOne = () => {}
+  public lunchCreate = () => {}
+  public lunchDelete = () => {}
+
   public getLunch = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const page = parseInt(req.query.page as string) || 1
@@ -24,7 +29,7 @@ class LunchController {
   public createLunch = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const base = req.params.base as string
@@ -37,8 +42,8 @@ class LunchController {
           cost: lunchData.cost,
           name: lunchData.name,
           org: lunchData.org,
-          products: lunchData.products,
-        }),
+          products: lunchData.products
+        })
       )
     } catch (error) {
       console.log(error)
@@ -49,7 +54,7 @@ class LunchController {
   public getByBase = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const base = req.params.base as string
@@ -70,15 +75,15 @@ class LunchController {
   public lunchUpdate = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const lunch = req.params.lunch
       res.json(
         await this.lunchService.updateLunch({
           id: lunch,
-          ...req.body,
-        }),
+          ...req.body
+        })
       )
     } catch (error) {
       next(error)
@@ -88,7 +93,7 @@ class LunchController {
   public pushProduct = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const lunch = req.params.lunch as string
@@ -96,8 +101,8 @@ class LunchController {
       res.json(
         await this.lunchService.pushProduct({
           lunch: lunch,
-          products: req.body.products,
-        }),
+          products: req.body.products
+        })
       )
     } catch (error) {
       next(error)
@@ -107,7 +112,7 @@ class LunchController {
   public fullUpdateProducts = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const lunch = req.params.lunch as string
@@ -120,8 +125,8 @@ class LunchController {
       res.json(
         await this.lunchService.fullUpdateProduct({
           lunch: lunch,
-          products: paylodBody.products,
-        }),
+          products: paylodBody.products
+        })
       )
     } catch (error) {
       console.log(error)
@@ -129,15 +134,19 @@ class LunchController {
     }
   }
 
-  public updateLunch = async(req: Request,res: Response,next: NextFunction)=>{
+  public updateLunch = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const lunchId = req.params.lunch
       if (!lunchId) throw new HttpException(400, 'not found lunch')
       res.json(
         await this.lunchService.fullUpdateLunch({
           ...req.body,
-          id: lunchId,
-        }),
+          id: lunchId
+        })
       )
     } catch (error) {
       console.log(error)
@@ -148,15 +157,15 @@ class LunchController {
   public updateProducts = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const lunch = req.params.lunch as string
       res.json(
         await this.lunchService.updateProduct({
           lunch: lunch,
-          products: req.body.products,
-        }),
+          products: req.body.products
+        })
       )
     } catch (error) {
       next(error)
@@ -166,7 +175,7 @@ class LunchController {
   public deleteLunch = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const lunch_id = req.params.id
@@ -181,20 +190,20 @@ class LunchController {
   public deleteProducts = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const { lunchId, productId } = req.params
 
       if (!lunchId || !productId)
         return res.json({
-          message: 'product or lunch  is required',
+          message: 'product or lunch  is required'
         })
       res.json(
         await this.lunchService.deleteProductOfLunch({
           lunch: lunchId,
-          product: productId,
-        }),
+          product: productId
+        })
       )
     } catch (error) {
       console.log(error)
@@ -202,9 +211,13 @@ class LunchController {
     }
   }
 
-  public toggleStatus = async(req:Request,res:Response,next:NextFunction) => {
+  public toggleStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      const lunchId: string  = req.params.id 
+      const lunchId: string = req.params.id
       res.json(await this.lunchService.toggleStatusLunch({ id: lunchId }))
     } catch (error) {
       next(error)

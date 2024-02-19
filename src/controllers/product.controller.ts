@@ -3,7 +3,7 @@ import { ParsedQs } from 'qs'
 import {
   CreateProduct,
   CreateProductBody,
-  UpdateAmountWithType,
+  UpdateAmountWithType
 } from '../dtos/product.dto'
 import { RequestWithUser } from '../interfaces/auth.interface'
 import { HttpException } from '@exceptions'
@@ -13,14 +13,40 @@ class ProductController {
   public productService = new ProductService()
   public productLogService = new ProductLogService()
 
-  public getProducts = async(req: Request<ParsedQs>,res: Response,next: NextFunction) => {
+  public ProductRetrieveAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      res.json(await this.productService.productRetrieveAll(req.body))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public ProductRetrieveOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      res.json(await this.productService.productRetrieveOne(req.body))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public getProducts = async (
+    req: Request<ParsedQs>,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const search = req.query.search as string
       const page = parseInt(req.query.page as string) || 1
       const size = parseInt(req.query.size as string) || 10
-      res.json(
-        await this.productService.getProducts({page,size,search,})
-      )
+      res.json(await this.productService.getProducts({ page, size, search }))
     } catch (error) {
       console.log(error)
       next(error)
@@ -30,13 +56,13 @@ class ProductController {
   public createProduct = async (
     req: RequestWithUser,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const bodyData: CreateProductBody = req.body
       const productData: CreateProduct = {
         ...bodyData,
-        org: req.user?.org || req.body.org,
+        org: req.user?.org || req.body.org
       }
       res.json(await this.productService.createNew(productData))
     } catch (error) {
@@ -48,7 +74,7 @@ class ProductController {
   public editAmountProduct = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const productData: UpdateAmountWithType = req.body
@@ -58,7 +84,7 @@ class ProductController {
         const editedProduct = await this.productService.increaseAmount({
           product,
           amount,
-          cost,
+          cost
         })
 
         if (!editedProduct) throw new HttpException(500, 'somethign went wrong')
@@ -70,7 +96,7 @@ class ProductController {
           amount,
           type: true,
           org: editedProduct['org'],
-          cost: cost,
+          cost: cost
         })
 
         res.json(editedProduct)
@@ -78,7 +104,7 @@ class ProductController {
         const editedProduct = await this.productService.decreaseAmount({
           product,
           amount,
-          cost,
+          cost
         })
 
         if (!editedProduct) throw new HttpException(500, 'somethign went wrong')
@@ -88,7 +114,7 @@ class ProductController {
           amount,
           type: false,
           org: editedProduct['org'],
-          cost: cost,
+          cost: cost
         })
 
         res.json(editedProduct)
@@ -101,7 +127,7 @@ class ProductController {
   public updateProduct = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const product = req.params.product
@@ -113,11 +139,10 @@ class ProductController {
         await this.productService.updateProduct({
           name,
           unit,
-          product,
-        }),
+          product
+        })
       )
     } catch (error) {
-      console.log(error)
       next(error)
     }
   }

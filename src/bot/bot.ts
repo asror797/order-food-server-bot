@@ -15,56 +15,54 @@ import { LunchBaseService } from './../services/lunch-base.service'
 import { OrderService } from './../services/order.service'
 import { TripService } from './../services/trip.service'
 import { IUser } from '../interfaces/user.interface'
-import {
-  CookMenu,
-  FoodMenu,
-  MainMenu,
-  ShareContact,
-  formatter,
-} from './keyboards'
+import { CookMenu } from './keyboards'
 import { orgModel } from '@models'
 
+function convertToNewFormat(orgArr: any) {
+  const result: any = []
+  let currentRow: any = []
 
-function convertToNewFormat(orgArr:any) {
-  const result:any = [];
-  let currentRow:any = [];
-
-  orgArr.forEach((org:any, index:any) => {
+  orgArr.forEach((org: any, index: any) => {
     const item = {
       text: org.name_org,
-      callback_data: `PICKORG-${org._id}-${org.name_org}`,
-    };
-
-    currentRow.push(item);
-
-    if (currentRow.length === 2 || index === orgArr.length - 1) {
-      result.push([...currentRow]);
-      currentRow = [];
-    }
-  })
-
-  return [...result,[{
-    text:"⬅️ Orqaga",
-    callback_data:"mainkeyboard-a"
-  }]]
-}
-
-function convertToNewFormatFoods(orgArr:any) {
-  const result:any = [];
-  let currentRow:any = [];
-
-  orgArr.forEach((org:any, index:any) => {
-    const item = {
-      text: org.name,
-      callback_data: `sf-${org._id}-${org['_id']}`,
+      callback_data: `PICKORG-${org._id}-${org.name_org}`
     }
 
     currentRow.push(item)
 
-    if(currentRow.length == 2 || index === orgArr.length - 1) {
+    if (currentRow.length === 2 || index === orgArr.length - 1) {
       result.push([...currentRow])
       currentRow = []
-    } 
+    }
+  })
+
+  return [
+    ...result,
+    [
+      {
+        text: '⬅️ Orqaga',
+        callback_data: 'mainkeyboard-a'
+      }
+    ]
+  ]
+}
+
+function convertToNewFormatFoods(orgArr: any) {
+  const result: any = []
+  let currentRow: any = []
+
+  orgArr.forEach((org: any, index: any) => {
+    const item = {
+      text: org.name,
+      callback_data: `sf-${org._id}-${org['_id']}`
+    }
+
+    currentRow.push(item)
+
+    if (currentRow.length == 2 || index === orgArr.length - 1) {
+      result.push([...currentRow])
+      currentRow = []
+    }
   })
 
   return result
@@ -109,23 +107,27 @@ class BotService {
             first_name: contact.first_name || '',
             last_name: contact.last_name || '',
             phone_number: contact.phone_number || '',
-            telegram_id: contact.user_id,
+            telegram_id: contact.user_id
           })
-          this.bot.sendMessage(user.telegram_id, "Siz ro'yxatdan o'tdingiz 🎉", {
-            reply_markup: {
-              keyboard: [
-                [
-                  {
-                    text:"Buyurtma Berish 🛒"
-                  },
-                  {
-                    text:"Balans 💰"
-                  }
-                ]
-              ],
-              resize_keyboard: true
+          this.bot.sendMessage(
+            user.telegram_id,
+            "Siz ro'yxatdan o'tdingiz 🎉",
+            {
+              reply_markup: {
+                keyboard: [
+                  [
+                    {
+                      text: 'Buyurtma Berish 🛒'
+                    },
+                    {
+                      text: 'Balans 💰'
+                    }
+                  ]
+                ],
+                resize_keyboard: true
+              }
             }
-          })
+          )
         }
       }
     } catch (error) {
@@ -133,7 +135,7 @@ class BotService {
       if (contact?.user_id) {
         this.bot.sendMessage(
           contact.user_id,
-          'Something went wrong try again :(',
+          'Something went wrong try again :('
         )
       }
     }
@@ -150,50 +152,63 @@ class BotService {
     try {
       const isExist: IisExist = await this.users.isExist(chatId)
       console.log(isExist)
-      if(!isExist.data) {
-        this.bot.sendMessage(chatId,"Siz ro'yhatdan o'tmagansiz\n telfon raqamingizni yuboring",{
-          reply_markup: {
-            keyboard: [
-              [
-                {
-                  text:"Telfon raqami yuborish",
-                  request_contact: true
-                }
-              ],
-            ],
-            resize_keyboard: true
-          }
-        })
-      } else {
-        if(isExist.data && isExist.data.is_active == true && isExist.data.is_verified == true && isExist.data.org?.name_org) {
-          if(isExist.data.role == 'user') {
-            if(chatType == 'private') this.handleClientCommands(msg)
-            if(chatType == 'group' || chatType == 'supergroup') this.handleGroupCommands(msg) 
-          } else if(isExist.data.role == 'cook') {
-            if(messageText.startsWith('/start')) {
-              this.bot.sendMessage(chatId,'Siz oshpazsiz',{ reply_markup: CookMenu});
-            } else if(messageText == 'Yangi Buyurtma') {
-              const foods = await this.lunchBaseService.getByOrg(isExist.data.org['_id'])
-              console.log(foods);
-    
-              const keys:any = [];
-    
-              foods.map((e:any) => {
-                  keys.push([
-                    {
-                      text:`${e.name}`,
-                      callback_data:`lunch-${e['_id']}`
-                    }
-                  ])
-              })
-    
-              this.bot.sendMessage(chatId,"Ovqatni tanlang: ",{ reply_markup: {
-                inline_keyboard: [
-                 ...keys
+      if (!isExist.data) {
+        this.bot.sendMessage(
+          chatId,
+          "Siz ro'yhatdan o'tmagansiz\n telfon raqamingizni yuboring",
+          {
+            reply_markup: {
+              keyboard: [
+                [
+                  {
+                    text: 'Telfon raqami yuborish',
+                    request_contact: true
+                  }
                 ]
-              }})
-    
-            } else if(messageText == "Buyurtmalarni ko'rish") {
+              ],
+              resize_keyboard: true
+            }
+          }
+        )
+      } else {
+        if (
+          isExist.data &&
+          isExist.data.is_active == true &&
+          isExist.data.is_verified == true &&
+          isExist.data.org?.name_org
+        ) {
+          if (isExist.data.role == 'user') {
+            if (chatType == 'private') this.handleClientCommands(msg)
+            if (chatType == 'group' || chatType == 'supergroup')
+              this.handleGroupCommands(msg)
+          } else if (isExist.data.role == 'cook') {
+            if (messageText.startsWith('/start')) {
+              this.bot.sendMessage(chatId, 'Siz oshpazsiz', {
+                reply_markup: CookMenu
+              })
+            } else if (messageText == 'Yangi Buyurtma') {
+              const foods = await this.lunchBaseService.getByOrg(
+                isExist.data.org['_id']
+              )
+              console.log(foods)
+
+              const keys: any = []
+
+              foods.map((e: any) => {
+                keys.push([
+                  {
+                    text: `${e.name}`,
+                    callback_data: `lunch-${e['_id']}`
+                  }
+                ])
+              })
+
+              this.bot.sendMessage(chatId, 'Ovqatni tanlang: ', {
+                reply_markup: {
+                  inline_keyboard: [...keys]
+                }
+              })
+            } else if (messageText == "Buyurtmalarni ko'rish") {
               const trip = await this.tripService.tripRetrieveOne(chatId)
               if (trip.status) console.log(trip.data)
               let outputStr = '\nSarflanadigan Mahsulotlar:\n\n'
@@ -214,27 +229,34 @@ class BotService {
 
               this.bot.sendMessage(
                 chatId,
-                `${trip.data.meal.name}\n${trip.data.candidates.length} ta hohlaydi.\n\nShundan:\n${countLunch} ${outputStr}`,
+                `${trip.data.meal.name}\n${trip.data.candidates.length} ta hohlaydi.\n\nShundan:\n${countLunch} ${outputStr}`
               )
             }
           }
-        } else if((isExist.data && isExist.data.is_verified == false) || !isExist.data.org?.name_org) {
-          this.bot.sendMessage(chatId,'<b>Siz tasdiqlanmagansiz!</b> \nIltimos admin tomonidan tasdiqlanishingizni kuting',{ 
-            parse_mode:'HTML',
-            reply_markup: {
-              keyboard: [
-                [
-                  {
-                    text:"Buyurtma Berish 🛒"
-                  },
-                  {
-                    text:"Balans 💰"
-                  }
-                ]
-              ],
-              resize_keyboard: true
+        } else if (
+          (isExist.data && isExist.data.is_verified == false) ||
+          !isExist.data.org?.name_org
+        ) {
+          this.bot.sendMessage(
+            chatId,
+            '<b>Siz tasdiqlanmagansiz!</b> \nIltimos admin tomonidan tasdiqlanishingizni kuting',
+            {
+              parse_mode: 'HTML',
+              reply_markup: {
+                keyboard: [
+                  [
+                    {
+                      text: 'Buyurtma Berish 🛒'
+                    },
+                    {
+                      text: 'Balans 💰'
+                    }
+                  ]
+                ],
+                resize_keyboard: true
+              }
             }
-          })
+          )
         }
       }
     } catch (error) {
@@ -242,24 +264,20 @@ class BotService {
     }
   }
 
-  private async handleCookCommands(payload: any) {
-    const chatId = payload.chat.id
-  }
-
-  private async handleClientCommands(payload:any) {
+  private async handleClientCommands(payload: any) {
     const textMessage = payload.text || ''
     const chatId = payload.chat.id
 
-    if(textMessage.startsWith('/start')) {
-      this.bot.sendMessage(chatId,'Xush kelibsiz!\nДобро пожаловать!',{
+    if (textMessage.startsWith('/start')) {
+      this.bot.sendMessage(chatId, 'Xush kelibsiz!\nДобро пожаловать!', {
         reply_markup: {
           keyboard: [
             [
               {
-                text:"Buyurtma Berish 🛒"
+                text: 'Buyurtma Berish 🛒'
               },
               {
-                text:"Balans 💰"
+                text: 'Balans 💰'
               }
             ]
           ],
@@ -267,38 +285,45 @@ class BotService {
         }
       })
     }
-    if(textMessage == 'Buyurtma Berish 🛒') {
+    if (textMessage == 'Buyurtma Berish 🛒') {
       const orgs = await orgModel.find().select('name_org').exec()
-      const sentMessage = await this.bot.sendMessage(chatId,'<i>Loading...</i>',{
-        parse_mode: 'HTML',
-        reply_markup: {
-          remove_keyboard: true
+      const sentMessage = await this.bot.sendMessage(
+        chatId,
+        '<i>Loading...</i>',
+        {
+          parse_mode: 'HTML',
+          reply_markup: {
+            remove_keyboard: true
+          }
         }
-      })
-      this.bot.deleteMessage(chatId,sentMessage.message_id)
-      this.bot.sendMessage(chatId,'Oshxonani tanlang:',{
+      )
+      this.bot.deleteMessage(chatId, sentMessage.message_id)
+      this.bot.sendMessage(chatId, 'Oshxonani tanlang:', {
         reply_markup: {
           inline_keyboard: convertToNewFormat(orgs)
         }
       })
     }
-    if(textMessage == 'Balans 💰') {
+    if (textMessage == 'Balans 💰') {
       const userBalance: IUser | null = await this.users.getBalance(chatId)
-      if(userBalance) {
-        this.bot.sendMessage(chatId,`<b>Ism</b>: ${userBalance.first_name} ${userBalance.last_name}\n<b>Balans</b>: ${userBalance.balance} So'm\n<b>Status</b>: ${userBalance.is_active ? "tasdiqlangan" : "tasdiqlanmagan"}`,{ parse_mode:"HTML"});
+      if (userBalance) {
+        this.bot.sendMessage(
+          chatId,
+          `<b>Ism</b>: ${userBalance.first_name} ${userBalance.last_name}\n<b>Balans</b>: ${userBalance.balance} So'm\n<b>Status</b>: ${userBalance.is_active ? 'tasdiqlangan' : 'tasdiqlanmagan'}`,
+          { parse_mode: 'HTML' }
+        )
       } else {
-        this.bot.sendMessage(chatId,'Foydalanuvchi topilmadi');
+        this.bot.sendMessage(chatId, 'Foydalanuvchi topilmadi')
       }
     }
 
-    if(textMessage == 'Savat') {
-      this.bot.sendMessage(chatId,'')
+    if (textMessage == 'Savat') {
+      this.bot.sendMessage(chatId, '')
     }
-
   }
 
-  private async handleGroupCommands(payload:any) {
-    this.bot.sendMessage(payload.chat.id,`${payload.chat.id}`)
+  private async handleGroupCommands(payload: any) {
+    this.bot.sendMessage(payload.chat.id, `${payload.chat.id}`)
   }
 
   private async handleCallbackQuery(callbackQuery: CallbackQuery) {
@@ -310,50 +335,56 @@ class BotService {
     const ID = data?.split('-')[1]
 
     try {
-
-      if(splited == 'PICKORG' && chatId && callbackQuery.message?.text) {
-
-        await this.bot.editMessageText(`Tanlangan oshxona: <b>${data?.split('-')[2]}</b> \nNima buyurtma qilmoqchisiz: `,{
-          chat_id: chatId,
-          message_id: callbackQuery.message.message_id,
-          parse_mode: 'HTML',
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text:"Savat🛒",
-                  callback_data:`viewstore-${ID}`
-                },
-                {
-                  text:"🍰Desert",
-                  callback_data:`pk-dessert-${ID}`
-                }
-              ],
-              [
-                {
-                  text:"🥤Ichimlik",
-                  callback_data:`pk-drinks-${ID}`
-                },
-                {
-                  text:"🍟Gazak",
-                  callback_data:`pk-snacks-${ID}`
-                }
-              ],
-              [
-                {
-                  text:"⬅️Orqaga",
-                  callback_data:"back-org"
-                }
+      if (splited == 'PICKORG' && chatId && callbackQuery.message?.text) {
+        await this.bot.editMessageText(
+          `Tanlangan oshxona: <b>${data?.split('-')[2]}</b> \nNima buyurtma qilmoqchisiz: `,
+          {
+            chat_id: chatId,
+            message_id: callbackQuery.message.message_id,
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: 'Savat🛒',
+                    callback_data: `viewstore-${ID}`
+                  },
+                  {
+                    text: '🍰Desert',
+                    callback_data: `pk-dessert-${ID}`
+                  }
+                ],
+                [
+                  {
+                    text: '🥤Ichimlik',
+                    callback_data: `pk-drinks-${ID}`
+                  },
+                  {
+                    text: '🍟Gazak',
+                    callback_data: `pk-snacks-${ID}`
+                  }
+                ],
+                [
+                  {
+                    text: '⬅️Orqaga',
+                    callback_data: 'back-org'
+                  }
+                ]
               ]
-            ]
+            }
           }
-        })
+        )
       }
 
-      if(splited == 'back' && data?.split('-')[1] == 'org' && chatId && callbackQuery.message) {
+      if (
+        splited == 'back' &&
+        data?.split('-')[1] == 'org' &&
+        chatId &&
+        callbackQuery.message
+      ) {
         const orgs = await orgModel.find().select('name_org').exec()
         console.log(orgs)
-        this.bot.editMessageText('Oshxonani tanlang',{
+        this.bot.editMessageText('Oshxonani tanlang', {
           chat_id: chatId,
           message_id: callbackQuery.message.message_id,
           reply_markup: {
@@ -362,63 +393,24 @@ class BotService {
         })
       }
 
-      if(splited == 'pk' && chatId && callbackQuery.message && ID) {
-        const foods = await this.foods.getFoodsForBot({org: `${data?.split('-')[2]}`, category: ID, })
+      if (splited == 'pk' && chatId && callbackQuery.message && ID) {
+        const foods = await this.foods.getFoodsForBot({
+          org: `${data?.split('-')[2]}`,
+          category: ID
+        })
         console.log(foods)
         const FormatedFoods = convertToNewFormatFoods(foods)
         console.log(FormatedFoods)
-        await this.bot.editMessageText(`Mahsulotni tanlang: `,{
+        await this.bot.editMessageText(`Mahsulotni tanlang: `, {
           chat_id: chatId,
           message_id: callbackQuery.message.message_id,
           reply_markup: {
             inline_keyboard: [
-                ...FormatedFoods,
+              ...FormatedFoods,
               [
                 {
-                  text:"⬅️Orqaga",
-                  callback_data:`backmenu-${data?.split('-')[2]}`
-                }
-              ],
-            ]
-          }
-        })
-      }
-
-      if(splited == 'backmenu' && chatId && callbackQuery.message && ID) {
-        const Org = await orgModel.findById(ID).select('name_org').exec()
-        if(!Org) {
-          throw new Error('Org not found')
-        }
-        await this.bot.editMessageText(`Tanlangan Oshxona: <b>${Org.name_org}</b>\nNima buyurtma qilmoqchisiz:`,{
-          chat_id: chatId,
-          message_id: callbackQuery.message.message_id,
-          parse_mode: 'HTML',
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text:"Savat🛒",
-                  callback_data:`viewstore-${ID}`
-                },
-                {
-                  text:"🍰Desert",
-                  callback_data:`pk-dessert-${ID}`
-                }
-              ],
-              [
-                {
-                  text:"🥤Ichimlik",
-                  callback_data:`pk-drinks-${ID}`
-                },
-                {
-                  text:"🍟Gazak",
-                  callback_data:`pk-snacks-${ID}`
-                }
-              ],
-              [
-                {
-                  text:"⬅️Orqaga",
-                  callback_data:"back-org"
+                  text: '⬅️Orqaga',
+                  callback_data: `backmenu-${data?.split('-')[2]}`
                 }
               ]
             ]
@@ -426,42 +418,90 @@ class BotService {
         })
       }
 
-      if(splited == 'sf' && chatId && callbackQuery.message && ID && data) {
+      if (splited == 'backmenu' && chatId && callbackQuery.message && ID) {
+        const Org = await orgModel.findById(ID).select('name_org').exec()
+        if (!Org) {
+          throw new Error('Org not found')
+        }
+        await this.bot.editMessageText(
+          `Tanlangan Oshxona: <b>${Org.name_org}</b>\nNima buyurtma qilmoqchisiz:`,
+          {
+            chat_id: chatId,
+            message_id: callbackQuery.message.message_id,
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: 'Savat🛒',
+                    callback_data: `viewstore-${ID}`
+                  },
+                  {
+                    text: '🍰Desert',
+                    callback_data: `pk-dessert-${ID}`
+                  }
+                ],
+                [
+                  {
+                    text: '🥤Ichimlik',
+                    callback_data: `pk-drinks-${ID}`
+                  },
+                  {
+                    text: '🍟Gazak',
+                    callback_data: `pk-snacks-${ID}`
+                  }
+                ],
+                [
+                  {
+                    text: '⬅️Orqaga',
+                    callback_data: 'back-org'
+                  }
+                ]
+              ]
+            }
+          }
+        )
+      }
+
+      if (splited == 'sf' && chatId && callbackQuery.message && ID && data) {
         const food = await this.foods.getById(ID)
         console.log(food)
-        await this.bot.editMessageText(`Mahsulot: <b>${food.name}</b>\nNarxi: <b>${food.cost} so'm</b>`,{
-          chat_id: chatId,
-          message_id: callbackQuery.message.message_id,
-          parse_mode:'HTML',
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text: '-',
-                  callback_data: 'decrease',
-                },
-                {
-                  text: '1',
-                  callback_data: 'count',
-                },
-                {
-                  text: '+',
-                  callback_data: 'increase',
-                },
-              ],
-              [
-                {
-                  text: "⬅️Orqaga qaytish",
-                  callback_data: `pk-${food.category}-${food.org['_id']}`,
-                },
-                {
-                  text: "Savatga Qo'shish 🛒",
-                  callback_data: `store-${data.split('-')[1]}-${food.org}`,
-                },
-              ],
-            ]
+        await this.bot.editMessageText(
+          `Mahsulot: <b>${food.name}</b>\nNarxi: <b>${food.cost} so'm</b>`,
+          {
+            chat_id: chatId,
+            message_id: callbackQuery.message.message_id,
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '-',
+                    callback_data: 'decrease'
+                  },
+                  {
+                    text: '1',
+                    callback_data: 'count'
+                  },
+                  {
+                    text: '+',
+                    callback_data: 'increase'
+                  }
+                ],
+                [
+                  {
+                    text: '⬅️Orqaga qaytish',
+                    callback_data: `pk-${food.category}-${food.org['_id']}`
+                  },
+                  {
+                    text: "Savatga Qo'shish 🛒",
+                    callback_data: `store-${data.split('-')[1]}-${food.org}`
+                  }
+                ]
+              ]
+            }
           }
-        })
+        )
       }
 
       if (splited == 'remove' && chatId && callbackQuery.message) {
@@ -471,59 +511,67 @@ class BotService {
       if (splited == 'canceltrip' && ID) {
         const updatedTrip = await this.tripService.cancelAgreeClient({
           trip: ID,
-          client: data.split('-')[2],
+          client: data.split('-')[2]
         })
         console.log('Canceled', updatedTrip)
       }
 
-      if(splited == 'viewstore' && chatId && data && callbackQuery.message) {
-        const store = await this.store.getStoreByOrg({chatId:chatId,org:data.split('-')[1]})
+      if (splited == 'viewstore' && chatId && data && callbackQuery.message) {
+        const store = await this.store.getStoreByOrg({
+          chatId: chatId,
+          org: data.split('-')[1]
+        })
         console.log(store)
 
-        const contentText:string[] = []
-        let totalSum:number = 0
+        const contentText: string[] = []
+        let totalSum: number = 0
 
-        store.map((e:any,index:number) => {
-          contentText.push(`${index+1}. <b>${e.food.food}</b> - x<b>${e.amount}</b>\nNarxi: <b>${e.food.cost} so'm</b>`)
+        store.map((e: any, index: number) => {
+          contentText.push(
+            `${index + 1}. <b>${e.food.food}</b> - x<b>${e.amount}</b>\nNarxi: <b>${e.food.cost} so'm</b>`
+          )
           totalSum = totalSum + e.food.cost * e.amount
         })
 
-        if(store.length > 0) {
-          await this.bot.editMessageText(`<b>Savat:</b>\n\n${contentText.join('\n\n')} \n\nJami: <b>${totalSum} so'm</b>`,{
-            chat_id: chatId,
-            message_id: callbackQuery.message.message_id,
-            parse_mode:'HTML',
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text:"Savat bo'shatish",
-                    callback_data: `clear-${data.split('-')[1]}`
-                  },
-                  {
-                    text:"Sotib olish",
-                    callback_data: `buy-${data.split('-')[1]}`
-                  }
-                ],
-                [
-                  {
-                    text:"⬅️Orqaga",
-                    callback_data: `backmenu-${data.split('-')[1]}`
-                  }
+        if (store.length > 0) {
+          await this.bot.editMessageText(
+            `<b>Savat:</b>\n\n${contentText.join('\n\n')} \n\nJami: <b>${totalSum} so'm</b>`,
+            {
+              chat_id: chatId,
+              message_id: callbackQuery.message.message_id,
+              parse_mode: 'HTML',
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text: "Savat bo'shatish",
+                      callback_data: `clear-${data.split('-')[1]}`
+                    },
+                    {
+                      text: 'Sotib olish',
+                      callback_data: `buy-${data.split('-')[1]}`
+                    }
+                  ],
+                  [
+                    {
+                      text: '⬅️Orqaga',
+                      callback_data: `backmenu-${data.split('-')[1]}`
+                    }
+                  ]
                 ]
-              ]
+              }
             }
-          })
+          )
         } else {
-          await this.bot.editMessageText(`Savat bo'sh`,{
+          await this.bot.editMessageText(`Savat bo'sh`, {
             chat_id: chatId,
             message_id: callbackQuery.message.message_id,
-            parse_mode:'HTML',
+            parse_mode: 'HTML',
             reply_markup: {
               inline_keyboard: [
                 [
                   {
-                    text:"⬅️Orqaga",
+                    text: '⬅️Orqaga',
                     callback_data: `backmenu-${data.split('-')[1]}`
                   }
                 ]
@@ -532,7 +580,6 @@ class BotService {
           })
         }
       }
-
 
       if (splited == 'agree' && ID && chatId && callbackQuery.message) {
         await this.bot.deleteMessage(chatId, callbackQuery.message?.message_id)
@@ -540,51 +587,60 @@ class BotService {
         console.log(ID)
 
         this.bot.sendMessage(chatId, 'ok')
-        const Trip = await this.tripService.agreeClient(ID,chatId)
+        const Trip = await this.tripService.agreeClient(ID, chatId)
 
-        if(Trip.status && Trip.data) {
-          const {  user ,trip , org} = Trip.data
-          console.log('User',user)
-          console.log('Trip',trip)
-          console.log('Org',org)
-          if(user) {
-            this.bot.sendMessage(chatId,`${trip?.meal?.name} Qabul qilindi`,{
+        if (Trip.status && Trip.data) {
+          const { user, trip, org } = Trip.data
+          console.log('User', user)
+          console.log('Trip', trip)
+          console.log('Org', org)
+          if (user) {
+            this.bot.sendMessage(chatId, `${trip?.meal?.name} Qabul qilindi`, {
               reply_markup: {
                 inline_keyboard: [
                   [
                     {
-                      text:'Olish uchun keldim',
-                      callback_data:`ask-${trip['_id']}-${user['_id']}`
+                      text: 'Olish uchun keldim',
+                      callback_data: `ask-${trip['_id']}-${user['_id']}`
                     }
                   ]
                 ]
               }
             })
-            this.bot.sendMessage(org.group_b_id,`Kimga: \n👤: ${user?.first_name} ${user?.last_name}\n📞: +998${user?.phone_number} \n`,{
-              reply_markup: {
-                inline_keyboard: [
-                  [
-                    {
-                      text:'Bajarish ✅',
-                      callback_data:'remove'
-                    }
-                  ],
-                  [
-                    {
-                      text:'Bekor qilish ❌',
-                      callback_data:`canceltrip-${trip['_id']}-${chatId}`
-                    }
+            this.bot.sendMessage(
+              org.group_b_id,
+              `Kimga: \n👤: ${user?.first_name} ${user?.last_name}\n📞: +998${user?.phone_number} \n`,
+              {
+                reply_markup: {
+                  inline_keyboard: [
+                    [
+                      {
+                        text: 'Bajarish ✅',
+                        callback_data: 'remove'
+                      }
+                    ],
+                    [
+                      {
+                        text: 'Bekor qilish ❌',
+                        callback_data: `canceltrip-${trip['_id']}-${chatId}`
+                      }
+                    ]
                   ]
-                ]
+                }
               }
-            })
+            )
           }
         } else {
-          this.bot.sendMessage(chatId,'Vaqt tugadi.')
+          this.bot.sendMessage(chatId, 'Vaqt tugadi.')
         }
-      } else if (splited == 'disagree' && chatId && callbackQuery.message && ID) {
+      } else if (
+        splited == 'disagree' &&
+        chatId &&
+        callbackQuery.message &&
+        ID
+      ) {
         await this.bot.deleteMessage(chatId, callbackQuery.message?.message_id)
-        const trip = await this.tripService.disagreeClient(ID, chatId)
+        await this.tripService.disagreeClient(ID, chatId)
         this.bot.sendMessage(chatId, `${ID} yuborildi`)
       }
 
@@ -593,7 +649,7 @@ class BotService {
         const Order = await this.tripService.pushUser(
           data.split('-')[2],
           chatId,
-          data.split('-')[1],
+          data.split('-')[1]
         )
 
         if (Order.status && Order.data) {
@@ -605,11 +661,11 @@ class BotService {
                   [
                     {
                       text: 'Olish uchun keldim',
-                      callback_data: `ask-${trip['_id']}-${user['_id']}`,
-                    },
-                  ],
-                ],
-              },
+                      callback_data: `ask-${trip['_id']}-${user['_id']}`
+                    }
+                  ]
+                ]
+              }
             })
           }
         } else {
@@ -628,7 +684,7 @@ class BotService {
         await this.bot.deleteMessage(chatId, callbackQuery.message?.message_id)
         const order: any = await this.tripService.findOrderTrip({
           trip: callbackQuery.data.split('-')[1],
-          user: callbackQuery.data.split('-')[2],
+          user: callbackQuery.data.split('-')[2]
         })
         console.log(order)
 
@@ -643,12 +699,12 @@ class BotService {
                   [
                     {
                       text: 'Berdim ✅',
-                      callback_data: 'donetrip',
-                    },
-                  ],
-                ],
-              },
-            },
+                      callback_data: 'donetrip'
+                    }
+                  ]
+                ]
+              }
+            }
           )
         }
       }
@@ -659,8 +715,8 @@ class BotService {
           {
             chat_id: chatId,
             message_id: callbackQuery.message.message_id,
-            reply_markup: { inline_keyboard: [] },
-          },
+            reply_markup: { inline_keyboard: [] }
+          }
         )
       }
 
@@ -672,13 +728,13 @@ class BotService {
           const newTrip: any = await this.tripService.createTrip({
             meal: data.split('-')[1],
             org: User.data.org['_id'],
-            sent_at: Math.floor(Date.now() / 1000),
+            sent_at: Math.floor(Date.now() / 1000)
           })
           console.log('Created Trip', newTrip)
           if (newTrip?.status) {
             this.bot.sendMessage(chatId, 'Yuborildi')
             const lunches = await this.lunchService.getByBase(
-              data.split('-')[1],
+              data.split('-')[1]
             )
             interface OneKey {
               text: string
@@ -690,12 +746,12 @@ class BotService {
               baseKeys.push([
                 {
                   text: `${e.name} - ${e.cost}`,
-                  callback_data: `select-${e['_id']}-${newTrip.data['_id']}`,
-                },
+                  callback_data: `select-${e['_id']}-${newTrip.data['_id']}`
+                }
               ])
             })
             const clients = await this.users.getTelegramIDOfClients(
-              User.data.org['_id'],
+              User.data.org['_id']
             )
 
             console.log(clients)
@@ -710,20 +766,18 @@ class BotService {
                       [
                         {
                           text: "Yo'q ❌",
-                          callback_data: `disagree-${newTrip.data['_id']}`,
-                        },
-                      ],
-                    ],
-                  },
-                },
+                          callback_data: `disagree-${newTrip.data['_id']}`
+                        }
+                      ]
+                    ]
+                  }
+                }
               )
             })
           } else {
             this.bot.sendMessage(
               chatId,
-              `⏳ Yangi e'lon berish uchun ${Math.floor(
-                newTrip.data.diffrence,
-              )} minut vatq qoldi.`,
+              `⏳ Yangi e'lon berish uchun ${Math.floor(newTrip.data.diffrence)} minut vatq qoldi.`
             )
           }
           console.log(newTrip)
@@ -738,7 +792,7 @@ class BotService {
           if (Lunch && callbackQuery.message) {
             await this.bot.deleteMessage(
               chatId,
-              callbackQuery.message?.message_id,
+              callbackQuery.message?.message_id
             )
             this.bot.sendMessage(
               chatId,
@@ -749,18 +803,18 @@ class BotService {
                     [
                       {
                         text: "📢 E'lon qilish",
-                        callback_data: `newtrip-${lunchID}`,
-                      },
+                        callback_data: `newtrip-${lunchID}`
+                      }
                     ],
                     [
                       {
                         text: '❌ Bekor Qilish',
-                        callback_data: `remove`,
-                      },
-                    ],
-                  ],
-                },
-              },
+                        callback_data: `remove`
+                      }
+                    ]
+                  ]
+                }
+              }
             )
           } else {
             this.bot.sendMessage(chatId, `Taom topilmadi`)
@@ -775,15 +829,26 @@ class BotService {
         if (type == 'done') {
           const updatedOrder: any = await this.orderService.acceptOrder({
             order: data?.split('-')[1],
-            type: true,
+            type: true
           })
 
-          console.log('Update Order',updatedOrder)
+          console.log('Update Order', updatedOrder)
 
-          if(updatedOrder.message == 'cancelled') {
-            this.bot.editMessageText(callbackQuery.message.text + '\n Buyurtma avtomatik bekor qilingan',{ chat_id: chatId, message_id: callbackQuery.message.message_id, reply_markup: { inline_keyboard: [] }, parse_mode: 'HTML'})
-          } else if(updatedOrder.message == 'InfluenceBalance') {
-            this.bot.sendMessage(chatId,"Foydalanuchi puli yetarli emas",{ reply_to_message_id: callbackQuery.message.message_id })
+          if (updatedOrder.message == 'cancelled') {
+            this.bot.editMessageText(
+              callbackQuery.message.text +
+                '\n Buyurtma avtomatik bekor qilingan',
+              {
+                chat_id: chatId,
+                message_id: callbackQuery.message.message_id,
+                reply_markup: { inline_keyboard: [] },
+                parse_mode: 'HTML'
+              }
+            )
+          } else if (updatedOrder.message == 'InfluenceBalance') {
+            this.bot.sendMessage(chatId, 'Foydalanuchi puli yetarli emas', {
+              reply_to_message_id: callbackQuery.message.message_id
+            })
           } else {
             const textMessage: string[] = []
             if (updatedOrder) {
@@ -791,15 +856,17 @@ class BotService {
                 `<b>Kimga:</b>${updatedOrder.client.first_name} ${updatedOrder.client.last_name}\n<b>Telefon:</b>+998${updatedOrder.client.phone_number}\n\n`
               )
               updatedOrder.foods.map((e: any) => {
-                textMessage.push(`\n<b>${e.food.name}</b>\n${e.amount} x ${e.food.cost} = ${e.amount * e.food.cost} so'm`)
+                textMessage.push(
+                  `\n<b>${e.food.name}</b>\n${e.amount} x ${e.food.cost} = ${e.amount * e.food.cost} so'm`
+                )
               })
               textMessage.push(
-                `\n------------------------\nJami: ${updatedOrder.total_cost} so'm`,
+                `\n------------------------\nJami: ${updatedOrder.total_cost} so'm`
               )
               textMessage.push(`\n\Buyurtma Holati: Bajarildi ✅`)
               await this.bot.deleteMessage(
                 chatId,
-                callbackQuery.message?.message_id,
+                callbackQuery.message?.message_id
               )
               this.bot.sendMessage(
                 updatedOrder?.client.telegram_id,
@@ -821,22 +888,22 @@ class BotService {
           const textMessage: string[] = []
           const updatedOrder: any = await this.orderService.cancelOrder({
             order: data?.split('-')[1],
-            type: false,
+            type: false
           })
           if (updatedOrder) {
             textMessage.push(
-              `<b>Kimga:</b>\n${updatedOrder.client.first_name} ${updatedOrder.client.last_name}\n${updatedOrder.client.phone_number}`,
+              `<b>Kimga:</b>\n${updatedOrder.client.first_name} ${updatedOrder.client.last_name}\n${updatedOrder.client.phone_number}`
             )
             updatedOrder.foods.map((e: any, i: number) => {
               textMessage.push(`${i + 1}. ${e.food.name}`)
             })
             textMessage.push(
-              `\n\n-------------------\nJami: ${updatedOrder.total_cost} uzs`,
+              `\n\n-------------------\nJami: ${updatedOrder.total_cost} uzs`
             )
             textMessage.push(`\n\nBuyurtma Holati: Bekor qilindi ❌`)
             await this.bot.deleteMessage(
               chatId,
-              callbackQuery.message?.message_id,
+              callbackQuery.message?.message_id
             )
             this.bot.sendMessage(
               Number(updatedOrder?.client.telegram_id),
@@ -857,8 +924,8 @@ class BotService {
         if (callbackQuery.message) {
           const amount = Number(
             callbackQuery.message.reply_markup?.inline_keyboard[0].find(
-              (e) => e.callback_data == 'count',
-            )?.text,
+              (e) => e.callback_data == 'count'
+            )?.text
           )
           const food = data?.split('-')[1]
 
@@ -871,47 +938,53 @@ class BotService {
             })
             const organization = data.split('-')[2]
             this.bot.answerCallbackQuery(callbackQuery.id, {
-              text: "Savat qo'shildi",
+              text: "Savat qo'shildi"
             })
-            const Org = await orgModel.findById(organization).select('name_org').exec()
-            if(!Org) {
+            const Org = await orgModel
+              .findById(organization)
+              .select('name_org')
+              .exec()
+            if (!Org) {
               throw new Error('Org not found')
             }
-            await this.bot.editMessageText(`Tanlangan Oshxona: <b>${Org.name_org}</b>\nNima buyurtma qilmoqchisiz:`,{
-              chat_id: chatId,
-              message_id: callbackQuery.message.message_id,
-              parse_mode: 'HTML',
-              reply_markup: {
-                inline_keyboard: [
-                  [
-                    {
-                      text:"Savat🛒",
-                      callback_data:`viewstore-${organization}`
-                    },
-                    {
-                      text:"🍰Desert",
-                      callback_data:`pk-dessert-${organization}`
-                    }
-                  ],
-                  [
-                    {
-                      text:"🥤Ichimlik",
-                      callback_data:`pk-drinks-${organization}`
-                    },
-                    {
-                      text:"🍟Gazak",
-                      callback_data:`pk-snacks-${organization}`
-                    }
-                  ],
-                  [
-                    {
-                      text:"⬅️Orqaga",
-                      callback_data:"back-org"
-                    }
+            await this.bot.editMessageText(
+              `Tanlangan Oshxona: <b>${Org.name_org}</b>\nNima buyurtma qilmoqchisiz:`,
+              {
+                chat_id: chatId,
+                message_id: callbackQuery.message.message_id,
+                parse_mode: 'HTML',
+                reply_markup: {
+                  inline_keyboard: [
+                    [
+                      {
+                        text: 'Savat🛒',
+                        callback_data: `viewstore-${organization}`
+                      },
+                      {
+                        text: '🍰Desert',
+                        callback_data: `pk-dessert-${organization}`
+                      }
+                    ],
+                    [
+                      {
+                        text: '🥤Ichimlik',
+                        callback_data: `pk-drinks-${organization}`
+                      },
+                      {
+                        text: '🍟Gazak',
+                        callback_data: `pk-snacks-${organization}`
+                      }
+                    ],
+                    [
+                      {
+                        text: '⬅️Orqaga',
+                        callback_data: 'back-org'
+                      }
+                    ]
                   ]
-                ]
+                }
               }
-            })
+            )
           } else {
             this.bot.sendMessage(chatId, 'something went wrong')
           }
@@ -920,66 +993,69 @@ class BotService {
 
       if (splited == 'clear' && chatId && callbackQuery.message && ID) {
         this.bot.answerCallbackQuery(callbackQuery.id, {
-          text: "Savat Bo'shatildi",
+          text: "Savat Bo'shatildi"
         })
-        await this.store.clearStoreByOrg({chat:chatId,org: ID})
+        await this.store.clearStoreByOrg({ chat: chatId, org: ID })
         const Org = await orgModel.findById(ID).select('name_org').exec()
-        if(!Org) {
+        if (!Org) {
           throw new Error('Org not found')
         }
-        await this.bot.editMessageText(`Tanlangan Oshxona: <b>${Org.name_org}</b>\nNima buyurtma qilmoqchisiz:`,{
-          chat_id: chatId,
-          message_id: callbackQuery.message.message_id,
-          parse_mode: 'HTML',
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text:"Savat🛒",
-                  callback_data:`viewstore-${ID}`
-                },
-                {
-                  text:"🍰Desert",
-                  callback_data:`pk-dessert-${ID}`
-                }
-              ],
-              [
-                {
-                  text:"🥤Ichimlik",
-                  callback_data:`pk-drinks-${ID}`
-                },
-                {
-                  text:"🍟Gazak",
-                  callback_data:`pk-snacks-${ID}`
-                }
-              ],
-              [
-                {
-                  text:"⬅️Orqaga",
-                  callback_data:"back-org"
-                }
+        await this.bot.editMessageText(
+          `Tanlangan Oshxona: <b>${Org.name_org}</b>\nNima buyurtma qilmoqchisiz:`,
+          {
+            chat_id: chatId,
+            message_id: callbackQuery.message.message_id,
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: 'Savat🛒',
+                    callback_data: `viewstore-${ID}`
+                  },
+                  {
+                    text: '🍰Desert',
+                    callback_data: `pk-dessert-${ID}`
+                  }
+                ],
+                [
+                  {
+                    text: '🥤Ichimlik',
+                    callback_data: `pk-drinks-${ID}`
+                  },
+                  {
+                    text: '🍟Gazak',
+                    callback_data: `pk-snacks-${ID}`
+                  }
+                ],
+                [
+                  {
+                    text: '⬅️Orqaga',
+                    callback_data: 'back-org'
+                  }
+                ]
               ]
-            ]
+            }
           }
-        })
-      } 
-    
-      if(splited == 'mainkeyboard' && chatId && callbackQuery.message) {
-        this.bot.deleteMessage(chatId,callbackQuery.message.message_id)
-        this.bot.sendMessage(chatId,'Asosiy menu 👇',{
+        )
+      }
+
+      if (splited == 'mainkeyboard' && chatId && callbackQuery.message) {
+        this.bot.deleteMessage(chatId, callbackQuery.message.message_id)
+        this.bot.sendMessage(chatId, 'Asosiy menu 👇', {
           reply_markup: {
             keyboard: [
               [
                 {
-                  text:"Buyurtma Berish 🛒"
+                  text: 'Buyurtma Berish 🛒'
                 },
                 {
-                  text:"Balans 💰"
+                  text: 'Balans 💰'
                 }
               ]
             ],
             resize_keyboard: true
-          },
+          }
         })
         // this.bot.editMessageText('Buyurtma Berish: ',{
         //   chat_id: chatId,
@@ -992,13 +1068,16 @@ class BotService {
       if (splited == 'buy' && chatId && data) {
         const user = await this.users.isExist(chatId)
         if (user.data.is_active == true && user.data.is_verified == true) {
-          const store = await this.store.getStoreByOrg({chatId:chatId,org: data.split('-')[1]})
+          const store = await this.store.getStoreByOrg({
+            chatId: chatId,
+            org: data.split('-')[1]
+          })
           const org = await orgModel.findById(data.split('-')[1])
-          if(!org) {
+          if (!org) {
             throw new Error('org not found')
           }
 
-          if (store.length > 0) {    
+          if (store.length > 0) {
             // const foodArray: any = []
             // store.map((e: any) => {
             //   foodArray.push({ food: e.food.id, amount: e.amount })
@@ -1007,50 +1086,59 @@ class BotService {
             const Order = await this.orderService.createOrder({
               org: org['_id'],
               client: user.data['_id'],
-              foods: store.map((e:any) => ({ food: e.food.id, amount: e.amount })),
+              foods: store.map((e: any) => ({
+                food: e.food.id,
+                amount: e.amount
+              }))
             })
 
             if (Order && callbackQuery.message) {
               const foods: string[] = []
-              let totalSum:number = 0
-              foods.push(`<b>Kimga:</b> ${user.data.first_name}\n<b>Telefon:</b> +998${user.data.phone_number}\n\n`)
-              Order.foods.map((e:any) => {
-                foods.push(`<b>${e.food.name}</b>\n${e.amount} x ${e.food.cost} = ${e.amount * e.food.cost} so'm\n`)
+              let totalSum: number = 0
+              foods.push(
+                `<b>Kimga:</b> ${user.data.first_name}\n<b>Telefon:</b> +998${user.data.phone_number}\n\n`
+              )
+              Order.foods.map((e: any) => {
+                foods.push(
+                  `<b>${e.food.name}</b>\n${e.amount} x ${e.food.cost} = ${e.amount * e.food.cost} so'm\n`
+                )
                 totalSum = totalSum + e.amount * e.food.cost
               })
-              foods.push(`\n------------------------------------\nJami: ${totalSum} so'm`)
-              if (
-                org.group_a_id &&
-                user.data.balance >= Order.total_cost
-              ) {
+              foods.push(
+                `\n------------------------------------\nJami: ${totalSum} so'm`
+              )
+              if (org.group_a_id && user.data.balance >= Order.total_cost) {
                 try {
-                  await this.store.clearStoreByOrg({chat:chatId,org:org['_id']})
+                  await this.store.clearStoreByOrg({
+                    chat: chatId,
+                    org: org['_id']
+                  })
                   await this.bot.deleteMessage(
                     chatId,
-                    callbackQuery.message?.message_id,
+                    callbackQuery.message?.message_id
                   )
                 } catch (error) {
-                  console.log('Salom',error)
+                  console.log('Salom', error)
                 }
                 this.bot.sendMessage(
                   chatId,
                   `<b>Buyurtma:</b>\n\n${foods.join(' ')}`,
-                  { 
+                  {
                     parse_mode: 'HTML',
                     reply_markup: {
                       keyboard: [
                         [
                           {
-                            text:"Buyurtma Berish 🛒",
+                            text: 'Buyurtma Berish 🛒'
                           },
                           {
-                            text:"Balans 💰"
+                            text: 'Balans 💰'
                           }
                         ]
                       ],
                       resize_keyboard: true
                     }
-                  },
+                  }
                 )
                 this.bot.sendMessage(org.group_a_id, foods.join(''), {
                   parse_mode: 'HTML',
@@ -1059,22 +1147,22 @@ class BotService {
                       [
                         {
                           text: 'Bajarildi ✅',
-                          callback_data: `order-${Order['_id']}-done`,
-                        },
+                          callback_data: `order-${Order['_id']}-done`
+                        }
                       ],
                       [
                         {
                           text: 'Bekor Qilish ❌',
-                          callback_data: `order-${Order['_id']}-cancel`,
-                        },
-                      ],
-                    ],
-                  },
+                          callback_data: `order-${Order['_id']}-cancel`
+                        }
+                      ]
+                    ]
+                  }
                 })
               } else if (user.data.balance < Order.total_cost) {
                 this.bot.answerCallbackQuery(callbackQuery.id, {
                   text: 'Hisobda pul yetarli emas',
-                  show_alert: true,
+                  show_alert: true
                 })
               }
             } else {
@@ -1084,16 +1172,19 @@ class BotService {
         } else {
           this.bot.sendMessage(
             chatId,
-            'Foydalanuvchi tasdiqlanmagan yoki aktiv emas!',
+            'Foydalanuvchi tasdiqlanmagan yoki aktiv emas!'
           )
         }
       }
 
-      if ((data == 'decrease' || data == 'increase' || data == 'count') && callbackQuery.message ) {
+      if (
+        (data == 'decrease' || data == 'increase' || data == 'count') &&
+        callbackQuery.message
+      ) {
         console.log('Callback', callbackQuery)
         console.log(
           'bfirfkwjnjrfn',
-          callbackQuery.message.reply_markup?.inline_keyboard,
+          callbackQuery.message.reply_markup?.inline_keyboard
         )
         console.log(data)
 
@@ -1103,7 +1194,7 @@ class BotService {
           const message = callbackQuery.message
           const count =
             message.reply_markup?.inline_keyboard[0].find(
-              (e) => e.callback_data == 'count',
+              (e) => e.callback_data == 'count'
             )?.text || 0
           this.bot.editMessageReplyMarkup(
             {
@@ -1111,30 +1202,30 @@ class BotService {
                 [
                   {
                     text: '-',
-                    callback_data: 'decrease',
+                    callback_data: 'decrease'
                   },
                   {
                     text: `${Number(count) + 1}`,
-                    callback_data: 'count',
+                    callback_data: 'count'
                   },
                   {
                     text: '+',
-                    callback_data: 'increase',
-                  },
+                    callback_data: 'increase'
+                  }
                 ],
-                [...callbackQuery.message.reply_markup?.inline_keyboard[1]],
-              ],
+                [...callbackQuery.message.reply_markup?.inline_keyboard[1]]
+              ]
             },
             {
               chat_id: message.chat.id,
-              message_id: message.message_id,
-            },
+              message_id: message.message_id
+            }
           )
         } else if (callbackQuery.message.reply_markup && data == 'decrease') {
           const message = callbackQuery.message
           const count =
             message.reply_markup?.inline_keyboard[0].find(
-              (e) => e.callback_data == 'count',
+              (e) => e.callback_data == 'count'
             )?.text || 0
 
           if (Number(count) > 1) {
@@ -1144,29 +1235,29 @@ class BotService {
                   [
                     {
                       text: '-',
-                      callback_data: 'decrease',
+                      callback_data: 'decrease'
                     },
                     {
                       text: `${Number(count) - 1}`,
-                      callback_data: 'count',
+                      callback_data: 'count'
                     },
                     {
                       text: '+',
-                      callback_data: 'increase',
-                    },
+                      callback_data: 'increase'
+                    }
                   ],
-                  [...callbackQuery.message.reply_markup?.inline_keyboard[1]],
-                ],
+                  [...callbackQuery.message.reply_markup?.inline_keyboard[1]]
+                ]
               },
               {
                 chat_id: message.chat.id,
-                message_id: message.message_id,
-              },
+                message_id: message.message_id
+              }
             )
           } else {
             this.bot.answerCallbackQuery(callbackQuery.id, {
               text: 'Soni kam',
-              show_alert: true,
+              show_alert: true
             })
           }
         }
@@ -1187,27 +1278,27 @@ class BotService {
                   [
                     {
                       text: '-',
-                      callback_data: 'decrease',
+                      callback_data: 'decrease'
                     },
                     {
                       text: '1',
-                      callback_data: 'count',
+                      callback_data: 'count'
                     },
                     {
                       text: '+',
-                      callback_data: 'increase',
-                    },
+                      callback_data: 'increase'
+                    }
                   ],
                   [
                     {
                       text: "Savatga Qo'shish ✅",
-                      callback_data: `store-${data.split('-')[1]}`,
-                    },
-                  ],
-                ],
+                      callback_data: `store-${data.split('-')[1]}`
+                    }
+                  ]
+                ]
               },
-              parse_mode: 'HTML',
-            },
+              parse_mode: 'HTML'
+            }
           )
         }
       }

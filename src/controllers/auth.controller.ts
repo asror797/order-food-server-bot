@@ -18,7 +18,7 @@ class AuthController {
   public LoginSuperAdmin = (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
       const adminData: AdminLoginDto = req.body
@@ -28,14 +28,18 @@ class AuthController {
     }
   }
 
-  public loginAdmin = async(req:Request,res:Response,next:NextFunction) => {
+  public loginAdmin = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const { phoneNumber, password } = req.body
       console.log(req.body)
-      if(!phoneNumber || !password ) {
-        throw new HttpException(400,'phoneNumber or password is wrong 1')
+      if (!phoneNumber || !password) {
+        throw new HttpException(400, 'phoneNumber or password is wrong 1')
       }
-      res.json(await this.authService.login({phoneNumber,password}))
+      res.json(await this.authService.login({ phoneNumber, password }))
     } catch (error) {
       next(error)
     }

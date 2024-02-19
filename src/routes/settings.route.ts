@@ -13,7 +13,7 @@ export class SettingsRoute {
   private initializeRoutes() {
     this.router.post(
       `${this.path}/otp-info`,
-      this.settingsController.saveOtpInfo,
+      this.settingsController.saveOtpInfo
     )
   }
 }

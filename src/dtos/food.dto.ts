@@ -5,7 +5,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
-  ValidateNested,
+  ValidateNested
 } from 'class-validator'
 import { Category } from '../interfaces/food.interface'
 import { Type } from 'class-transformer'

@@ -31,14 +31,14 @@ export class FoodService {
         currentPage: page,
         totalPages: Math.ceil(totalFoods / size),
         totalFoods,
-        foodsOnPage: foods.length,
+        foodsOnPage: foods.length
       }
     }
 
     const re = new RegExp(search, 'i')
     const foods = await this.foods
       .find({
-        $or: [{ name: { $regex: re } }],
+        $or: [{ name: { $regex: re } }]
       })
       .populate('org', 'name_org')
       .populate('products.product', 'name cost')
@@ -54,7 +54,7 @@ export class FoodService {
       currentPage: page,
       totalPages,
       totalFoods,
-      foodsOnPage: foods.length,
+      foodsOnPage: foods.length
     }
   }
 
@@ -64,7 +64,7 @@ export class FoodService {
       .find({
         org: org,
         category: category,
-        $or: [{ is_deleted: false }, { is_deleted: { $exists: false } }],
+        $or: [{ is_deleted: false }, { is_deleted: { $exists: false } }]
       })
       .exec()
 
@@ -79,7 +79,7 @@ export class FoodService {
 
           const statusProduct = await this.productService.checkAmountProduct({
             product: product.product['_id'],
-            amount: product.amount,
+            amount: product.amount
           })
 
           if (statusProduct) {
@@ -111,7 +111,7 @@ export class FoodService {
         product: orderFood.product['_id'].toString(),
         type: false,
         cost: orderFood.product.cost,
-        org: Food.org,
+        org: Food.org
       })
     }
     return 'ok'
@@ -136,7 +136,7 @@ export class FoodService {
       cost,
       org,
       category,
-      products: productObjects,
+      products: productObjects
     })
 
     return newFood
@@ -145,7 +145,7 @@ export class FoodService {
   public async getByCategory(category: string, org: string) {
     const foods = await this.foods.find({
       category: category,
-      org: org,
+      org: org
     })
     console.log(foods)
     return foods
@@ -173,9 +173,9 @@ export class FoodService {
     const updatedFood = await this.foods.findByIdAndUpdate(
       food,
       {
-        img: image,
+        img: image
       },
-      { new: true },
+      { new: true }
     )
 
     if (!updatedFood) throw new HttpException(500, 'something went wrong')
@@ -184,7 +184,7 @@ export class FoodService {
       _id: updatedFood['_id'],
       name: updatedFood.name,
       cost: updatedFood.cost,
-      category: updatedFood.category,
+      category: updatedFood.category
     }
   }
 
@@ -197,12 +197,12 @@ export class FoodService {
     const updatedFood = await this.foods.findByIdAndUpdate(
       id,
       { is_deleted: status },
-      { new: true },
+      { new: true }
     )
 
     return {
       _id: updatedFood ? updatedFood['_id'] : '',
-      name: updatedFood?.name,
+      name: updatedFood?.name
     }
   }
 
@@ -215,7 +215,7 @@ export class FoodService {
       ...(category !== undefined && { category }),
       ...(is_deleted !== undefined && { is_deleted }),
       ...(img !== undefined && { img }),
-      ...(name !== undefined && { name }),
+      ...(name !== undefined && { name })
     }
 
     if (updateData.org) {
@@ -261,7 +261,7 @@ export class FoodService {
     const Food = await this.getFoodById(food)
 
     const isProductInArray = Food.products.some(
-      (item) => item.product == product.id,
+      (item) => item.product == product.id
     )
 
     if (!isProductInArray) throw new HttpException(400, 'product not found')
@@ -269,7 +269,7 @@ export class FoodService {
     const updatedFood = await this.foods.findByIdAndUpdate(
       food,
       { $pull: { products: { product: product.id } } },
-      { new: true },
+      { new: true }
     )
     return updatedFood
   }

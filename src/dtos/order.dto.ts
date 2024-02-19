@@ -9,7 +9,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
-  ValidateNested,
+  ValidateNested
 } from 'class-validator'
 
 export class GetOrderDto {
@@ -66,7 +66,7 @@ enum TypeDate {
   day = 'day',
   week = 'week',
   month = 'month',
-  year = 'year',
+  year = 'year'
 }
 
 export class OrderRetrieveAllDto {

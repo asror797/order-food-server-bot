@@ -1,4 +1,5 @@
 import { IsBoolean, IsNumber, IsString } from 'class-validator'
+import { ProductCreateRequest } from './../interfaces'
 
 export class CreateProductBody {
   @IsString()
@@ -8,7 +9,7 @@ export class CreateProductBody {
   unit: string
 }
 
-export class CreateProduct {
+export class CreateProduct implements ProductCreateRequest {
   @IsString()
   name: string
 

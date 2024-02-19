@@ -5,16 +5,16 @@ const foodSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: true
     },
     cost: {
       type: Number,
-      default: 0,
+      default: 0
     },
     img: {
       type: String,
       default:
-        'https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg',
+        'https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg'
     },
     products: {
       type: [
@@ -22,34 +22,34 @@ const foodSchema: Schema = new Schema(
           product: {
             type: Schema.Types.ObjectId,
             ref: 'Product',
-            required: true,
+            required: true
           },
           amount: {
             type: Number,
-            required: true,
-          },
-        },
+            required: true
+          }
+        }
       ],
-      default: [],
+      default: []
     },
     org: {
       type: Schema.Types.ObjectId,
       ref: 'Org',
-      required: true,
+      required: true
     },
     category: {
       type: String,
-      enum: Object.values(Category),
+      enum: Object.values(Category)
     },
     is_deleted: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   {
     versionKey: false,
-    timestamps: true,
-  },
+    timestamps: true
+  }
 )
 
 export const foodModel = model<IFood & Document>('Food', foodSchema)
