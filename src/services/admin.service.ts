@@ -48,6 +48,7 @@ export class AdminService {
       }))
     }
   }
+
   public async adminRetrieveOne(
     payload: AdminRetrieveOneRequest
   ): Promise<AdminRetrieveOneResponse> {
@@ -65,6 +66,7 @@ export class AdminService {
       createdAt: ''
     }
   }
+
   public async adminCreate(
     payload: AdminCreateRequest
   ): Promise<AdminCreateResponse> {
