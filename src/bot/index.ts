@@ -1,2 +1,2 @@
-export * from './bot'
+export * from './newbot'
 export * from './keyboards'

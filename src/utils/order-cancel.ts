@@ -1,5 +1,5 @@
 import { orderModel } from '@models'
-import { botService } from '@bot'
+// import { botInstance } from '@bot'
 
 export async function autoCancelOrder() {
   try {
@@ -22,7 +22,7 @@ export async function autoCancelOrder() {
       try {
         expiredOrders.map((e: any) => {
           if (e.client && e.client.telegram_id) {
-            botService.sendText(e.client.telegram_id, 'Buyurtma bekor qilindi')
+            // botInstance.sendText(e.client.telegram_id, 'Buyurtma bekor qilindi')
           }
         })
       } catch (error) {

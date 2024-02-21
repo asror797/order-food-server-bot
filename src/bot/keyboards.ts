@@ -1,9 +1,17 @@
-import { ReplyKeyboardMarkup } from 'node-telegram-bot-api'
+import { ReplyKeyboardMarkup, SendMessageOptions } from 'node-telegram-bot-api'
 
 // interface Keyboard {
 //   text: string
 //   callback_data: string
 // }
+
+export const handleStart: SendMessageOptions = {
+  reply_markup: {
+    keyboard: [[{ text: '' }]],
+    resize_keyboard: true
+  },
+  parse_mode: 'HTML'
+}
 
 export const ShareContact: ReplyKeyboardMarkup = {
   keyboard: [

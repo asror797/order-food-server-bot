@@ -4,12 +4,11 @@ import errorMiddleware from './middlewares/error.middleware'
 import { Routes } from './interfaces/route.interface'
 import { connect } from 'mongoose'
 import { dbConnection } from '@database'
-import { botService } from '@bot'
+import { botInstance } from '@bot'
 import { autoCancelOrder } from '@utils'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
 import { PORT } from '@config'
-import authMiddleware from './middlewares/auth.middleware'
 
 class App {
   public app: express.Application
@@ -20,7 +19,7 @@ class App {
     console.log(PORT)
     this.app = express()
     this.port = 9070 || PORT
-    this.bot = botService
+    this.bot = botInstance
 
     this.connectToDatabase()
     this.initializeMiddlewares()
@@ -63,8 +62,8 @@ class App {
     this.app.use(errorMiddleware)
   }
 
-  private initializeBot() {
-    botService.initialize()
+  private async initializeBot() {
+    await this.bot.initializeBot()
   }
 
   private initializeSwagger() {

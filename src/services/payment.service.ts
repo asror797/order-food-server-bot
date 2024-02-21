@@ -1,4 +1,4 @@
-import { botService } from '@bot'
+// import { botInstance } from '@bot'
 import { userModel, paymentModel } from '@models'
 import { CreatePaymentDto } from '../dtos/payment.dto'
 import { HttpException } from '@exceptions'
@@ -42,7 +42,7 @@ export class PaymentService {
   }
 
   public async increase(paymentData: CreatePaymentDto) {
-    const { user, amount, org } = paymentData
+    const { user, amount } = paymentData
     const User = await this.userRepo.findById(user)
     if (!User) throw new HttpException(400, 'user not found')
 
@@ -54,10 +54,10 @@ export class PaymentService {
       { new: true }
     )
 
-    botService.sendText(
-      User.telegram_id,
-      `🟢 Hisobingizga ${amount} so'm pul tushurildi`
-    )
+    // botService.sendText(
+    //   User.telegram_id,
+    //   `🟢 Hisobingizga ${amount} so'm pul tushurildi`
+    // )
     await this.paymentRepo.create({
       type: true,
       org: User.org,
@@ -88,10 +88,10 @@ export class PaymentService {
       amount
     })
 
-    botService.sendText(
-      User.telegram_id,
-      `🔴 Hisobdan ${amount} so'm pul yechib olindi`
-    )
+    // botService.sendText(
+    //   User.telegram_id,
+    //   `🔴 Hisobdan ${amount} so'm pul yechib olindi`
+    // )
 
     return updatedUser
   }

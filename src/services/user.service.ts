@@ -1,7 +1,7 @@
 import { userModel, orgModel } from '@models'
 import { formatPhoneNumber } from '@utils'
 import { HttpException } from '@exceptions'
-import { botService } from '@bot'
+// import { botService } from '@bot'
 import {
   ChangeOrg,
   ChangeStatus,
@@ -12,11 +12,11 @@ import {
   UpdateUserDto
 } from '../dtos/user.dto'
 import { IUser } from '../interfaces/user.interface'
+import { UserRegisterPayload, UserCheckResponse } from './../interfaces'
 
 export class UserService {
   private users = userModel
   private orgs = orgModel
-
 
   public async isExist(telegramID: number): Promise<any> {
     const user = await this.users
@@ -45,6 +45,34 @@ export class UserService {
       phone_number
     })
     return newUser
+  }
+
+  public async checkUser(payload: {
+    telegramId: number
+  }): Promise<UserCheckResponse> {
+    const user = await this.users
+      .findOne({
+        telegram_id: payload.telegramId
+      })
+      .populate('org', 'name_org')
+      .select('-createdAt -updatedAt')
+      .exec()
+
+    return {
+      isExist: !!user,
+      user: user
+    }
+  }
+
+  public async registerUser(payload: UserRegisterPayload): Promise<any> {
+    const user = await this.users.create({
+      telegram_id: payload.telegramId,
+      first_name: payload.firstName,
+      last_name: payload.lastName,
+      phone_number: payload.phoneNumber
+    })
+
+    return user
   }
 
   public async userRetrieveAll(payload: SearchPagination) {
@@ -205,7 +233,7 @@ export class UserService {
   }
 
   public async sendMessageToUsers(msgData: SendMessae) {
-    const { org, message } = msgData
+    const { org } = msgData
 
     if (org == 'all' || org == null) {
       const users = await this.users.find({
@@ -213,7 +241,8 @@ export class UserService {
         is_verified: true
       })
       users.map((e) => {
-        botService.sendText(e.telegram_id, message)
+        console.log(e)
+        // botService.sendText(e.telegram_id, message)
       })
 
       return {
@@ -229,7 +258,8 @@ export class UserService {
         org: org
       })
       users.map((e) => {
-        botService.sendText(e.telegram_id, message)
+        console.log(e)
+        // botService.sendText(e.telegram_id, message)
       })
       return {
         message: 'ok',
@@ -278,6 +308,8 @@ export class UserService {
 
     return updatedUser
   }
+
+  public async getTelegramIDOfClients() {}
 
   public async transitPayment(userData: any) {
     const { type, amount, user } = userData
