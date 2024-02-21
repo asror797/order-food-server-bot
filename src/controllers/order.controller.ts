@@ -4,7 +4,7 @@ import { ParsedQs } from 'qs'
 import { CreateOrderDto } from '../dtos/order.dto'
 import { HttpException } from '@exceptions'
 
-class OrderController {
+export class OrderController {
   public orderService = new OrderService()
 
   public orderRetrieveAll = async (
@@ -185,5 +185,3 @@ class OrderController {
     }
   }
 }
-
-export default OrderController

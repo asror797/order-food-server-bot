@@ -2,7 +2,7 @@ import { HttpException } from '@exceptions'
 import { RoleService } from '@services'
 import { NextFunction, Request, Response } from 'express'
 
-class RoleController {
+export class RoleController {
   public roleService = new RoleService()
 
   public roleRetrieveAll = async (
@@ -213,5 +213,3 @@ class RoleController {
     }
   }
 }
-
-export default RoleController

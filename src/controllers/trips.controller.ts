@@ -4,7 +4,7 @@ import { ParsedQs } from 'qs'
 import { HttpException } from '@exceptions'
 // import { CreateTrip } from '../dtos/trip.dto'
 
-class TripController {
+export class TripController {
   public tripService = new TripService()
 
   public getTrips = async (
@@ -70,4 +70,3 @@ class TripController {
     }
   }
 }
-export default TripController

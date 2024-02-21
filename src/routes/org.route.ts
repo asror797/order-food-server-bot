@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import OrgController from '../controllers/org.controller'
+import { OrgController } from '@controllers'
 import { checkPermission } from '@middlewares'
 import { OrgPermissions } from '@constants'
 

@@ -3,7 +3,7 @@ import { PaymentService } from '@services'
 import { ParsedQs } from 'qs'
 import { HttpException } from '@exceptions'
 
-class PaymentController {
+export class PaymentController {
   public paymentService = new PaymentService()
 
   public paymentRetrieveAll = async (
@@ -100,5 +100,3 @@ class PaymentController {
     }
   }
 }
-
-export default PaymentController

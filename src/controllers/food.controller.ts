@@ -4,7 +4,7 @@ import { ParsedQs } from 'qs'
 import { CreateFood, UpdateFoodDto } from '../dtos/food.dto'
 import { HttpException } from '@exceptions'
 
-class FoodController {
+export class FoodController {
   public foodService = new FoodService()
 
   public foodRetrieveAll = async (
@@ -174,5 +174,3 @@ class FoodController {
     }
   }
 }
-
-export default FoodController

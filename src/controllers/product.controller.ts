@@ -9,7 +9,7 @@ import { RequestWithUser } from '../interfaces/auth.interface'
 import { HttpException } from '@exceptions'
 import { ProductLogService, ProductService } from '@services'
 
-class ProductController {
+export class ProductController {
   public productService = new ProductService()
   public productLogService = new ProductLogService()
 
@@ -186,5 +186,3 @@ class ProductController {
     }
   }
 }
-
-export default ProductController

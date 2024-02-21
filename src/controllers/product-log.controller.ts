@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import ProductLogService from '../services/product-log.service'
 import { ParsedQs } from 'qs'
 
-class ProductLogController {
+export class ProductLogController {
   public logs = new ProductLogService()
 
   public getLogs = async (
@@ -19,5 +19,3 @@ class ProductLogController {
     }
   }
 }
-
-export default ProductLogController

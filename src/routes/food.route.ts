@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import FoodController from '../controllers/food.controller'
+import { FoodController } from '@controllers'
 import { checkPermission } from '@middlewares'
 import { FoodPermissions } from '@constants'
 

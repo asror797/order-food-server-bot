@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import PaymentController from '../controllers/payment.controller'
+import { PaymentController } from '@controllers'
 import { checkPermission } from '@middlewares'
 import { PaymentPermissions } from '@constants'
 

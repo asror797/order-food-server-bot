@@ -3,7 +3,7 @@ import { AuthService } from '@services'
 import { AdminLoginDto } from '../dtos/admin.dto'
 import { HttpException } from '@exceptions'
 
-class AuthController {
+export class AuthController {
   private authService = new AuthService()
 
   // public sendOtp = (req:Request,res:Response,next:NextFunction) => {
@@ -45,5 +45,3 @@ class AuthController {
     }
   }
 }
-
-export default AuthController

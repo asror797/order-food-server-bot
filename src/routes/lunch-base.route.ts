@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import LunchBaseController from '../controllers/lunch-base.controller'
+import { LunchBaseController } from '@controllers'
 import { checkPermission } from '@middlewares'
 import { LunchBasePermissions } from '@constants'
 

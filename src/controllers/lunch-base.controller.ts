@@ -3,7 +3,7 @@ import { LunchBaseService } from '@services'
 import { ParsedQs } from 'qs'
 import { HttpException } from '@exceptions'
 
-class LunchBaseController {
+export class LunchBaseController {
   readonly service = new LunchBaseService()
 
   public lunchBaseRetrieveOne = () => {}
@@ -90,5 +90,3 @@ class LunchBaseController {
     }
   }
 }
-
-export default LunchBaseController

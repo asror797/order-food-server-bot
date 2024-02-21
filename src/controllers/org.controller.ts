@@ -3,7 +3,7 @@ import { OrgService } from '@services'
 import { ParsedQs } from 'qs'
 import { Update, UpdateGroupDto } from '../dtos/org.dto'
 
-class OrgController {
+export class OrgController {
   public orgService = new OrgService()
 
   public orgRetrieveAll = async (
@@ -148,5 +148,3 @@ class OrgController {
     }
   }
 }
-
-export default OrgController

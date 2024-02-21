@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 
-class AnaliticsController {
+export class AnaliticsController {
   public getTotalSale = async (
     req: Request,
     res: Response,
@@ -23,5 +23,3 @@ class AnaliticsController {
     }
   }
 }
-
-export default AnaliticsController

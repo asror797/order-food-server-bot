@@ -18,6 +18,7 @@
       "@bot": ["./bot"],
       "@config": ["./config"],
       "@constants": ["./constants"],
+      "@controllers": ["./controllers"],
       "@models": ["./models"],
       "@middlewares": ["./middlewares"],
       "@utils": ["./utils"],

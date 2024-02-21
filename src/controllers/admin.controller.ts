@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import AdminService from '../services/admin.service'
 import { HttpException } from '@exceptions'
 
-class AdminController {
+export class AdminController {
   public adminService = new AdminService()
 
   public adminRetrieveAll = async (
@@ -169,5 +169,3 @@ class AdminController {
     }
   }
 }
-
-export default AdminController

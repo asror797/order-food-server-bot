@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import OrderController from '../controllers/order.controller'
+import { OrderController } from '@controllers'
 import { checkPermission } from '@middlewares'
 import { OrderPermissions } from '@constants'
 

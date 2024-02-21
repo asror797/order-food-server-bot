@@ -11,7 +11,7 @@ import { ParsedQs } from 'qs'
 import { PaymentService } from '@services'
 import { HttpException } from '@exceptions'
 
-class UserController {
+export class UserController {
   public userService = new UserService()
   public paymentService = new PaymentService()
 
@@ -195,7 +195,7 @@ class UserController {
     next: NextFunction
   ) => {
     try {
-      const { user, role, type } = req.body
+      const { type } = req.body
 
       if (type === true) {
         // const updatedUser = await this.userService.addRole({
@@ -258,5 +258,3 @@ class UserController {
     }
   }
 }
-
-export default UserController
