@@ -17,7 +17,6 @@ export class RoleService {
     payload: RoleRetrieveAllRequest
   ): Promise<RoleRetrieveAllResponse> {
     const skip = (payload.pageNumber - 1) * payload.pageSize
-
     const roles = await this.role.find().skip(skip).select('title modules')
 
     return {

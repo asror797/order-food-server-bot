@@ -13,7 +13,6 @@ export class TripService {
   public lunch = lunchModel
   public paymentService = new PaymentService()
 
-
   public async getTrips(page: number, size: number) {
     const skip = (page - 1) * size
 
@@ -219,7 +218,7 @@ export class TripService {
   }
 
   public async createTrip(tripData: CreateTrip) {
-    const { meal, org, sent_at } = tripData
+    const { meal, org } = tripData
     const Org = await this.org.findById(org)
     if (!Org) throw new HttpException(400, 'org not foud')
 
@@ -535,7 +534,7 @@ export class TripService {
     return result
   }
 
-  public async statusChecker(trip: string, client: string) {
+  public async statusChecker(trip: string) {
     const isExist = await this.trips.findOne().sort('-createdAt')
     if (!isExist) throw new HttpException(400, 'not found trip')
     console.log(isExist)

@@ -1,0 +1,5 @@
+export type * from './food-retrieve-all.interface'
+export type * from './food-retrieve-one.interfaec'
+export type * from './food-create.interface'
+export type * from './food-update.interface'
+export type * from './food-delete.interface'

@@ -24,12 +24,13 @@ tags:
 
 paths:
 
+
+
   /admin:
     get:
-      summary: Get admins
+      summary: Retrieve All Admin
       tags: 
         - Admin
-
       responses:
         200: 
           description: "ok"  
@@ -47,6 +48,19 @@ paths:
       responses:
         200:
           description: "ok"  
+  /admin/:id:
+    get:
+      summary: Retrieve One Admin
+      tags:
+        - Admin
+    patch:
+      summary: Update User by Id
+      tags:
+        - Admin
+    delete:
+      summary: Delete User By Id
+      tags:
+        - Admin
   /admin/login:
     post:
       summary: Login User
@@ -62,6 +76,7 @@ paths:
       responses:
         200:
           description: "ok"
+
 
   /user:
     get:

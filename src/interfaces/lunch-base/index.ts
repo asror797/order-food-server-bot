@@ -1,0 +1,5 @@
+export type * from './lunch-base-retrieve-all.interface'
+export type * from './lunch-base-retrieve-one.interface'
+export type * from './lunch-base-create.interface'
+export type * from './lunch-base-update.interface'
+export type * from './lunch-base-delete.interface'

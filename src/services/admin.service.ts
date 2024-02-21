@@ -8,6 +8,12 @@ export class AdminService {
   public role = roleModel
   public org = orgModel
 
+  public async adminRetrieveAll() {}
+  public async adminRetrieveOne() {}
+  public async adminCreate() {}
+  public async adminUpdate() {}
+  public async adminDelete() {}
+
   public async getAdmins() {
     return await this.admins
       .find()

@@ -1,0 +1,5 @@
+export type * from './admin-retrieve-all.interface'
+export type * from './admin-retrieve-one.interface'
+export type * from './admin-create.interface'
+export type * from './admin-update.interface'
+export type * from './admin-delete.interface'

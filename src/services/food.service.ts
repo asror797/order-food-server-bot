@@ -11,6 +11,12 @@ export class FoodService {
   public productService = new ProductService()
   public org = orgModel
 
+  public async foodRetrieveAll() {}
+  public async foodRetrieveOne() {}
+  public async foodCreate() {}
+  public async foodUpdate() {}
+  public async foodDelete() {}
+
   public async getFoods(payload: any) {
     const { page, size, search } = payload
     const skip = (page - 1) * size

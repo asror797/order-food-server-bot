@@ -1,3 +1,5 @@
-export * from './product-retrieve-all.interface'
-export * from './product-retrieve-one.interface'
-export * from './product-create.interface'
+export type * from './product-retrieve-all.interface'
+export type * from './product-retrieve-one.interface'
+export type * from './product-create.interface'
+export type * from './product-update.interface'
+export type * from './product-delete.interface'
