@@ -6,6 +6,10 @@ import { RequestWithUser } from './../interfaces/auth.interface'
 export const checkPermission = (requiredPermission: string) => {
   return (req: RequestWithUser, res: Response, next: NextFunction) => {
     console.log(req.user)
+
+    if (false) {
+      res.json('ok')
+    }
     console.log(requiredPermission)
     /*
     user.modules 

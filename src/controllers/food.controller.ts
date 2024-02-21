@@ -7,6 +7,71 @@ import { HttpException } from '@exceptions'
 class FoodController {
   public foodService = new FoodService()
 
+  public foodRetrieveAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('ok')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public foodRetrieveOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('ok')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public foodCreate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('ok')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public foodUpdate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('ok')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public foodDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('ok')
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public getFoods = async (
     req: Request<ParsedQs>,
     res: Response,
