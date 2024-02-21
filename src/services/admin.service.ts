@@ -1,136 +1,122 @@
-import { AdminLoginDto, CreateAdmin } from '../dtos/admin.dto'
-import { HttpException } from '../exceptions/httpException'
+import {
+  AdminCreateRequest,
+  AdminCreateResponse,
+  AdminDeleteRequest,
+  AdminDeleteResponse,
+  AdminRetrieveAllRequest,
+  AdminRetrieveAllResponse,
+  AdminRetrieveOneRequest,
+  AdminRetrieveOneResponse,
+  AdminUpdateRequest,
+  AdminUpdateResponse
+} from '@interfaces'
 import { adminModel, orgModel, roleModel } from '@models'
-import jwt from 'jsonwebtoken'
+import { HttpException } from '@exceptions'
 
 export class AdminService {
   public admins = adminModel
   public role = roleModel
   public org = orgModel
 
-  public async adminRetrieveAll() {}
-  public async adminRetrieveOne() {}
-  public async adminCreate() {}
-  public async adminUpdate() {}
-  public async adminDelete() {}
-
-  public async getAdmins() {
-    return await this.admins
+  public async adminRetrieveAll(
+    payload: AdminRetrieveAllRequest
+  ): Promise<AdminRetrieveAllResponse> {
+    const adminList = await this.admins
       .find()
-      .populate({ path: 'org', select: ' name_org' })
-      .populate({ path: 'role', select: 'title module' })
+      .skip((payload.pageNumber - 1) * payload.pageSize)
+      .limit(payload.pageSize)
+      .populate('org', 'name_org')
+      .populate('role', 'title')
+      .select('-updatedAt')
       .exec()
-  }
 
-  public async createAdmin(adminData: CreateAdmin) {
-    const newAdmin = await this.admins.create(adminData)
-    return newAdmin
-  }
+    const count = await this.admins.countDocuments().exec()
 
-  public async create(payload: any) {
-    const role = await this.role.findById(payload.roleId)
-    const org = await this.org.findById(payload.orgId)
-
-    if (!org || !role) {
-      throw new HttpException(400, 'Role or Org not found')
-    }
-
-    const newAdmin = await this.admins.create({
-      password: payload.password,
-      fullname: payload.fullname,
-      org: payload.orgId,
-      phone_number: payload.phoneNumber,
-      role: payload.roleId
-    })
-
-    return newAdmin
-  }
-
-  public async loginAdmin(adminData: AdminLoginDto) {
-    const { password, phone_number } = adminData
-
-    let admin: any = await this.admins.find({
-      phone_number: phone_number
-    })
-
-    if (admin.length >= 0) {
-      admin = admin[0]
-    }
-
-    if (!admin) throw new HttpException(400, 'user not found')
-
-    console.log(admin)
-    if (admin.password != password) {
-      throw new HttpException(400, 'password or phone_number wrong')
-    }
     return {
-      token: jwt.sign(JSON.stringify(admin), 'secret_key'),
-      admin: {
-        fullname: admin.fullname,
-        role: admin.role
-      }
+      count: count,
+      pageSize: payload.pageSize,
+      pageNumber: payload.pageNumber,
+      pageCount: 1,
+      adminList: adminList.map((e) => ({
+        _id: e['_id'],
+        fullname: e.fullname,
+        role: e.role?.title,
+        phone_number: e.phone_number,
+        org: e.org,
+        password: '',
+        createdAt: ''
+      }))
+    }
+  }
+  public async adminRetrieveOne(
+    payload: AdminRetrieveOneRequest
+  ): Promise<AdminRetrieveOneResponse> {
+    const admin = await this.admins.findById(payload.id).exec()
+
+    if (!admin) throw new HttpException(404, 'User NotFound')
+
+    return {
+      _id: '',
+      fullname: '',
+      password: '',
+      phone_number: '',
+      org: '',
+      role: '',
+      createdAt: ''
+    }
+  }
+  public async adminCreate(
+    payload: AdminCreateRequest
+  ): Promise<AdminCreateResponse> {
+    const admin = await this.admins.create({
+      fullname: payload.fullname
+    })
+    return {
+      _id: '',
+      fullname: admin.fullname,
+      password: '',
+      phone_number: '',
+      org: '',
+      role: '',
+      createdAt: ''
     }
   }
 
-  public async updateAdmin(payload: any) {
-    const { admin, fullname, password, newPassword } = payload
+  public async adminUpdate(
+    payload: AdminUpdateRequest
+  ): Promise<AdminUpdateResponse> {
+    await this.adminRetrieveOne({ id: payload.id })
 
-    const Admin = await this.admins.findById(admin)
-
-    if (!Admin) throw new HttpException(400, 'admin is not defined')
-
-    interface IUpdate {
-      fullname?: string
-      password?: string
+    if (payload.role) {
+      const role = await this.role.findById(payload.role)
+      if (!role) throw new HttpException(404, 'Role NotFound')
     }
 
-    const updatesData: IUpdate = {}
-
-    if (fullname) {
-      updatesData.fullname = fullname
+    if (payload.org) {
+      const org = await this.org.findById(payload.org)
+      if (!org) throw new HttpException(404, 'Org NotFound')
     }
 
-    if (newPassword) {
-      if (Admin.password !== password)
-        throw new HttpException(400, 'old password is wrong')
-      updatesData.password = newPassword
+    const admin = await this.admins.findById(payload.id, {}).exec()
+    return {
+      _id: '',
+      fullname: admin?.fullname || '',
+      password: '',
+      phone_number: '',
+      org: '',
+      role: '',
+      createdAt: ''
     }
-
-    const updatedAdmin = await this.admins.findOneAndUpdate(
-      {
-        _id: admin
-      },
-      { ...updatesData },
-      { new: true }
-    )
-
-    return updatedAdmin
   }
 
-  public async updateAdminRole(payload: any) {
-    const { id, role } = payload
-
-    const Admin = await this.admins.findById(id).exec()
-    if (!Admin) {
-      throw new HttpException(400, 'Admin Not Found')
+  public async adminDelete(
+    payload: AdminDeleteRequest
+  ): Promise<AdminDeleteResponse> {
+    await this.adminRetrieveOne({ id: payload.id })
+    // const admin = await this.admins.findByIdAndDelete(payload.id)
+    return {
+      id: ''
     }
-    const Role = await this.role.findById(role).exec()
-    if (!Role) {
-      throw new HttpException(400, 'Not Found Role')
-    }
-
-    const updatedAdmin = await this.admins.findOneAndUpdate(
-      { _id: id },
-      { $set: { role: role } },
-      { returnDocument: 'after' }
-    )
-
-    return updatedAdmin
-  }
-
-  public async deleteAdmin(payload: { id: string }): Promise<any> {
-    const deleteAdmin = await this.admins.findByIdAndDelete(payload.id)
-    return deleteAdmin
   }
 }
 

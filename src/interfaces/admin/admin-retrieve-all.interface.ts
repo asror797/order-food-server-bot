@@ -6,8 +6,12 @@ export interface AdminRetrieveAllRequest {
 
 export interface AdminList {
   _id: string
-  name: string
-  cost: number
+  fullname: string
+  password: string
+  org: string
+  role: string
+  phone_number: string
+  createdAt: string
 }
 
 export interface AdminRetrieveAllResponse {
@@ -15,5 +19,5 @@ export interface AdminRetrieveAllResponse {
   pageSize: number
   pageCount: number
   pageNumber: number
-  lunchList: AdminList[]
+  adminList: AdminList[]
 }

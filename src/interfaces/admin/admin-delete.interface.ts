@@ -1,7 +1,5 @@
 export interface AdminDeleteRequest {
-  pageSize: number
-  pageNumber: number
-  search: string
+  id: string
 }
 
 export interface AdminDeleteResponse {

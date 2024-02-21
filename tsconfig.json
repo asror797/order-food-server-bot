@@ -19,6 +19,7 @@
       "@config": ["./config"],
       "@constants": ["./constants"],
       "@controllers": ["./controllers"],
+      "@interfaces": ["./interfaces"],
       "@models": ["./models"],
       "@middlewares": ["./middlewares"],
       "@utils": ["./utils"],

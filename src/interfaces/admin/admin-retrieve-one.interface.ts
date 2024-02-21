@@ -1,9 +1,13 @@
 export interface AdminRetrieveOneRequest {
-  pageSize: number
-  pageNumber: number
-  search: string
+  id: string
 }
 
 export interface AdminRetrieveOneResponse {
-  id: string
+  _id: string
+  fullname: string
+  password: string
+  org: string
+  role: string
+  phone_number: string
+  createdAt: string
 }

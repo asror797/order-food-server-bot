@@ -1,12 +1,17 @@
 export interface AdminCreateRequest {
-  pageSize: number
-  pageNumber: number
-  search: string
+  fullname: string
+  password: string
+  org: string
+  role: string
+  phone_number: string
 }
 
 export interface AdminCreateResponse {
-  count: number
-  pageSize: number
-  pageCount: number
-  pageNumber: number
+  _id: string
+  fullname: string
+  password: string
+  org: string
+  role: string
+  phone_number: string
+  createdAt: string
 }
