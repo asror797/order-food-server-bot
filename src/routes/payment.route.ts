@@ -14,31 +14,31 @@ export class PaymentRoute {
 
   private initializeRoutes() {
     this.router.get(
-      '',
+      `${this.path}`,
       checkPermission(PaymentPermissions.PAYMENT_RETRIEVE_ALL),
       this.paymentController.paymentRetrieveAll
     )
 
     this.router.get(
-      '',
-      checkPermission(PaymentPermissions.PAYMENT_RETRIEVE_ALL),
+      `${this.path}`,
+      checkPermission(PaymentPermissions.PAYMENT_RETRIEVE_ONE),
       this.paymentController.paymentRetrieveOne
     )
 
     this.router.post(
-      '',
+      `${this.path}`,
       checkPermission(PaymentPermissions.PAYMENT_CREATE),
       this.paymentController.paymentCreate
     )
 
     this.router.get(
-      '',
+      `${this.path}`,
       checkPermission(PaymentPermissions.PAYMENT_UPDATE),
       this.paymentController.paymentUpdate
     )
 
     this.router.get(
-      '',
+      `${this.path}`,
       checkPermission(PaymentPermissions.PAYMENT_DELETE),
       this.paymentController.paymentDelete
     )
