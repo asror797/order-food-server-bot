@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import TripController from '../controllers/trips.controller'
+import { TripController } from '@controllers'
 
 export class TripRoute {
   public path = '/trip'
