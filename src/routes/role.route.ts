@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import RoleController from '../controllers/role.controller'
-import { checkPermission } from 'middlewares'
+import { checkPermission } from '@middlewares'
 
 export class RoleRoute {
   public path = '/role'

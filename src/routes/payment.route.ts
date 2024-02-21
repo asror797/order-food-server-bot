@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import PaymentController from '../controllers/payment.controller'
-import { checkPermission } from 'middlewares'
-import { PaymentPermissions } from './../constants'
+import { checkPermission } from '@middlewares'
+import { PaymentPermissions } from '@constants'
 
 export class PaymentRoute {
   public path: string = '/payment'

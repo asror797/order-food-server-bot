@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import FoodController from '../controllers/food.controller'
-import { checkPermission } from 'middlewares'
-import { FoodPermissions } from './../constants'
+import { checkPermission } from '@middlewares'
+import { FoodPermissions } from '@constants'
 
 export class FoodRoute {
   public path = '/food'

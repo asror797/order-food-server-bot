@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import OrgController from '../controllers/org.controller'
-import { checkPermission } from 'middlewares'
-import { OrgPermissions } from './../constants'
+import { checkPermission } from '@middlewares'
+import { OrgPermissions } from '@constants'
 
 export class OrgRoute {
   public path = '/org'

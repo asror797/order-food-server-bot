@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import ProductController from '../controllers/product.controller'
-import { checkPermission } from 'middlewares'
-import { ProductPermissions } from './../constants'
+import { checkPermission } from '@middlewares'
+import { ProductPermissions } from '@constants'
 
 export class ProductRoute {
   public path = '/product'

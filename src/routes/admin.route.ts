@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import AdminController from '../controllers/admin.controller'
-import { checkPermission } from './../middlewares'
-import { AdminPermissions } from './../constants'
+import { checkPermission } from '@middlewares'
+import { AdminPermissions } from '@constants'
 
 export class AdminRoute {
   public path = '/admin'

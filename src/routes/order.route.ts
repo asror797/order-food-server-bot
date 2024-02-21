@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import OrderController from '../controllers/order.controller'
-import { checkPermission } from 'middlewares'
-import { OrderPermissions } from './../constants'
+import { checkPermission } from '@middlewares'
+import { OrderPermissions } from '@constants'
 
 export class OrderRoute {
   public path = '/order'

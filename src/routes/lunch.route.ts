@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import LunchController from '../controllers/lunch.controller'
-import { checkPermission } from './../middlewares'
-import { LunchPermissions } from './../constants'
+import { checkPermission } from '@middlewares'
+import { LunchPermissions } from '@constants'
 
 export class LunchRoute {
   public path = '/lunch'
