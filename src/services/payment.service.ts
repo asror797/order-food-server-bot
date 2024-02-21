@@ -16,6 +16,12 @@ export class PaymentService {
   private userRepo = userModel
   private paymentRepo = paymentModel
 
+  public async paymentRetrieveAll(): Promise<any> {}
+  public async paymentRetrieveOne(): Promise<any> {}
+  public async paymentCreate(): Promise<any> {}
+  public async paymentUpdate(): Promise<any> {}
+  public async paymentDelete(): Promise<any> {}
+
   public async getRetrieveAll(payload: any) {
     const { page, size } = payload
     const skip = (page - 1) * size

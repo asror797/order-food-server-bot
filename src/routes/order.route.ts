@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import OrderController from '../controllers/order.controller'
 import { checkPermission } from 'middlewares'
+import { OrderPermissions } from './../constants'
 
 export class OrderRoute {
   public path = '/order'
@@ -14,27 +15,31 @@ export class OrderRoute {
   public initializeRoutes() {
     this.router.get(
       'order-retrieve-all',
-      checkPermission(''),
+      checkPermission(OrderPermissions.ORDER_RETRIEVE_ALL),
       this.orderController.orderRetrieveAll
     )
+
     this.router.get(
       'order-retrieve-all',
-      checkPermission(''),
+      checkPermission(OrderPermissions.ORDER_RETRIEVE_ONE),
       this.orderController.orderRetrieveOne
     )
-    this.router.get(
+
+    this.router.post(
       'order-retrieve-one',
-      checkPermission(''),
+      checkPermission(OrderPermissions.ORDER_CREATE),
       this.orderController.orderCreate
     )
-    this.router.get(
+
+    this.router.patch(
       'order-retrieve',
-      checkPermission(''),
+      checkPermission(OrderPermissions.ORDER_UPDATE),
       this.orderController.orderUpdate
     )
-    this.router.get(
+
+    this.router.delete(
       'order-retrievel',
-      checkPermission(''),
+      checkPermission(OrderPermissions.ORDER_DELETE),
       this.orderController.orderDelete
     )
 

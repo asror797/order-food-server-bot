@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import OrgController from '../controllers/org.controller'
+import { checkPermission } from 'middlewares'
+import { OrgPermissions } from './../constants'
 
 export class OrgRoute {
   public path = '/org'
@@ -11,6 +13,36 @@ export class OrgRoute {
   }
 
   private initializeRoutes() {
+    this.router.get(
+      'route',
+      checkPermission(OrgPermissions.ORG_RETRIEVE_ALL),
+      this.orgController.orgRetrieveAll
+    )
+
+    this.router.get(
+      'route',
+      checkPermission(OrgPermissions.ORG_RETRIEVE_ONE),
+      this.orgController.orgRetrieveAll
+    )
+
+    this.router.post(
+      'route',
+      checkPermission(OrgPermissions.ORG_CREATE),
+      this.orgController.orgRetrieveAll
+    )
+
+    this.router.patch(
+      'route',
+      checkPermission(OrgPermissions.ORG_UPDATE),
+      this.orgController.orgRetrieveAll
+    )
+
+    this.router.delete(
+      'route',
+      checkPermission(OrgPermissions.ORG_DELETE),
+      this.orgController.orgRetrieveAll
+    )
+
     this.router.get(`${this.path}`, this.orgController.get)
     this.router.post(`${this.path}`, this.orgController.createOrg)
     this.router.patch(`${this.path}/group`, this.orgController.updateOrg)

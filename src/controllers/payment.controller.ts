@@ -20,6 +20,58 @@ class PaymentController {
     }
   }
 
+  public paymentRetrieveOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public paymentCreate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public paymentUpdate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public paymentDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('')
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public calculateSpents = async (
     req: Request<ParsedQs>,
     res: Response,

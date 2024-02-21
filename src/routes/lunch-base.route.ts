@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import LunchBaseController from '../controllers/lunch-base.controller'
 import { checkPermission } from 'middlewares'
+import { LunchBasePermissions } from './../constants'
 
 export class LunchBaseRoute {
   public path = '/lunch-base'
@@ -14,28 +15,31 @@ export class LunchBaseRoute {
   private initializeRoutes() {
     this.router.get(
       '',
-      checkPermission('s'),
+      checkPermission(LunchBasePermissions.LUNCH_BASE_RETRIEVE_ALL),
       this.lunchBaseController.lunchBaseRetrieveAll
     )
 
     this.router.get(
       '',
-      checkPermission('s'),
+      checkPermission(LunchBasePermissions.LUNCH_BASE_RETRIEVE_ONE),
       this.lunchBaseController.lunchBaseRetrieveOne
     )
+
     this.router.get(
       '',
-      checkPermission('s'),
+      checkPermission(LunchBasePermissions.LUNCH_BASE_CREATE),
       this.lunchBaseController.lunchBaseCreate
     )
+
     this.router.get(
       '',
-      checkPermission('s'),
+      checkPermission(LunchBasePermissions.LUNCH_BASE_UPDATE),
       this.lunchBaseController.lunchBaseUpdate
     )
+
     this.router.get(
       '',
-      checkPermission('s'),
+      checkPermission(LunchBasePermissions.LUNCH_BASE_DELETE),
       this.lunchBaseController.lunchBaseDelete
     )
 

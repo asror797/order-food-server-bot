@@ -13,7 +13,7 @@ class ProductController {
   public productService = new ProductService()
   public productLogService = new ProductLogService()
 
-  public ProductRetrieveAll = async (
+  public productRetrieveAll = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -25,13 +25,52 @@ class ProductController {
     }
   }
 
-  public ProductRetrieveOne = async (
+  public productRetrieveOne = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
     try {
       res.json(await this.productService.productRetrieveOne(req.body))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public productCreate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req)
+      res.json('')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public productUpdate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req)
+      res.json('')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public productDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req)
+      res.json('')
     } catch (error) {
       next(error)
     }

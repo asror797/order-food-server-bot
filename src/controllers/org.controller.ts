@@ -6,11 +6,74 @@ import { Update, UpdateGroupDto } from '../dtos/org.dto'
 class OrgController {
   public orgService = new OrgService()
 
-  public orgRetrieveAll = () => {}
-  public orgRetrieveOne = () => {}
-  public orgCreate = () => {}
-  public orgUpdate = () => {}
-  public orgDelete = () => {}
+  public orgRetrieveAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('')
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
+  public orgRetrieveOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('')
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public orgCreate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('')
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
+  public orgUpdate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('')
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
+  public orgDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      console.log(req.body)
+      res.json('')
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
 
   public get = async (
     req: Request<ParsedQs>,

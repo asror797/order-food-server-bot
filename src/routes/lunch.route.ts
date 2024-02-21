@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import LunchController from '../controllers/lunch.controller'
+import { checkPermission } from './../middlewares'
+import { LunchPermissions } from './../constants'
 
 export class LunchRoute {
   public path = '/lunch'
@@ -11,6 +13,36 @@ export class LunchRoute {
   }
 
   private initializeRoutes() {
+    this.router.get(
+      '',
+      checkPermission(LunchPermissions.LUNCH_RETRIEVE_ALL),
+      this.lunchController.lunchRetrieveAll
+    )
+
+    this.router.get(
+      '',
+      checkPermission(LunchPermissions.LUNCH_RETRIEVE_ONE),
+      this.lunchController.lunchRetrieveOne
+    )
+
+    this.router.post(
+      '',
+      checkPermission(LunchPermissions.LUNCH_CREATE),
+      this.lunchController.lunchCreate
+    )
+
+    this.router.patch(
+      '',
+      checkPermission(LunchPermissions.LUNCH_UPDATE),
+      this.lunchController.lunchUpdate
+    )
+
+    this.router.delete(
+      '',
+      checkPermission(LunchPermissions.LUNCH_DELETE),
+      this.lunchController.lunchDelete
+    )
+
     this.router.get(`${this.path}`, this.lunchController.getLunch)
     this.router.get(`${this.path}/:base`, this.lunchController.getByBase)
     this.router.get(

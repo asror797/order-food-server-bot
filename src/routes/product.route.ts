@@ -16,13 +16,33 @@ export class ProductRoute {
     this.router.get(
       'product/retrieve-all',
       checkPermission(ProductPermissions.PRODUCT_RETRIEVE_ALL),
-      this.productController.ProductRetrieveAll
+      this.productController.productRetrieveAll
     )
+
     this.router.get(
       'product',
       checkPermission(ProductPermissions.PRODUCT_RETRIEVE_ONE),
-      this.productController.ProductRetrieveOne
+      this.productController.productRetrieveOne
     )
+
+    this.router.get(
+      'product',
+      checkPermission(ProductPermissions.PRODUCT_CREATE),
+      this.productController.productCreate
+    )
+
+    this.router.get(
+      'product',
+      checkPermission(ProductPermissions.PRODUCT_UPDATE),
+      this.productController.productUpdate
+    )
+
+    this.router.get(
+      'product',
+      checkPermission(ProductPermissions.PRODUCT_DELETE),
+      this.productController.productDelete
+    )
+
     this.router.get(`${this.path}`, this.productController.getProducts)
     this.router.post(`${this.path}`, this.productController.createProduct)
     this.router.patch(
