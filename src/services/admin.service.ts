@@ -121,5 +121,3 @@ export class AdminService {
     }
   }
 }
-
-export default AdminService
