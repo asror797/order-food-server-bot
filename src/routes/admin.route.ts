@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import AdminController from '../controllers/admin.controller'
 import { checkPermission } from './../middlewares'
+import { AdminPermissions } from './../constants'
 
 export class AdminRoute {
   public path = '/admin'
@@ -12,30 +13,33 @@ export class AdminRoute {
   }
 
   private initializeRoutes() {
-    /* New Version */
     this.router.get(
       'aass',
-      checkPermission('asas'),
+      checkPermission(AdminPermissions.ADMIN_RETRIEVE_ALL),
       this.adminController.adminRetrieveAll
     )
+
     this.router.get(
       'admin/:id',
-      checkPermission('asas'),
+      checkPermission(AdminPermissions.ADMIN_RETRIEVE_ONE),
       this.adminController.adminRetrieveOne
     )
+
     this.router.post(
       'create',
-      checkPermission('asas'),
+      checkPermission(AdminPermissions.ADMIN_CREATE),
       this.adminController.adminCreate
     )
+
     this.router.patch(
       'update/:id',
-      checkPermission('asas'),
+      checkPermission(AdminPermissions.ADMIN_UPDATE),
       this.adminController.adminUpdate
     )
+
     this.router.delete(
       'delelete/:id',
-      checkPermission('asas'),
+      checkPermission(AdminPermissions.ADMIN_DELETE),
       this.adminController.adminUpdate
     )
 
