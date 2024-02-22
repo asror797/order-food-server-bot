@@ -1,22 +1,28 @@
 import { NextFunction, Request, Response } from 'express'
 import { AdminService } from '@services'
+import { ParsedQs } from 'qs'
+import { AdminCreateDto } from 'dtos'
+import { validate } from 'class-validator'
 // import { HttpException } from '@exceptions'
 
 export class AdminController {
   public adminService = new AdminService()
 
   public adminRetrieveAll = async (
-    req: Request,
+    req: Request<ParsedQs>,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
+      const pageNumber = parseInt(req.query.page as string) || 1
+      const pageSize = parseInt(req.query.size as string) || 10
+      const search = req.query.search as string
+
       res.json(
         await this.adminService.adminRetrieveAll({
-          pageNumber: 1,
-          pageSize: 1,
-          search: ''
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          search: search
         })
       )
     } catch (error) {
@@ -32,6 +38,7 @@ export class AdminController {
   ) => {
     try {
       const id = req.params.id as string
+
       res.json(await this.adminService.adminRetrieveOne({ id }))
     } catch (error) {
       console.log(error)
@@ -45,7 +52,11 @@ export class AdminController {
     next: NextFunction
   ) => {
     try {
-      res.json(req.body)
+      const adminData: AdminCreateDto = req.body
+      const error = await validate(adminData)
+      if (error) throw Error('')
+
+      res.json(await this.adminService.adminCreate(adminData))
     } catch (error) {
       console.log(error)
       next(error)
@@ -58,7 +69,15 @@ export class AdminController {
     next: NextFunction
   ) => {
     try {
-      res.json(req.body)
+      const id = req.params.id as string
+      const adminData = req.body
+
+      res.json(
+        await this.adminService.adminUpdate({
+          id,
+          ...adminData
+        })
+      )
     } catch (error) {
       console.log(error)
       next(error)
@@ -71,7 +90,9 @@ export class AdminController {
     next: NextFunction
   ) => {
     try {
-      res.json(req.body)
+      const id = req.params.id as string
+
+      res.json(await this.adminService.adminDelete({ id }))
     } catch (error) {
       console.log(error)
       next(error)
