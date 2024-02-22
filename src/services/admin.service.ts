@@ -52,17 +52,22 @@ export class AdminService {
   public async adminRetrieveOne(
     payload: AdminRetrieveOneRequest
   ): Promise<AdminRetrieveOneResponse> {
-    const admin = await this.admins.findById(payload.id).exec()
+    const admin = await this.admins
+      .findById(payload.id)
+      .populate('org', 'name_org')
+      .populate('role', 'title')
+      .select('fullname phone_number createdAt updatedAt org role')
+      .exec()
 
     if (!admin) throw new HttpException(404, 'User NotFound')
 
     return {
-      _id: '',
-      fullname: '',
+      _id: admin['_id'],
+      fullname: admin.fullname,
       password: '',
-      phone_number: '',
-      org: '',
-      role: '',
+      phone_number: admin.phone_number,
+      org: admin.org,
+      role: admin.role,
       createdAt: ''
     }
   }
@@ -71,15 +76,20 @@ export class AdminService {
     payload: AdminCreateRequest
   ): Promise<AdminCreateResponse> {
     const admin = await this.admins.create({
-      fullname: payload.fullname
+      fullname: payload.fullname,
+      phone_number: payload.phone_number,
+      org: payload.org,
+      role: payload.role,
+      password: ''
     })
+
     return {
-      _id: '',
+      _id: admin['_id'],
       fullname: admin.fullname,
       password: '',
-      phone_number: '',
-      org: '',
-      role: '',
+      phone_number: admin.phone_number,
+      org: admin.org,
+      role: admin.role,
       createdAt: ''
     }
   }
@@ -100,11 +110,12 @@ export class AdminService {
     }
 
     const admin = await this.admins.findById(payload.id, {}).exec()
+
     return {
       _id: '',
       fullname: admin?.fullname || '',
       password: '',
-      phone_number: '',
+      phone_number: admin?.phone_number || '',
       org: '',
       role: '',
       createdAt: ''

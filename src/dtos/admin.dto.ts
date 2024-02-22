@@ -1,5 +1,5 @@
-import { AdminCreateRequest } from '@interfaces'
-import { IsNotEmpty, IsString } from 'class-validator'
+import { AdminCreateRequest, AdminUpdateRequest } from '@interfaces'
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 export class AdminLoginDto {
   @IsString()
@@ -46,4 +46,30 @@ export class AdminCreateDto implements AdminCreateRequest {
   @IsString()
   @IsNotEmpty()
   role: string
+}
+
+export class AdminUpdateDto implements AdminUpdateRequest {
+  @IsString()
+  @IsNotEmpty()
+  id: string
+
+  @IsString()
+  @IsOptional()
+  fullname?: string
+
+  @IsString()
+  @IsOptional()
+  org?: string
+
+  @IsString()
+  @IsOptional()
+  password?: string
+
+  @IsString()
+  @IsOptional()
+  phone_number?: string
+
+  @IsString()
+  @IsOptional()
+  role?: string
 }
