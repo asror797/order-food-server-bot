@@ -1,3 +1,5 @@
+import { LunchProductsDefinition } from './lunch-create.interface'
+
 export interface LunchRetrieveOneRequest {
   pageSize: number
   pageNumber: number
@@ -5,5 +7,10 @@ export interface LunchRetrieveOneRequest {
 }
 
 export interface LunchRetrieveOneResponse {
-  id: string
+  _id: string
+  cost: number
+  base: string
+  products: LunchProductsDefinition[]
+  org: string
+  percent_cook: string
 }

@@ -1,5 +1,0 @@
-export type * from './workplace-menu-retrieve-all.interface'
-export type * from './workplace-menu-retrieve-one.interface'
-export type * from './workplace-menu-create.interface'
-export type * from './workplace-menu-update.interface'
-export type * from './workplace-menu-delete.interface'

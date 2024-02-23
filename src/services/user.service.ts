@@ -54,7 +54,7 @@ export class UserService {
       .findOne({
         telegram_id: payload.telegramId
       })
-      .populate('org', 'name_org')
+      .populate('org', 'name_org group_a_id group_b_id')
       .select('-createdAt -updatedAt')
       .exec()
 

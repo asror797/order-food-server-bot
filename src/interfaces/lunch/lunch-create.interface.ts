@@ -1,7 +1,15 @@
+export interface LunchProductsDefinition {
+  product: string
+  amount: number
+}
+
 export interface LunchCreateRequest {
-  pageSize: number
-  pageNumber: number
-  search: string
+  name: string
+  cost: number
+  base: string
+  products: LunchProductsDefinition[]
+  org: string
+  persent_cook: number
 }
 
 export interface LunchCreateResponse {

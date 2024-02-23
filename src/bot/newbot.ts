@@ -31,7 +31,7 @@ class TelegramBotApi {
         if (data.user.role == 'cook' && chatType == 'private')
           await this.handleCookMessages(msg)
         if (data.user.role == 'user' && chatType == 'private')
-          await this.handleCookMessages(msg)
+          await this.handleUserMessages(msg)
       } else {
         this.bot.sendMessage(chatId, `Siz ro'yhatdan otmagansiz`)
       }
@@ -89,6 +89,14 @@ class TelegramBotApi {
   }
 
   private async handleCookMessages(msg: Message): Promise<void> {
+    try {
+      console.log(msg)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  private async handleUserMessages(msg: Message): Promise<void> {
     try {
       console.log(msg)
     } catch (error) {

@@ -16,6 +16,7 @@ export class LunchBaseService {
   public async lunchBaseCreate(): Promise<any> {}
   public async lunchBaseUpdate(): Promise<any> {}
   public async lunchBaseDelete(): Promise<any> {}
+  async #_checkName() {}
 
   async retrieveAllLunchBases(payload: GetLunchBaseDto) {
     const skip = (payload.page - 1) * payload.size

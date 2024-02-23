@@ -8,6 +8,7 @@ export interface LunchBaseList {
   _id: string
   name: string
   cost: number
+  is_active: boolean
 }
 
 export interface LunchBaseRetrieveAllResponse {

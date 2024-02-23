@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import { ILunch } from '../interfaces/lunch.interface'
+import { ILunch } from '@interfaces'
 import { Document } from 'mongoose'
 
 const lunchSchema: Schema = new Schema(

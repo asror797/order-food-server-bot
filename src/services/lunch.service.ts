@@ -1,6 +1,7 @@
 import { lunchBaseModel, lunchModel, orgModel, productModel } from '@models'
 import { CreateLunch, LunchUpdateDto, PushProductDto } from '../dtos/lunch.dto'
 import { HttpException } from '@exceptions'
+import { LunchUpdateRequest } from '@interfaces'
 
 export class LunchService {
   public lunches = lunchModel
@@ -8,10 +9,45 @@ export class LunchService {
   public products = productModel
   public bases = lunchBaseModel
 
-  public async lunchRetrieveAll(): Promise<any> {}
-  public async lunchRetrieveOne(): Promise<any> {}
-  public async lunchCreate(): Promise<any> {}
-  public async lunchUpdate(): Promise<any> {}
+  public async lunchRetrieveAll(): Promise<any> {
+    const lunchList = await this.lunches.find().exec()
+
+    return {
+      count: 4,
+      pageNumber: 1,
+      pageSize: 10,
+      pageCount: 10,
+      lunchList: lunchList
+    }
+  }
+  public async lunchRetrieveOne(payload: { id: string }): Promise<any> {
+    const lunch = await this.lunches.findById(payload.id)
+
+    if (!lunch) throw new HttpException(404, 'Not Found Lunch')
+
+    return {
+      name: lunch?.name
+    }
+  }
+
+  public async lunchCreate(): Promise<any> {
+    const lunch = await this.lunches.create({
+      name: ''
+    })
+
+    return {
+      name: lunch.name
+    }
+  }
+
+  public async lunchUpdate(payload: LunchUpdateRequest): Promise<any> {
+    await this.lunchRetrieveOne({ id: '' })
+
+    if (payload.base) {
+      const base = await this.bases.findById(payload.id)
+      if (!base) throw new HttpException(400, 'Base Not Found')
+    }
+  }
   public async lunchDelete(): Promise<any> {}
 
   public async getLunches(page: number, size: number) {

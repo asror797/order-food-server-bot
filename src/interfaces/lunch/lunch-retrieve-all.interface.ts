@@ -8,6 +8,8 @@ export interface LunchList {
   _id: string
   name: string
   cost: number
+  base: string
+  percent_cook: number
 }
 
 export interface LunchRetrieveAllResponse {

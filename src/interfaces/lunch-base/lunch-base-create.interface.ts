@@ -1,12 +1,12 @@
 export interface LunchBaseCreateRequest {
-  pageSize: number
-  pageNumber: number
-  search: string
+  name: number
+  org: number
 }
 
 export interface LunchBaseCreateResponse {
-  count: number
-  pageSize: number
-  pageCount: number
-  pageNumber: number
+  _id: string
+  name: string
+  org: string
+  is_active: boolean
+  createdAt: string
 }

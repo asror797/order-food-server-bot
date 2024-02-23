@@ -1,5 +1,4 @@
-import { Document } from 'mongoose'
-import { IOrg } from './org.interface'
+import { Document, ObjectId } from 'mongoose'
 
 interface IProduct {
   product: string
@@ -7,7 +6,7 @@ interface IProduct {
 }
 
 export interface ILunch extends Document {
-  org: IOrg['_id']
+  org: string | ObjectId
   name: string
   cost: number
   products: IProduct[]
