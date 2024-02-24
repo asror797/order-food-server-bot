@@ -59,7 +59,7 @@ export class AdminService {
       .select('fullname phone_number createdAt updatedAt org role')
       .exec()
 
-    if (!admin) throw new HttpException(404, 'User NotFound')
+    if (!admin) throw new HttpException(404, 'User not found')
 
     return {
       _id: admin['_id'],
@@ -80,7 +80,7 @@ export class AdminService {
       phone_number: payload.phone_number,
       org: payload.org,
       role: payload.role,
-      password: ''
+      password: payload.password
     })
 
     return {
@@ -97,25 +97,27 @@ export class AdminService {
   public async adminUpdate(
     payload: AdminUpdateRequest
   ): Promise<AdminUpdateResponse> {
+    const updateObj: Omit<AdminUpdateRequest, 'id'> = {}
     await this.adminRetrieveOne({ id: payload.id })
-
     if (payload.role) {
       const role = await this.role.findById(payload.role)
-      if (!role) throw new HttpException(404, 'Role NotFound')
+      if (!role) throw new HttpException(404, 'Role not found')
     }
 
     if (payload.org) {
       const org = await this.org.findById(payload.org)
-      if (!org) throw new HttpException(404, 'Org NotFound')
+      if (!org) throw new HttpException(404, 'Org not found')
     }
 
-    const admin = await this.admins.findById(payload.id, {}).exec()
+    const admin = await this.admins.findById(payload.id, updateObj).exec()
+
+    if (!admin) throw new HttpException(500, ' Admin is not update')
 
     return {
-      _id: '',
-      fullname: admin?.fullname || '',
+      _id: admin['_id'],
+      fullname: admin.fullname,
       password: '',
-      phone_number: admin?.phone_number || '',
+      phone_number: admin.phone_number,
       org: '',
       role: '',
       createdAt: ''
@@ -126,9 +128,10 @@ export class AdminService {
     payload: AdminDeleteRequest
   ): Promise<AdminDeleteResponse> {
     await this.adminRetrieveOne({ id: payload.id })
-    // const admin = await this.admins.findByIdAndDelete(payload.id)
+    const admin = await this.admins.findByIdAndDelete(payload.id)
+    console.log(admin)
     return {
-      id: ''
+      _id: 'as'
     }
   }
 }

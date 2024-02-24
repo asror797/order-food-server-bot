@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongoose'
+
 export interface AdminUpdateRequest {
   id: string
   fullname?: string
@@ -8,7 +10,7 @@ export interface AdminUpdateRequest {
 }
 
 export interface AdminUpdateResponse {
-  _id: string
+  _id: string | ObjectId
   fullname: string
   password: string
   org: string

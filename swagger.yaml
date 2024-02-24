@@ -1,1222 +1,1210 @@
-openapi: 3.0.0
-servers:
-  - description: Woodline Server Url
-    url: http://localhost:9070/
-info:
-  version: "1.0.0"
-  title: Woodline Kitchen
-  description: Woodline grocery service API documentation
-paths:
-  /admin:
-    get:
-      tags:
-        - Admins
-      description: Retrieve All Admin
-      operationId: adminRetrieveAll
-      parameters:
-        - in: query
-          name: pageNumber
-          description: page number
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: pageSize
-          description: size of page 
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: search
-          description: search text
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
-    post:
-      tags:
-        - Admins
-      operationId: adminCreate
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminCreate'
-  /admin/{id}:
-    get:
-      tags:
-       - Admins
-      description: Retrieve One Admin
-      operationId: adminRetrieveOne
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Admin'
-    patch:
-      summary: Retrieve a list of products
-      tags:
-       - Admins
-      description: Update Admin By Id
-      operationId: adminUpdate
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    delete:
-      tags:
-       - Admins
-      description: Delete Admin
-      operationId: adminDelete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
+# openapi: 3.0.0
+# servers:
+#   - description: Woodline Server Url
+#     url: http://localhost:9070/
+# info:
+#   version: "1.0.0"
+#   title: Woodline Kitchen
+#   description: Woodline grocery service API documentation
+# paths:
+#   /admin:
+#     get:
+#       tags:
+#         - Admins
+#       description: Retrieve All Admin
+#       operationId: adminRetrieveAll
+#       parameters:
+#         - in: query
+#           name: pageNumber
+#           description: page number
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: pageSize
+#           description: size of page 
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: search
+#           description: search text
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
+#     post:
+#       tags:
+#         - Admins
+#       operationId: adminCreate
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/AdminCreate'
+#   /admin/{id}:
+#     get:
+#       tags:
+#        - Admins
+#       description: Retrieve One Admin
+#       operationId: adminRetrieveOne
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/Admin'
+#     patch:
+#       summary: Retrieve a list of products
+#       tags:
+#        - Admins
+#       description: Update Admin By Id
+#       operationId: adminUpdate
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     delete:
+#       tags:
+#        - Admins
+#       description: Delete Admin
+#       operationId: adminDelete
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
   
-  /admin-auth/login:
-    post:
-      tags:
-        - Admin-Auth
-      description: Retrieve All Admin
-      operationId: adminAuthRetrieveAll
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
+#   /admin-auth/login:
+#     post:
+#       tags:
+#         - Admin-Auth
+#       description: Retrieve All Admin
+#       operationId: adminAuthRetrieveAll
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
   
-  /admin-auth/refresh:
-    post:
-      tags:
-        - Admin-Auth
-      operationId: adminAuthRefresh
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminCreate'
+#   /admin-auth/refresh:
+#     post:
+#       tags:
+#         - Admin-Auth
+#       operationId: adminAuthRefresh
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/AdminCreate'
   
-  /user:
-    get:
-      tags:
-        - Users
-      description: Retrieve All User
-      operationId: userRetrieveAll
-      parameters:
-        - in: query
-          name: pageNumber
-          description: page number
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: pageSize
-          description: size of page 
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: search
-          description: search text
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
-    post:
-      tags:
-        - Users
-      operationId: userCreate
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserCreate'
-  /user/{id}:
-    get:
-      tags:
-       - Users
-      description: Retrieve One Admin
-      operationId: userRetrieveOne
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    patch:
-      summary: Retrieve a list of products
-      tags:
-       - Users
-      description: Update Admin By Id
-      operationId: adminUpdate
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    delete:
-      tags:
-       - Users
-      description: Delete Admin
-      operationId: userDelete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
+#   /user:
+#     get:
+#       tags:
+#         - Users
+#       description: Retrieve All User
+#       operationId: userRetrieveAll
+#       parameters:
+#         - in: query
+#           name: pageNumber
+#           description: page number
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: pageSize
+#           description: size of page 
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: search
+#           description: search text
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
+#     post:
+#       tags:
+#         - Users
+#       operationId: userCreate
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/UserCreate'
+#   /user/{id}:
+#     get:
+#       tags:
+#        - Users
+#       description: Retrieve One Admin
+#       operationId: userRetrieveOne
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     patch:
+#       summary: Retrieve a list of products
+#       tags:
+#        - Users
+#       description: Update Admin By Id
+#       operationId: adminUpdate
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     delete:
+#       tags:
+#        - Users
+#       description: Delete Admin
+#       operationId: userDelete
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
           
           
-  /food:
-    get:
-      tags:
-        - Foods
-      description: Retrieve All Food
-      operationId: foodRetrieveAll
-      parameters:
-        - in: query
-          name: pageNumber
-          description: page number
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: pageSize
-          description: size of page 
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: search
-          description: search text
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
-    post:
-      tags:
-        - Foods
-      operationId: foodCreate
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FoodCreate'
-  /food/{id}:
-    get:
-      tags:
-       - Foods
-      description: Retrieve One Admin
-      operationId: foodRetrieveOne
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    patch:
-      summary: Retrieve a list of products
-      tags:
-       - Foods
-      description: Update Admin By Id
-      operationId: foodUpdate
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    delete:
-      tags:
-       - Foods
-      description: Delete Admin
-      operationId: foodDelete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
+#   /food:
+#     get:
+#       tags:
+#         - Foods
+#       description: Retrieve All Food
+#       operationId: foodRetrieveAll
+#       parameters:
+#         - in: query
+#           name: pageNumber
+#           description: page number
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: pageSize
+#           description: size of page 
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: search
+#           description: search text
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
+#     post:
+#       tags:
+#         - Foods
+#       operationId: foodCreate
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/FoodCreate'
+#   /food/{id}:
+#     get:
+#       tags:
+#        - Foods
+#       description: Retrieve One Admin
+#       operationId: foodRetrieveOne
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     patch:
+#       summary: Retrieve a list of products
+#       tags:
+#        - Foods
+#       description: Update Admin By Id
+#       operationId: foodUpdate
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     delete:
+#       tags:
+#        - Foods
+#       description: Delete Admin
+#       operationId: foodDelete
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
           
     
-  /lunch-base:
-    get:
-      tags:
-        - LunchBase
-      description: Retrieve All Food
-      operationId: lunchBaseRetrieveAll
-      parameters:
-        - in: query
-          name: pageNumber
-          description: page number
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: pageSize
-          description: size of page 
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: search
-          description: search text
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
-    post:
-      tags:
-        - LunchBase
-      operationId: lunchBaseCreate
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LunchBaseCreate'
-  /lunch-base/{id}:
-    get:
-      tags:
-       - LunchBase
-      description: Retrieve One Admin
-      operationId: lunchBaseRetrieveOne
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    patch:
-      summary: Retrieve a list of products
-      tags:
-       - LunchBase
-      description: Update Admin By Id
-      operationId: lunchBaseUpdate
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    delete:
-      tags:
-       - LunchBase
-      description: Delete Admin
-      operationId: lunchBaseDelete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
+#   /lunch-base:
+#     get:
+#       tags:
+#         - LunchBase
+#       description: Retrieve All Food
+#       operationId: lunchBaseRetrieveAll
+#       parameters:
+#         - in: query
+#           name: pageNumber
+#           description: page number
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: pageSize
+#           description: size of page 
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: search
+#           description: search text
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
+#     post:
+#       tags:
+#         - LunchBase
+#       operationId: lunchBaseCreate
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/LunchBaseCreate'
+#   /lunch-base/{id}:
+#     get:
+#       tags:
+#        - LunchBase
+#       description: Retrieve One Admin
+#       operationId: lunchBaseRetrieveOne
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     patch:
+#       summary: Retrieve a list of products
+#       tags:
+#        - LunchBase
+#       description: Update Admin By Id
+#       operationId: lunchBaseUpdate
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     delete:
+#       tags:
+#        - LunchBase
+#       description: Delete Admin
+#       operationId: lunchBaseDelete
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
 
 
-  /lunch:
-    get:
-      tags:
-        - Lunch
-      description: Retrieve All Food
-      operationId: lunchRetrieveAll
-      parameters:
-        - in: query
-          name: pageNumber
-          description: page number
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: pageSize
-          description: size of page 
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: search
-          description: search text
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
-    post:
-      tags:
-        - Lunch
-      operationId: lunchCreate
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LunchCreate'
-  /lunch/{id}:
-    get:
-      tags:
-       - Lunch
-      description: Retrieve One Admin
-      operationId: lunchRetrieveOne
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    patch:
-      summary: Retrieve a list of products
-      tags:
-       - Lunch
-      description: Update Admin By Id
-      operationId: lunchUpdate
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    delete:
-      tags:
-       - Lunch
-      description: Delete Admin
-      operationId: lunchDelete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
+#   /lunch:
+#     get:
+#       tags:
+#         - Lunch
+#       description: Retrieve All Food
+#       operationId: lunchRetrieveAll
+#       parameters:
+#         - in: query
+#           name: pageNumber
+#           description: page number
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: pageSize
+#           description: size of page 
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: search
+#           description: search text
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
+#     post:
+#       tags:
+#         - Lunch
+#       operationId: lunchCreate
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/LunchCreate'
+#   /lunch/{id}:
+#     get:
+#       tags:
+#        - Lunch
+#       description: Retrieve One Admin
+#       operationId: lunchRetrieveOne
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     patch:
+#       summary: Retrieve a list of products
+#       tags:
+#        - Lunch
+#       description: Update Admin By Id
+#       operationId: lunchUpdate
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     delete:
+#       tags:
+#        - Lunch
+#       description: Delete Admin
+#       operationId: lunchDelete
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
   
 
-  /order:
-    get:
-      tags:
-        - Order
-      description: Retrieve All Food
-      operationId: orderRetrieveAll
-      parameters:
-        - in: query
-          name: pageNumber
-          description: page number
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: pageSize
-          description: size of page 
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: search
-          description: search text
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
-    post:
-      tags:
-        - Order
-      operationId: orderCreate
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminCreate'
-  /order/{id}:
-    get:
-      tags:
-       - Order
-      description: Retrieve One Admin
-      operationId: orderRetrieveOne
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    patch:
-      summary: Retrieve a list of products
-      tags:
-       - Order
-      description: Update Admin By Id
-      operationId: orderUpdate
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    delete:
-      tags:
-       - Order
-      description: Delete Admin
-      operationId: orderDelete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
+#   /order:
+#     get:
+#       tags:
+#         - Order
+#       description: Retrieve All Food
+#       operationId: orderRetrieveAll
+#       parameters:
+#         - in: query
+#           name: pageNumber
+#           description: page number
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: pageSize
+#           description: size of page 
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: search
+#           description: search text
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
+#     post:
+#       tags:
+#         - Order
+#       operationId: orderCreate
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/AdminCreate'
+#   /order/{id}:
+#     get:
+#       tags:
+#        - Order
+#       description: Retrieve One Admin
+#       operationId: orderRetrieveOne
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     patch:
+#       summary: Retrieve a list of products
+#       tags:
+#        - Order
+#       description: Update Admin By Id
+#       operationId: orderUpdate
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     delete:
+#       tags:
+#        - Order
+#       description: Delete Admin
+#       operationId: orderDelete
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
 
 
-  /org:
-    get:
-      tags:
-        - Org
-      description: Retrieve All Food
-      operationId: orgRetrieveAll
-      parameters:
-        - in: query
-          name: pageNumber
-          description: page number
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: pageSize
-          description: size of page 
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: search
-          description: search text
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
-    post:
-      tags:
-        - Org
-      operationId: orgCreate
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminCreate'
-  /org/{id}:
-    get:
-      tags:
-       - Org
-      description: Retrieve One Admin
-      operationId: orgRetrieveOne
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    patch:
-      summary: Retrieve a list of products
-      tags:
-       - Org
-      description: Update Admin By Id
-      operationId: orgUpdate
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    delete:
-      tags:
-       - Org
-      description: Delete Admin
-      operationId: orgDelete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
+#   /org:
+#     get:
+#       tags:
+#         - Org
+#       description: Retrieve All Food
+#       operationId: orgRetrieveAll
+#       parameters:
+#         - in: query
+#           name: pageNumber
+#           description: page number
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: pageSize
+#           description: size of page 
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: search
+#           description: search text
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
+#     post:
+#       tags:
+#         - Org
+#       operationId: orgCreate
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/AdminCreate'
+#   /org/{id}:
+#     get:
+#       tags:
+#        - Org
+#       description: Retrieve One Admin
+#       operationId: orgRetrieveOne
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     patch:
+#       summary: Retrieve a list of products
+#       tags:
+#        - Org
+#       description: Update Admin By Id
+#       operationId: orgUpdate
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     delete:
+#       tags:
+#        - Org
+#       description: Delete Admin
+#       operationId: orgDelete
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
 
 
-  /payment:
-    get:
-      tags:
-        - Payments
-      description: Retrieve All Food
-      operationId: paymentRetrieveAll
-      parameters:
-        - in: query
-          name: pageNumber
-          description: page number
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: pageSize
-          description: size of page 
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: search
-          description: search text
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
-    post:
-      tags:
-        - Payments
-      operationId: paymentCreate
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminCreate'
-  /payment/{id}:
-    get:
-      tags:
-       - Payments
-      description: Retrieve One Admin
-      operationId: paymentRetrieveOne
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    patch:
-      summary: Retrieve a list of products
-      tags:
-       - Payments
-      description: Update Admin By Id
-      operationId: paymentUpdate
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    delete:
-      tags:
-       - Payments
-      description: Delete Admin
-      operationId: paymentDelete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
+#   /payment:
+#     get:
+#       tags:
+#         - Payments
+#       description: Retrieve All Food
+#       operationId: paymentRetrieveAll
+#       parameters:
+#         - in: query
+#           name: pageNumber
+#           description: page number
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: pageSize
+#           description: size of page 
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: search
+#           description: search text
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
+#     post:
+#       tags:
+#         - Payments
+#       operationId: paymentCreate
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/AdminCreate'
+#   /payment/{id}:
+#     get:
+#       tags:
+#        - Payments
+#       description: Retrieve One Admin
+#       operationId: paymentRetrieveOne
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     patch:
+#       summary: Retrieve a list of products
+#       tags:
+#        - Payments
+#       description: Update Admin By Id
+#       operationId: paymentUpdate
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     delete:
+#       tags:
+#        - Payments
+#       description: Delete Admin
+#       operationId: paymentDelete
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
 
 
-  /product-log:
-    get:
-      tags:
-        - PoductLog
-      description: Retrieve All Food
-      operationId: productLogRetrieveAll
-      parameters:
-        - in: query
-          name: pageNumber
-          description: page number
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: pageSize
-          description: size of page 
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: search
-          description: search text
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
-    post:
-      tags:
-        - PoductLog
-      operationId: productLogCreate
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminCreate'
-  /product-log/{id}:
-    get:
-      tags:
-       - PoductLog
-      description: Retrieve One Admin
-      operationId: productLogRetrieveOne
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    patch:
-      summary: Retrieve a list of products
-      tags:
-       - PoductLog
-      description: Update Admin By Id
-      operationId: productLogUpdate
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    delete:
-      tags:
-       - PoductLog
-      description: Delete Admin
-      operationId: productLogDelete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
+#   /product-log:
+#     get:
+#       tags:
+#         - PoductLog
+#       description: Retrieve All Food
+#       operationId: productLogRetrieveAll
+#       parameters:
+#         - in: query
+#           name: pageNumber
+#           description: page number
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: pageSize
+#           description: size of page 
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: search
+#           description: search text
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
+#     post:
+#       tags:
+#         - PoductLog
+#       operationId: productLogCreate
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/AdminCreate'
+#   /product-log/{id}:
+#     get:
+#       tags:
+#        - PoductLog
+#       description: Retrieve One Admin
+#       operationId: productLogRetrieveOne
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     patch:
+#       summary: Retrieve a list of products
+#       tags:
+#        - PoductLog
+#       description: Update Admin By Id
+#       operationId: productLogUpdate
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     delete:
+#       tags:
+#        - PoductLog
+#       description: Delete Admin
+#       operationId: productLogDelete
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
 
 
-  /product:
-    get:
-      tags:
-        - Products
-      description: Retrieve All Food
-      operationId: productRetrieveAll
-      parameters:
-        - in: query
-          name: pageNumber
-          description: page number
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: pageSize
-          description: size of page 
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: search
-          description: search text
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
-    post:
-      tags:
-        - Products
-      operationId: productCreate
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminCreate'
-  /product/{id}:
-    get:
-      tags:
-       - Products
-      description: Retrieve One Admin
-      operationId: productRetrieveOne
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    patch:
-      summary: Retrieve a list of products
-      tags:
-       - Products
-      description: Update Admin By Id
-      operationId: productUpdate
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    delete:
-      tags:
-       - Products
-      description: Delete Admin
-      operationId: productDelete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
+#   /product:
+#     get:
+#       tags:
+#         - Products
+#       description: Retrieve All Food
+#       operationId: productRetrieveAll
+#       parameters:
+#         - in: query
+#           name: pageNumber
+#           description: page number
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: pageSize
+#           description: size of page 
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: search
+#           description: search text
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
+#     post:
+#       tags:
+#         - Products
+#       operationId: productCreate
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/AdminCreate'
+#   /product/{id}:
+#     get:
+#       tags:
+#        - Products
+#       description: Retrieve One Admin
+#       operationId: productRetrieveOne
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     patch:
+#       summary: Retrieve a list of products
+#       tags:
+#        - Products
+#       description: Update Admin By Id
+#       operationId: productUpdate
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     delete:
+#       tags:
+#        - Products
+#       description: Delete Admin
+#       operationId: productDelete
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
 
-  /role:
-    get:
-      tags:
-        - Roles
-      description: Retrieve All Food
-      operationId: roleRetrieveAll
-      parameters:
-        - in: query
-          name: pageNumber
-          description: page number
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: pageSize
-          description: size of page 
-          schema:
-            type: integer
-            format: int32
-        - in: query
-          name: search
-          description: search text
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Admins
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AdminList'
-    post:
-      tags:
-        - Roles
-      operationId: roleCreate
-      responses:
-        '200':
-          description: successfully created admin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RoleCreate'
-  /role/{id}:
-    get:
-      tags:
-       - Roles
-      description: Retrieve One Admin
-      operationId: roleRetrieveOne
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    patch:
-      summary: Retrieve a list of products
-      tags:
-       - Roles
-      description: Update Admin By Id
-      operationId: roleUpdate
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
-    delete:
-      tags:
-       - Roles
-      description: Delete Admin
-      operationId: roleDelete
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Success
+#   /role:
+#     get:
+#       tags:
+#         - Roles
+#       description: Retrieve All Food
+#       operationId: roleRetrieveAll
+#       parameters:
+#         - in: query
+#           name: pageNumber
+#           description: page number
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: pageSize
+#           description: size of page 
+#           schema:
+#             type: integer
+#             format: int32
+#         - in: query
+#           name: search
+#           description: search text
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Admins
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: '#/components/schemas/AdminList'
+#     post:
+#       tags:
+#         - Roles
+#       operationId: roleCreate
+#       responses:
+#         '200':
+#           description: successfully created admin
+#       requestBody:
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/RoleCreate'
+#   /role/{id}:
+#     get:
+#       tags:
+#        - Roles
+#       description: Retrieve One Admin
+#       operationId: roleRetrieveOne
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     patch:
+#       summary: Retrieve a list of products
+#       tags:
+#        - Roles
+#       description: Update Admin By Id
+#       operationId: roleUpdate
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
+#     delete:
+#       tags:
+#        - Roles
+#       description: Delete Admin
+#       operationId: roleDelete
+#       parameters:
+#         - name: id
+#           in: path
+#           required: true
+#           schema:
+#             type: string
+#       responses:
+#         '200':
+#           description: Success
 
 
-  
-components:
-  schemas:
-    AdminList:
-      type: object
-      properties:
-        count:
-          type: number
-          example: 10
-        pageNumber:
-          type: number
-          example: 1
-        pageSize:
-          type: number
-          example: 10
-        pageCount:
-          type: number
-          example: 10
-        dataList:
-          type: array
-          items:
-            type: object
-            properties:
-              _id:
-                type: string
-                example: 'sdsdsds'
-              fullname:
-                type: string
-                example: 'sdsdsd'
-              phone_number:
-                type: string
-                example: 'assas'
+
+# components:
+#   schemas:
+#     AdminList:
+#       type: object
+#       properties:
+#         count:
+#           type: number
+#           example: 10
+#         pageNumber:
+#           type: number
+#           example: 1
+#         pageSize:
+#           type: number
+#           example: 10
+#         pageCount:
+#           type: number
+#           example: 10
+#         dataList:
+#           type: array
     
-    Admin:
-      type: object
-      properties:
-        fullname:
-          type: string
-        phone_number:
-          type: string
-        org:
-          type: string
-        role:
-          type: string
-    AdminCreate:
-      type: object
-      properties:
-        fullname:
-          type: string
-          example: 'john Doe'
-        phone_number:
-          type: string
-          example: '+998905050707'
-        password:
-          type: string
-          example: '12345678'
-        role: 
-          type: string
-          example: '64ff00a049490c972a59020'
-        org: 
-          type: string
-          example: '64ff00a049490c972a59020'
+#     Admin:
+#       type: object
+#       properties:
+#         fullname:
+#           type: string
+#         phone_number:
+#           type: string
+#         org:
+#           type: string
+#         role:
+#           type: string
+#     AdminCreate:
+#       type: object
+#       properties:
+#         fullname:
+#           type: string
+#           example: 'john Doe'
+#         phone_number:
+#           type: string
+#           example: '+998905050707'
+#         password:
+#           type: string
+#           example: '12345678'
+#         role: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
+#         org: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
           
-    UserCreate:
-      type: object
-      properties:
-        first_name:
-          type: string
-          example: 'john Doe'
-        last_name:
-          type: string
-          example: '+998905050707'
-        phone_number:
-          type: string
-          example: '12345678'
-        role: 
-          type: string
-          example: '64ff00a049490c972a59020'
-        org: 
-          type: string
-          example: '64ff00a049490c972a59020'
+#     UserCreate:
+#       type: object
+#       properties:
+#         first_name:
+#           type: string
+#           example: 'john Doe'
+#         last_name:
+#           type: string
+#           example: '+998905050707'
+#         phone_number:
+#           type: string
+#           example: '12345678'
+#         role: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
+#         org: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
     
-    LunchBaseCreate:
-      type: object
-      properties:
-        first_name:
-          type: string
-          example: 'john Doe'
-        last_name:
-          type: string
-          example: '+998905050707'
-        phone_number:
-          type: string
-          example: '12345678'
-        role: 
-          type: string
-          example: '64ff00a049490c972a59020'
-        org: 
-          type: string
-          example: '64ff00a049490c972a59020'
+#     LunchBaseCreate:
+#       type: object
+#       properties:
+#         first_name:
+#           type: string
+#           example: 'john Doe'
+#         last_name:
+#           type: string
+#           example: '+998905050707'
+#         phone_number:
+#           type: string
+#           example: '12345678'
+#         role: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
+#         org: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
           
-    LunchCreate:
-      type: object
-      properties:
-        first_name:
-          type: string
-          example: 'john Doe'
-        last_name:
-          type: string
-          example: '+998905050707'
-        phone_number:
-          type: string
-          example: '12345678'
-        role: 
-          type: string
-          example: '64ff00a049490c972a59020'
-        org: 
-          type: string
-          example: '64ff00a049490c972a59020'
+#     LunchCreate:
+#       type: object
+#       properties:
+#         first_name:
+#           type: string
+#           example: 'john Doe'
+#         last_name:
+#           type: string
+#           example: '+998905050707'
+#         phone_number:
+#           type: string
+#           example: '12345678'
+#         role: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
+#         org: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
       
-    FoodCreate:
-      type: object
-      properties:
-        first_name:
-          type: string
-          example: 'john Doe'
-        last_name:
-          type: string
-          example: '+998905050707'
-        phone_number:
-          type: string
-          example: '12345678'
-        role: 
-          type: string
-          example: '64ff00a049490c972a59020'
-        org: 
-          type: string
-          example: '64ff00a049490c972a59020' 
+#     FoodCreate:
+#       type: object
+#       properties:
+#         first_name:
+#           type: string
+#           example: 'john Doe'
+#         last_name:
+#           type: string
+#           example: '+998905050707'
+#         phone_number:
+#           type: string
+#           example: '12345678'
+#         role: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
+#         org: 
+#           type: string
+#           example: '64ff00a049490c972a59020' 
     
-    OrderCreate:
-      type: object
-      properties:
-        first_name:
-          type: string
-          example: 'john Doe'
-        last_name:
-          type: string
-          example: '+998905050707'
-        phone_number:
-          type: string
-          example: '12345678'
-        role: 
-          type: string
-          example: '64ff00a049490c972a59020'
-        org: 
-          type: string
-          example: '64ff00a049490c972a59020'
+#     OrderCreate:
+#       type: object
+#       properties:
+#         first_name:
+#           type: string
+#           example: 'john Doe'
+#         last_name:
+#           type: string
+#           example: '+998905050707'
+#         phone_number:
+#           type: string
+#           example: '12345678'
+#         role: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
+#         org: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
     
-    OrgCreate:
-      type: object
-      properties:
-        first_name:
-          type: string
-          example: 'john Doe'
-        last_name:
-          type: string
-          example: '+998905050707'
-        phone_number:
-          type: string
-          example: '12345678'
-        role: 
-          type: string
-          example: '64ff00a049490c972a59020'
-        org: 
-          type: string
-          example: '64ff00a049490c972a59020'
+#     OrgCreate:
+#       type: object
+#       properties:
+#         first_name:
+#           type: string
+#           example: 'john Doe'
+#         last_name:
+#           type: string
+#           example: '+998905050707'
+#         phone_number:
+#           type: string
+#           example: '12345678'
+#         role: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
+#         org: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
           
     
-    PaymentCreate:
-      type: object
-      properties:
-        first_name:
-          type: string
-          example: 'john Doe'
-        last_name:
-          type: string
-          example: '+998905050707'
-        phone_number:
-          type: string
-          example: '12345678'
-        role: 
-          type: string
-          example: '64ff00a049490c972a59020'
-        org: 
-          type: string
-          example: '64ff00a049490c972a59020'
+#     PaymentCreate:
+#       type: object
+#       properties:
+#         first_name:
+#           type: string
+#           example: 'john Doe'
+#         last_name:
+#           type: string
+#           example: '+998905050707'
+#         phone_number:
+#           type: string
+#           example: '12345678'
+#         role: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
+#         org: 
+#           type: string
+#           example: '64ff00a049490c972a59020'
           
-    RoleCreate:
-      type: object
-      properties:
-        title:
-          type: string
-          example: 'Admin'
+#     RoleCreate:
+#       type: object
+#       properties:
+#         title:
+#           type: string
+#           example: 'Admin'
 

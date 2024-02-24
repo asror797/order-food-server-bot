@@ -1,0 +1,657 @@
+# openapi: 3.0.0
+# info:
+#   title: Woodline Kitchen Bot
+#   description: Woodline kitchen server api 
+#   version: 1.0.0
+
+# tags:
+#   - name: Auth
+#     description: Api for Auth
+#   - name: User
+#     descriptions: Api for users
+#   - name: Admin
+#     descriptions: Api for admin
+#   - name: Product
+#     descriptions: Api for products
+#   - name: Food
+#     description: Api for Foods
+#   - name: Order
+#     description: Api for Orders
+#   - name: Settings
+#     description: Settings 
+#   - name: Trip
+#     description: Api for Trips
+
+# paths:
+
+
+
+#   /admin:
+#     get:
+#       summary: Retrieve All Admin
+#       tags: 
+#         - Admin
+#       responses:
+#         200: 
+#           description: "ok"  
+#     post:
+#       summary: Create admin
+#       tags: 
+#         - Admin
+#       parameters:
+#         - name: Admin
+#           in: body
+#           description: 'create admin'
+#           required: true
+#           schema:
+#             $ref: '#/definitions/CreateAdmin'    
+#       responses:
+#         200:
+#           description: "ok"  
+#   /admin/:id:
+#     get:
+#       summary: Retrieve One Admin
+#       tags:
+#         - Admin
+#     patch:
+#       summary: Update User by Id
+#       tags:
+#         - Admin
+#     delete:
+#       summary: Delete User By Id
+#       tags:
+#         - Admin
+#   /admin/login:
+#     post:
+#       summary: Login User
+#       tags:
+#         - Admin
+#       parameters:
+#         - name: Login
+#           in: body
+#           decription: ''
+#           required: true
+#           schema:
+#             $ref: '#/definitions/LoginAdmin'
+#       responses:
+#         200:
+#           description: "ok"
+
+
+#   /user:
+#     get:
+#       summary: Retrieve a list of books
+#       tags:
+#         - User
+#       parameters:
+#         - name: page
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 1
+#         - name: size
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 10
+#       responses:
+#         200:
+#           description: Successfully retrieved the list of books
+#           schema:
+#             type: array
+#             items:
+#               $ref: '#/definitions/User'
+#   /user/send-message:
+#     post:
+#       summary: Send messages
+#       tags:
+#         - User
+#       parameters:
+#         - name: body
+#           in: body
+#           description: User data
+#           required: true
+#           schema:
+#             $ref: '#/definitions/SendMessage'
+#       responses:
+#         200:
+#           description: ok
+
+#   /user/status/{user}:
+#     put:
+#       summary: Verify User
+#       tags:
+#         - User
+#       parameters:
+#         - name: user
+#           in: path
+#           type: string
+#           required: true
+#         - name: is_active
+#           in: body
+#           required: true
+#           schema:
+#             $ref: '#/definitions/UserStatus'
+#       responses:
+#         200:
+#           description: ok
+
+#   /user/verify/{user}:
+#     put:
+#       summary: Verify User
+#       tags:
+#         - User
+#       parameters:
+#         - name: user
+#           in: path
+#           type: string
+#           required: true
+#       responses:
+#         200:
+#           description: ok 
+#   /user/org/{user}:
+#     put:
+#       summary: change org
+#       tags:
+#         - User
+#       parameters:
+#         - name: user
+#           in: path
+#           required: true
+#           type: string
+#         - name: org
+#           in: body
+#           required: true
+#           schema:
+#             $ref: '#/definitions/ChangeOrg'
+
+#   /lunch:
+#     get:
+#       summary: get lunches
+#       tags:
+#         - Lunch
+#       parameters:
+#         - name: page
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 1
+#         - name: size
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 10
+#       responses:
+#         200:
+#           description: ok
+#     post:
+#       summary: create lunch
+#       tags:
+#         - Lunch
+#       parameters:
+#         - name: lunch
+#           in: body
+#           description: create lunch 
+#           required: true
+#           schema:
+#             $ref: '#/definitions/CreateLunch'
+#       responses:
+#         200:
+#           description: "ok"
+
+#   /user/payment:  
+#     patch:
+#       summary: payment
+#       tags:
+#         - Payment
+#       parameters: 
+#         - name: Payment
+#           in: body
+#           description: payment
+#           required: true
+#           schema:
+#             $ref: '#/definitions/Payment'
+#       responses:
+#         200:
+#           description: "ok"
+
+#   /trip:
+#     get:
+#       summary: Get trips
+#       tags:
+#         - Trip
+#       parameters:
+#         - name: page
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 1
+#         - name: size
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 10
+#       responses:
+#         200:
+#           description: "ok"
+
+#   /auth:
+#     get:
+#       summary: get info
+#       tags:
+#         - Auth
+
+#     post:
+#       summary: login user
+#       tags:
+#         - Auth
+#       parameters:
+#         - name: body
+#           in: body
+#           description: User data
+#           required: true
+#           schema:
+#             $ref: '#/definitions/UserInput'
+#       responses:
+#         200:
+#           description: User created
+#           schema:
+#             $ref: '#/definitions/Login'
+#   /org:
+#     get:
+#       summary: Retrieve a list of books
+#       tags:
+#         - Org
+#       parameters:
+#         - name: page
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 1
+#         - name: size
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 10
+#       responses:
+#         200:
+#           description: Successfully retrieved the list of books
+#           schema:
+#             type: array
+#             items:
+#               $ref: '#/definitions/Org'
+  
+#     post:
+#       summary: Org
+#       tags:
+#         - Org
+#       parameters:
+#         - name: body
+#           in: body
+#           description: create org
+#           required: true
+#           schema:
+#             $ref: '#/definitions/CreateOrg'
+#       responses:
+#         200:
+#           description: Org created 
+#   /org/group:
+#     patch:
+#       summary: update orders
+#       tags:
+#         - Org
+#       parameters:
+#         - name: body
+#           in: body
+#           description: update group id
+#           required: true
+#           schema:
+#             $ref: '#/definitions/UpdateGroupId'
+#       responses:
+#         200:
+#           description: "ok"
+
+#   /order:
+#     get:
+#       summary: Get orders
+#       tags:
+#         - Order
+#       parameters:
+#         - name: page
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 1
+#         - name: size
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 10
+#           default: 10 
+#       responses:
+#         200:
+#           description: get order
+
+
+
+#   /product:
+#     get:
+#       summary: Retrieve a list of products
+#       tags:
+#         - Product 
+#       parameters:
+#         - name: page
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 1
+#         - name: size
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 10
+#           default: 10 
+#       responses:
+#         200:
+#           description: Successfully retrieved the list of products
+#           schema:
+#             type: array
+#             items:
+#               $ref: '#/definitions/Product'
+#     post:
+#       summary: Create Product
+#       tags:
+#         - Product
+#       parameters:
+#         - name: body
+#           in: body
+#           description: create Product
+#           required: true
+#           schema:
+#             $ref: '#/definitions/CreateProduct'
+#       responses:
+#         200:
+#           description: Org created
+
+#   /product/amount:
+#     patch:
+#       summary: Update amount
+#       tags:
+#         - Product
+#       parameters:
+#         - name: page
+#           in: body
+#           required: true
+#           schema:
+#             $ref: '#/definitions/UpdateAmount'
+#       responses:
+#         200: 
+#           description: "ok"    
+#   /food:
+#     get:
+#       summary: Retrieve a list of foods
+#       tags:
+#         - Food
+#       parameters:
+#         - name: page
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 1
+#         - name: size
+#           in: query
+#           description: ''
+#           type: integer
+#           minimum: 1
+#           default: 10
+#       responses:
+#         200:
+#           description: Successfully retrieved the list of books
+#           schema:
+#             type: array
+#             items:
+#               $ref: '#/definitions/Food'
+#     post:
+#       summary: Create Food
+#       tags:
+#         - Food
+#       parameters:
+#         - name: body
+#           in: body
+#           description: Create Food
+#           required: true
+#           schema: 
+#             $ref: '#/definitions/CreateFood'  
+
+# definitions:
+
+#   UpdateAmount:
+#     type: object
+#     properties:
+#       product:
+#         type: string
+#       amount:
+#         type: number
+#       type: 
+#         type: boolean
+  
+#   User:
+#     type: object
+#     properties:
+#       id:
+#         type: string
+#       first_name:
+#         type: string
+#         example: "Javohir"
+#       last_name: 
+#         type: string
+#         example: "Abdumalikov"
+#       phone_number:
+#         type: string
+#         example: "998909336272"
+#       balance:
+#         type: number
+#         example: 0
+#       telegram_id:
+#         type: number 
+#         example: 458985665
+#       is_active: 
+#         type: boolean
+#       is_verified:
+#         type: boolean
+#       roles:
+#         type: array
+#         example: ["user"]
+#       language_code: 
+#         type: string
+#         example: "uz"
+#       createdAt:
+#         type: string
+#         example: "2023-09-09T07:12:45.784Z"
+
+#   Product:
+#     type: object
+#     properties:
+#       name:
+#         type: string
+#         example: "Non"
+#       unit:
+#         type: string
+#         example: "dona"
+#       amount:
+#         type: number 
+#         example: 0
+#       min_amount:
+#         type: number
+#         example: 5 
+#   CreateProduct:
+#     type: object
+#     properties:
+#       name:
+#         type: string
+#       org:
+#         type: string
+#       unit:
+#         type: string
+#   Food:
+#     type: object
+#     properties: 
+#       name:
+#         type: string
+#         example: "Shaftoli"
+#       cost:
+#         type: number
+#         example: 5000
+#       products:
+#         type: array
+#         example: []
+#       org:
+#         type: string
+#         example: 'a878as8as18as187s'
+#       category:
+#         type: string
+#         example: 'drinks'
+#   CreateFood:
+#     type: object
+#     properties:
+#       name:
+#         type: string
+#       cost:
+#         type: number
+#       products:
+#         type: array
+#         items:
+#           type: object
+#           properties:
+#             product:
+#               type: string
+#             amount:
+#               type: number
+#       org: 
+#         type: string
+#       category:
+#         type: string
+
+#   UserInput:
+#     type: object
+#     properties:
+#       phone_number:
+#         type: string
+#       password:
+#         type: string
+#   UserStatus:
+#     type: object
+#     properties:
+#       is_active:
+#         type: boolean
+#   Login:
+#     type: object
+#     properties:
+#       token: 
+#         type: string
+
+#   CreateOrg:
+#     type: object
+#     properties:
+#       name_org:
+#         type: string
+#   Payment:
+#     type: object
+#     properties:
+#       amount:
+#         type: number
+#       user:
+#         type: string
+#       type:
+#         type: boolean
+#   Org:
+#     type: object
+#     properties:
+#       name_org:
+#         type: string
+#       is_active:
+#         type: boolean
+#       is_deleted:
+#         type: boolean
+#   SendMessage: 
+#     type: object
+#     properties:
+#       message:
+#         type: string
+#       org:
+#         type: string 
+
+
+
+
+#   ChangeOrg: 
+#     type: object
+#     properties:
+#       org: 
+#         type: string
+
+#   CreateLunch:
+#     type: object
+#     properties:
+#       name:
+#         type: string
+#       org: 
+#         type: string
+#       cost:
+#         type: number
+#   UpdateGroupId:
+#     type: object
+#     properties:
+#       org:
+#         type: string
+#       group_a_id: 
+#         type: string
+#       group_b_id: 
+#         type: string
+  
+#   CreateAdmin:
+#       type: object
+#       properties:
+#         phone_number:
+#           type: string
+#           example: '1234567890'
+#         fullname:
+#           type: string
+#           example: 'John Doe'
+#         password:
+#           type: string
+#           example: 'password123'
+#         org:
+#           type: string
+#           example: 'Organization Name'
+#         role:
+#           type: string
+#           example: 'admin'
+#         permissions:
+#           type: array
+#           items:
+#             type: string
+#             example:
+#               - 'read'
+#               - 'write'
+          
+#   LoginAdmin:
+#     type: object
+#     properties:
+#       phone_number: 
+#         type: string
+#       password:
+#         type: string
+      
+    
