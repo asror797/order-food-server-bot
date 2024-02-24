@@ -5,15 +5,25 @@ import { ReplyKeyboardMarkup, SendMessageOptions } from 'node-telegram-bot-api'
 //   callback_data: string
 // }
 
-export const handleStart: SendMessageOptions = {
+export const MainMenuKeyboard: SendMessageOptions = {
   reply_markup: {
-    keyboard: [[{ text: '' }]],
+    keyboard: [[{ text: 'Buyurtma berish' }, { text: 'Balans' }]],
     resize_keyboard: true
   },
   parse_mode: 'HTML'
 }
 
-export const ShareContact: ReplyKeyboardMarkup = {
+export const CookMainkeyboard: SendMessageOptions = {
+  reply_markup: {
+    keyboard: [
+      [{ text: 'Yangi elon yaratish' }, { text: 'yaratilgan elon korish' }]
+    ],
+    resize_keyboard: true
+  },
+  parse_mode: 'HTML'
+}
+
+export const ShareContactKeyboard: ReplyKeyboardMarkup = {
   keyboard: [
     [
       {

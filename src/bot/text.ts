@@ -14,5 +14,10 @@ export const BotTextes = {
       uz_text: '🇺🇿 Uzb',
       ru_text: '🇷🇺 Rus'
     }
+  },
+
+  cookMainMenu: {
+    uz: '<b>Xush kelibsiz!!!</b>\nSiz oshpaz ro`lidasiz',
+    ru: '<b>Xush kelibsiz!!!</b>\nSiz oshpaz ro`lidasiz'
   }
 }

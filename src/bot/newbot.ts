@@ -3,6 +3,7 @@ import { CallbackQuery, Message } from 'node-telegram-bot-api'
 import { BOT_TOKEN } from '@config'
 import { UserService } from '@services'
 import { BotTextes } from './text'
+import { MainMenuKeyboard, CookMainkeyboard } from './keyboards'
 
 class TelegramBotApi {
   private bot: TelegramBot
@@ -27,13 +28,29 @@ class TelegramBotApi {
     const chatType = msg.chat.type
     try {
       const data = await this.userService.checkUser({ telegramId: chatId })
-      if (data.isExist === true && data.user) {
-        if (data.user.role == 'cook' && chatType == 'private')
+      if (
+        data.isExist &&
+        data.user &&
+        data.user.is_active &&
+        data.user.is_verified
+      ) {
+        if (
+          data.user.role == 'cook' &&
+          chatType == 'private' &&
+          msg.text !== '/start'
+        ) {
           await this.handleCookMessages(msg)
-        if (data.user.role == 'user' && chatType == 'private')
+        } else if (
+          data.user.role == 'user' &&
+          chatType == 'private' &&
+          msg.text !== '/start'
+        ) {
           await this.handleUserMessages(msg)
+        }
       } else {
-        this.bot.sendMessage(chatId, `Siz ro'yhatdan otmagansiz`)
+        this.bot.sendMessage(chatId, `<b>Siz Tasdiqlanmagansiz</b>`, {
+          parse_mode: 'HTML'
+        })
       }
     } catch (error) {
       console.log(error)
@@ -63,8 +80,19 @@ class TelegramBotApi {
     try {
       const data = await this.userService.checkUser({ telegramId: msg.chat.id })
 
-      if (data.isExist) {
+      if (data.isExist && data.user && data.user.role == 'user') {
         console.log(data.user)
+        this.bot.sendMessage(
+          msg.chat.id,
+          'Xush kelibsiz buyurtma berishga tayyor',
+          MainMenuKeyboard
+        )
+      } else if (data.isExist && data.user && data.user.role == 'cook') {
+        this.bot.sendMessage(
+          msg.chat.id,
+          BotTextes.cookMainMenu.uz,
+          CookMainkeyboard
+        )
       } else {
         this.bot.sendMessage(msg.chat.id, BotTextes.askContact.uz, {
           reply_markup: {
@@ -90,15 +118,24 @@ class TelegramBotApi {
 
   private async handleCookMessages(msg: Message): Promise<void> {
     try {
-      console.log(msg)
+      this.bot.sendMessage(msg.chat.id, 'Salom oshpaz')
     } catch (error) {
       console.log(error)
+      this.bot.sendMessage(msg.chat.id, 'Error: ....')
     }
   }
 
   private async handleUserMessages(msg: Message): Promise<void> {
     try {
-      console.log(msg)
+      this.bot.sendMessage(msg.chat.id, 'Oshxonanni tanlang', {
+        reply_markup: {
+          keyboard: [
+            [{ text: 'Ortasaroy' }, { text: 'Kokakola' }],
+            [{ text: 'Orqaga' }]
+          ],
+          resize_keyboard: true
+        }
+      })
     } catch (error) {
       console.log(error)
     }
