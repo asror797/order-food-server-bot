@@ -7,12 +7,15 @@ import {
   ChangeStatus,
   CreateUserDto,
   EditUserDto,
-  SearchPagination,
   SendMessae,
   UpdateUserDto
 } from '../dtos/user.dto'
 import { IUser } from '../interfaces/user.interface'
-import { UserRegisterPayload, UserCheckResponse } from './../interfaces'
+import {
+  UserRegisterPayload,
+  UserCheckResponse,
+  UserRetrieveAllRequest
+} from '@interfaces'
 
 export class UserService {
   private users = userModel
@@ -64,6 +67,13 @@ export class UserService {
     }
   }
 
+  public async userUpdate(payload: any): Promise<any> {
+    const user = await this.userRetrieveOne({
+      id: payload.telegram_id
+    })
+    console.log(user)
+  }
+
   public async registerUser(payload: UserRegisterPayload): Promise<any> {
     const user = await this.users.create({
       telegram_id: payload.telegramId,
@@ -75,52 +85,40 @@ export class UserService {
     return user
   }
 
-  public async userRetrieveAll(payload: SearchPagination) {
-    const { search, page, size } = payload
-    if (!search || search.trim() === '') {
-      const users = await this.users
-        .find()
-        .sort({ createdAt: -1 })
-        .populate('org', 'name_org')
-        .skip((page - 1) * size)
-        .limit(size)
-        .exec()
-
-      const totalUsers = await this.users.countDocuments().exec()
-      const totalPages = Math.ceil(totalUsers / size)
-      return {
-        data: users,
-        currentPage: page,
-        totalPages,
-        totalUsers,
-        usersOnPage: users.length
-      }
+  public async userRetrieveAll(payload: UserRetrieveAllRequest): Promise<any> {
+    const query: any = {}
+    if (payload.search) {
+      query.$or = [
+        { first_name: { $regex: new RegExp(payload.search, 'i') } },
+        { last_name: { $regex: new RegExp(payload.search, 'i') } },
+        { phone_number: { $regex: new RegExp(payload.search, 'i') } }
+      ]
     }
 
-    const re = new RegExp(search, 'i')
-    const skip = (page - 1) * size
-
-    const users = await this.users
-      .find({
-        $or: [
-          { phone_number: { $regex: re } },
-          { first_name: { $regex: re } },
-          { last_name: { $regex: re } }
-        ]
-      })
+    const userList = await this.users
+      .find(query)
+      .skip((payload.pageNumber - 1) * payload.pageSize)
+      .limit(payload.pageSize)
       .populate('org', 'name_org')
-      .skip(skip)
-      .limit(size)
+      .select('first_name last_name role balance phone_number')
       .exec()
 
-    const totalUsers = await this.users.countDocuments().exec()
-    const totalPages = Math.ceil(totalUsers / size)
+    const count = await this.users.countDocuments(query)
+
     return {
-      data: users,
-      currentPage: page,
-      totalPages,
-      totalUsers,
-      usersOnPage: users.length
+      count: count,
+      pageSize: payload.pageSize,
+      pageNumber: payload.pageNumber,
+      pageCount: Math.ceil(count / payload.pageSize),
+      userList: userList.map((e) => ({
+        _id: e['_id'],
+        first_name: e.first_name,
+        last_name: e.last_name,
+        phone_number: e.phone_number,
+        role: e.role,
+        org: e.org?.name_org,
+        balance: e.balance
+      }))
     }
   }
 
@@ -145,11 +143,14 @@ export class UserService {
     }
   }
 
-  public async userRetrieveOne(payload: { telegramId: number }) {
+  public async userRetrieveOne(payload: { id: string }) {
     const user = await this.users
-      .findOne({ telegram_id: payload.telegramId })
-      .populate('org', ' group_a_id')
+      .findById(payload.id)
+      .populate('org', 'name_org')
+      .select('first_name last_name role pone_number balance')
       .exec()
+
+    if (!user) throw new HttpException(404, 'user not found')
 
     return user
   }

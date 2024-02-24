@@ -27,7 +27,7 @@ export class AdminService {
       .limit(payload.pageSize)
       .populate('org', 'name_org')
       .populate('role', 'title')
-      .select('-updatedAt')
+      .select('fullname phone_number password createdAt')
       .exec()
 
     const count = await this.admins.countDocuments().exec()
@@ -36,7 +36,7 @@ export class AdminService {
       count: count,
       pageSize: payload.pageSize,
       pageNumber: payload.pageNumber,
-      pageCount: 1,
+      pageCount: Math.ceil(count / payload.pageSize),
       adminList: adminList.map((e) => ({
         _id: e['_id'],
         fullname: e.fullname,
@@ -97,7 +97,6 @@ export class AdminService {
   public async adminUpdate(
     payload: AdminUpdateRequest
   ): Promise<AdminUpdateResponse> {
-    const updateObj: Omit<AdminUpdateRequest, 'id'> = {}
     await this.adminRetrieveOne({ id: payload.id })
 
     if (payload.role) {
@@ -110,9 +109,11 @@ export class AdminService {
       if (!org) throw new HttpException(404, 'Org not found')
     }
 
-    const admin = await this.admins.findById(payload.id, updateObj).exec()
+    const admin = await this.admins
+      .findByIdAndUpdate(payload.id, { ...payload })
+      .exec()
 
-    if (!admin) throw new HttpException(500, ' Admin is not update')
+    if (!admin) throw new HttpException(400, ' Admin is not update')
 
     return {
       _id: admin['_id'],

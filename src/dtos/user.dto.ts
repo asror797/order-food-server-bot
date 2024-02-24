@@ -90,7 +90,7 @@ export class EditRole {
   role: string
 }
 
-export class SearchPagination {
+export class SearchPaginationDto {
   @IsString()
   search: string
 

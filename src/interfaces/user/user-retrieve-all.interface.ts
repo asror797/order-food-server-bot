@@ -3,7 +3,7 @@ import { ObjectId } from 'mongoose'
 export interface UserRetrieveAllRequest {
   pageSize: number
   pageNumber: number
-  search: string
+  search?: string
 }
 
 export interface UserList {

@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import { UserController } from '@controllers'
+import { checkPermission } from '@middlewares'
+import { UserPermissions } from '@constants'
 
 export class UserRoute {
   public path = '/user'
@@ -12,9 +14,28 @@ export class UserRoute {
 
   private initializeRoutes() {
     this.router.get(
-      `${this.path}/search-pagination`,
-      this.userController.getUsers
+      `${this.path}`,
+      checkPermission(UserPermissions.USER_RETRIEVE_ALL),
+      this.userController.userRetrieveAll
     )
+
+    this.router.get(
+      `${this.path}/:id`,
+      checkPermission(UserPermissions.USER_RETRIEVE_ONE)
+    )
+
+    this.router.post(
+      `${this.path}`,
+      checkPermission(UserPermissions.USER_CREATE),
+      this.userController.createUser
+    )
+
+    this.router.patch(
+      `${this.path}/:id`,
+      checkPermission(UserPermissions.USER_UPDATE),
+      this.userController.editUser
+    )
+
     this.router.get(`${this.path}/search`, this.userController.SearchUser)
     this.router.get(
       `${this.path}/telegram/:telegramid`,

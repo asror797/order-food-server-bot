@@ -15,25 +15,24 @@ export class UserController {
   public userService = new UserService()
   public paymentService = new PaymentService()
 
-  public getUsers = async (
+  public userRetrieveAll = async (
     req: Request<ParsedQs>,
     res: Response,
     next: NextFunction
   ) => {
     try {
       const search = req.query.search as string
-      const page = parseInt(req.query.page as string) || 1
-      const size = parseInt(req.query.size as string) || 10
+      const pageNumber = parseInt(req.query.page as string) || 1
+      const pageSize = parseInt(req.query.size as string) || 10
 
       res.json(
         await this.userService.userRetrieveAll({
-          search,
-          page,
-          size
+          pageNumber,
+          pageSize,
+          search
         })
       )
     } catch (error) {
-      console.log(error)
       next(error)
     }
   }
