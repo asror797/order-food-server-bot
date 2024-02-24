@@ -99,6 +99,7 @@ export class AdminService {
   ): Promise<AdminUpdateResponse> {
     const updateObj: Omit<AdminUpdateRequest, 'id'> = {}
     await this.adminRetrieveOne({ id: payload.id })
+
     if (payload.role) {
       const role = await this.role.findById(payload.role)
       if (!role) throw new HttpException(404, 'Role not found')
