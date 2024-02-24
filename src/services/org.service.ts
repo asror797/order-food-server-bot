@@ -1,15 +1,62 @@
-import { Update, UpdateGroupDto } from '../dtos/org.dto'
-import { HttpException } from '../exceptions/httpException'
+import {
+  OrgCreateRequest,
+  OrgDeleteRequest,
+  OrgRetrieveAllRequest,
+  OrgRetrieveAllResponse,
+  OrgUpdateRequest
+} from '@interfaces'
 import { orgModel } from '@models'
+import { HttpException } from '@exceptions'
+import { Update, UpdateGroupDto } from '../dtos/org.dto'
 
 export class OrgService {
   private orgs = orgModel
 
-  public async orgRetrieveAll(): Promise<any> {}
-  public async orgRetrieveOne(): Promise<any> {}
-  public async orgCreate(): Promise<any> {}
-  public async orgUpdate(): Promise<any> {}
-  public async orgDelete(): Promise<any> {}
+  public async orgRetrieveAll(
+    payload: OrgRetrieveAllRequest
+  ): Promise<OrgRetrieveAllResponse> {
+    console.log(payload)
+    const orgList = await this.orgs
+      .find()
+      .skip((payload.pageNumber - 1) * payload.pageSize)
+      .limit(payload.pageSize)
+      .select('name_org group_a_id group_b_id')
+      .exec()
+    return {
+      count: 10,
+      pageNumber: 4,
+      pageCount: 5,
+      pageSize: 5,
+      orgList: orgList.map((e) => ({
+        _id: e['_id'],
+        name_org: e.name_org,
+        group_a_id: e.group_a_id,
+        group_b_id: e.group_b_id
+      }))
+    }
+  }
+  public async orgRetrieveOne(payload: { id: string }): Promise<any> {
+    const org = await this.orgs.findById(payload.id).exec()
+
+    return org
+  }
+
+  public async orgCreate(payload: OrgCreateRequest): Promise<any> {
+    const org = await this.orgs.create({
+      name_org: payload.name_org,
+      group_a_id: payload.group_a_id,
+      group_b_id: payload.group_b_id
+    })
+
+    return org
+  }
+
+  public async orgUpdate(payload: OrgUpdateRequest): Promise<any> {
+    console.log(payload)
+  }
+  public async orgDelete(payload: OrgDeleteRequest): Promise<any> {
+    console.log(payload)
+  }
 
   public async get(page: number, size: number) {
     const skip = (page - 1) * size

@@ -1,9 +1,9 @@
-export interface WorkPlaceMenuUpdateRequest {
+export interface PollVoteUpdateRequest {
   pageSize: number
   pageNumber: number
   search: string
 }
 
-export interface WorkPlaceMenuUpdateResponse {
+export interface PollVoteUpdateResponse {
   id: string
 }

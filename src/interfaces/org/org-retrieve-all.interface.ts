@@ -1,13 +1,16 @@
+import { ObjectId } from 'mongoose'
+
 export interface OrgRetrieveAllRequest {
   pageSize: number
   pageNumber: number
-  search: string
+  search?: string
 }
 
 export interface OrgList {
-  _id: string
-  name: string
-  cost: number
+  _id: string | ObjectId
+  name_org: string
+  group_a_id: number
+  group_b_id: number
 }
 
 export interface OrgRetrieveAllResponse {
@@ -15,5 +18,5 @@ export interface OrgRetrieveAllResponse {
   pageSize: number
   pageCount: number
   pageNumber: number
-  foodList: OrgList[]
+  orgList: OrgList[]
 }

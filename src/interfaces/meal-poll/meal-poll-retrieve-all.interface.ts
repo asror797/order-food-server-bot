@@ -1,19 +1,19 @@
-export interface WorkPlaceMenuRetrieveAllRequest {
+export interface MealPollRetrieveAllRequest {
   pageSize: number
   pageNumber: number
   search: string
 }
 
-export interface WorkPlaceMenuList {
+export interface MealPollList {
   _id: string
-  name: string
-  cost: number
+  meal: string
+  org: number
 }
 
-export interface WorkPlaceMenuRetrieveAllResponse {
+export interface MealPollRetrieveAllResponse {
   count: number
   pageSize: number
   pageCount: number
   pageNumber: number
-  lunchList: WorkPlaceMenuList[]
+  lunchList: MealPollList[]
 }

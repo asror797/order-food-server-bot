@@ -8,7 +8,7 @@ class GrammyBot {
 
   public initializeBot() {
     this.bot.command('start', this.handleStartCommand.bind(this))
-    this.bot.callbackQuery([],)
+    this.bot.callbackQuery([])
     // this.bot.drop()
     // this.bot.start({onStart})
   }

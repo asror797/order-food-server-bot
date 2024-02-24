@@ -14,33 +14,33 @@ export class OrgRoute {
 
   private initializeRoutes() {
     this.router.get(
-      'route',
+      `${this.path}`,
       checkPermission(OrgPermissions.ORG_RETRIEVE_ALL),
       this.orgController.orgRetrieveAll
     )
 
     this.router.get(
-      'route',
+      `${this.path}/:id`,
       checkPermission(OrgPermissions.ORG_RETRIEVE_ONE),
-      this.orgController.orgRetrieveAll
+      this.orgController.orgRetrieveOne
     )
 
     this.router.post(
-      'route',
+      `${this.path}`,
       checkPermission(OrgPermissions.ORG_CREATE),
-      this.orgController.orgRetrieveAll
+      this.orgController.orgCreate
     )
 
     this.router.patch(
-      'route',
+      `${this.path}/:id`,
       checkPermission(OrgPermissions.ORG_UPDATE),
-      this.orgController.orgRetrieveAll
+      this.orgController.orgUpdate
     )
 
     this.router.delete(
-      'route',
+      `${this.path}/:id`,
       checkPermission(OrgPermissions.ORG_DELETE),
-      this.orgController.orgRetrieveAll
+      this.orgController.orgDelete
     )
 
     this.router.get(`${this.path}`, this.orgController.get)

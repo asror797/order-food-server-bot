@@ -1,7 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api'
 import { CallbackQuery, Message } from 'node-telegram-bot-api'
 import { BOT_TOKEN } from '@config'
-import { UserService } from '@services'
+import { FoodService, OrderService, OrgService, UserService } from '@services'
 import { BotTextes } from './text'
 import {
   MainMenuKeyboard,
@@ -12,6 +12,10 @@ import {
 class TelegramBotApi {
   private bot: TelegramBot
   private userService = new UserService()
+  private orgService = new OrgService()
+  private foodService = new FoodService()
+  private orderService = new OrderService()
+
   constructor(token: string) {
     this.bot = new TelegramBot(token, { polling: true })
   }
@@ -128,26 +132,28 @@ class TelegramBotApi {
 
   private async handleUserMessages(msg: Message): Promise<void> {
     try {
-      // const msgtext = msg.text
+      // const msgtext = msg.text main menu
 
-      if (msg.text == 'Orqaga') {
-        switch ('tes') {
-          case 'tes':
-            console.log('')
-        }
+      if (msg.text == BotTextes.userNewOrder.uz) {
+        const orgs = await this.orgService.orgRetrieveAll({
+          pageNumber: 1,
+          pageSize: 5
+        })
+
+        console.log(orgs)
+
+        this.bot.sendMessage(msg.chat.id, 'Oshxonanni tanlang', {
+          reply_markup: {
+            keyboard: [
+              [{ text: 'Ortasaroy' }, { text: 'Kokakola' }],
+              [{ text: 'Orqaga' }]
+            ],
+            resize_keyboard: true
+          }
+        })
       } else if (msg.text == '') {
         console.log('ok')
       }
-
-      this.bot.sendMessage(msg.chat.id, 'Oshxonanni tanlang', {
-        reply_markup: {
-          keyboard: [
-            [{ text: 'Ortasaroy' }, { text: 'Kokakola' }],
-            [{ text: 'Orqaga' }]
-          ],
-          resize_keyboard: true
-        }
-      })
     } catch (error) {
       console.log(error)
     }

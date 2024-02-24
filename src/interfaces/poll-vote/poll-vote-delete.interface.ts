@@ -1,9 +1,9 @@
-export interface WorkPlaceMenuDeleteRequest {
+export interface PollVoteDeleteRequest {
   pageSize: number
   pageNumber: number
   search: string
 }
 
-export interface WorkPlaceMenuDeleteResponse {
+export interface PollVoteDeleteResponse {
   id: string
 }

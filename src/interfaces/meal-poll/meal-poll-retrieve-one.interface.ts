@@ -1,9 +1,9 @@
-export interface WorkPlaceMenuRetrieveOneRequest {
+export interface MealPollRetrieveOneRequest {
   pageSize: number
   pageNumber: number
   search: string
 }
 
-export interface WorkPlaceMenuRetrieveOneResponse {
+export interface MealPollRetrieveOneResponse {
   id: string
 }

@@ -1,13 +1,14 @@
 import { ReplyKeyboardMarkup, SendMessageOptions } from 'node-telegram-bot-api'
-
-// interface Keyboard {
-//   text: string
-//   callback_data: string
-// }
+import { BotTextes } from './text'
 
 export const MainMenuKeyboard: SendMessageOptions = {
   reply_markup: {
-    keyboard: [[{ text: 'Buyurtma berish' }, { text: 'Balans' }]],
+    keyboard: [
+      [
+        { text: BotTextes.userNewOrder.uz },
+        { text: BotTextes.userCheckBalance.uz }
+      ]
+    ],
     resize_keyboard: true
   },
   parse_mode: 'HTML'

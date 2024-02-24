@@ -39,10 +39,9 @@ export class OrgController {
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
-      res.json('')
+      const orgData = req.body
+      res.json(await this.orgService.orgCreate(orgData))
     } catch (error) {
-      console.log(error)
       next(error)
     }
   }

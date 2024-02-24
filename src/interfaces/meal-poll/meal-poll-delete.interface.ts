@@ -1,9 +1,9 @@
-export interface WorkPlaceMenuDeleteRequest {
+export interface MealPollDeleteRequest {
   pageSize: number
   pageNumber: number
   search: string
 }
 
-export interface WorkPlaceMenuDeleteResponse {
+export interface MealPollDeleteResponse {
   id: string
 }
