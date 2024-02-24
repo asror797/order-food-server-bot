@@ -3,7 +3,11 @@ import { CallbackQuery, Message } from 'node-telegram-bot-api'
 import { BOT_TOKEN } from '@config'
 import { UserService } from '@services'
 import { BotTextes } from './text'
-import { MainMenuKeyboard, CookMainkeyboard } from './keyboards'
+import {
+  MainMenuKeyboard,
+  CookMainkeyboard,
+  ShareContactKeyboard
+} from './keyboards'
 
 class TelegramBotApi {
   private bot: TelegramBot
@@ -94,13 +98,11 @@ class TelegramBotApi {
           CookMainkeyboard
         )
       } else {
-        this.bot.sendMessage(msg.chat.id, BotTextes.askContact.uz, {
-          reply_markup: {
-            keyboard: [[{ text: 'share contact', request_contact: true }]],
-            resize_keyboard: true
-          },
-          parse_mode: 'HTML'
-        })
+        this.bot.sendMessage(
+          msg.chat.id,
+          BotTextes.askContact.uz,
+          ShareContactKeyboard
+        )
       }
     } catch (error) {
       console.log(error)

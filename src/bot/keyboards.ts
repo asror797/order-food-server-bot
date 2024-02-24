@@ -23,17 +23,20 @@ export const CookMainkeyboard: SendMessageOptions = {
   parse_mode: 'HTML'
 }
 
-export const ShareContactKeyboard: ReplyKeyboardMarkup = {
-  keyboard: [
-    [
-      {
-        text: 'Telefon raqam yuborish 📞',
-        request_contact: true
-      }
-    ]
-  ],
-  resize_keyboard: true,
-  one_time_keyboard: true
+export const ShareContactKeyboard: SendMessageOptions = {
+  reply_markup: {
+    keyboard: [
+      [
+        {
+          text: 'Telefon raqam yuborish 📞',
+          request_contact: true
+        }
+      ]
+    ],
+    resize_keyboard: true,
+    one_time_keyboard: true
+  },
+  parse_mode: 'HTML'
 }
 
 export const MainMenu: ReplyKeyboardMarkup = {
