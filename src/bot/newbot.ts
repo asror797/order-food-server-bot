@@ -85,10 +85,9 @@ class TelegramBotApi {
       const data = await this.userService.checkUser({ telegramId: msg.chat.id })
 
       if (data.isExist && data.user && data.user.role == 'user') {
-        console.log(data.user)
         this.bot.sendMessage(
           msg.chat.id,
-          'Xush kelibsiz buyurtma berishga tayyor',
+          BotTextes.userMainMenu.uz,
           MainMenuKeyboard
         )
       } else if (data.isExist && data.user && data.user.role == 'cook') {
@@ -129,6 +128,17 @@ class TelegramBotApi {
 
   private async handleUserMessages(msg: Message): Promise<void> {
     try {
+      // const msgtext = msg.text
+
+      if (msg.text == 'Orqaga') {
+        switch ('tes') {
+          case 'tes':
+            console.log('')
+        }
+      } else if (msg.text == '') {
+        console.log('ok')
+      }
+
       this.bot.sendMessage(msg.chat.id, 'Oshxonanni tanlang', {
         reply_markup: {
           keyboard: [

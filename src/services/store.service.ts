@@ -132,11 +132,9 @@ export class StoreService {
   public async clear(id: number) {
     try {
       const response = await this.redisService.setValue(
-        `${id}`,
+        id.toString(),
         JSON.stringify([])
       )
-      console.log(response)
-
       return response
     } catch (error) {
       console.log(error)

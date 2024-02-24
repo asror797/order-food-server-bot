@@ -19,5 +19,9 @@ export const BotTextes = {
   cookMainMenu: {
     uz: '<b>Xush kelibsiz!!!</b>\nSiz oshpaz ro`lidasiz',
     ru: '<b>Xush kelibsiz!!!</b>\nSiz oshpaz ro`lidasiz'
+  },
+
+  userMainMenu: {
+    uz: '<b>Xush kelibsiz!!!</b>'
   }
 }
