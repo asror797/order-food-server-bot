@@ -1,11 +1,15 @@
 export const BotTextes = {
   askContact: {
     uz: `<b>Siz ro'yxatdan o'tmagansiz!</b>\nIltimos telefon raqamingizni yuboring.`,
-    ru: ''
+    ru: `<b>Siz ro'yxatdan o'tmagansiz!</b>\nIltimos telefon raqamingizni yuboring.`
   },
   askOrg: {
-    uz: '',
-    ru: ''
+    uz: 'Oshxonani tanlang',
+    ru: 'Oshxonani tanlang'
+  },
+  askCategory: {
+    uz: 'Kategoriyani tanlang',
+    ru: 'Kategoriyani tanlang'
   },
   language: {
     uz: {
@@ -27,5 +31,9 @@ export const BotTextes = {
   userCheckBalance: {
     uz: 'Balans',
     ru: 'Balans'
+  },
+  backAction: {
+    uz: 'Orqaga',
+    ru: 'Orqaga'
   }
 }

@@ -8,6 +8,7 @@ import {
   CookMainkeyboard,
   ShareContactKeyboard
 } from './keyboards'
+import { KeyboardMaker } from './helper'
 
 class TelegramBotApi {
   private bot: TelegramBot
@@ -132,27 +133,39 @@ class TelegramBotApi {
 
   private async handleUserMessages(msg: Message): Promise<void> {
     try {
-      // const msgtext = msg.text main menu
-
+      // get user Step
       if (msg.text == BotTextes.userNewOrder.uz) {
         const orgs = await this.orgService.orgRetrieveAll({
           pageNumber: 1,
           pageSize: 5
         })
 
-        console.log(orgs)
-
-        this.bot.sendMessage(msg.chat.id, 'Oshxonanni tanlang', {
-          reply_markup: {
-            keyboard: [
-              [{ text: 'Ortasaroy' }, { text: 'Kokakola' }],
-              [{ text: 'Orqaga' }]
-            ],
-            resize_keyboard: true
-          }
+        await this.bot.sendMessage(msg.chat.id, BotTextes.askOrg.uz, {
+          reply_markup: KeyboardMaker({ data: orgs.orgList })
         })
-      } else if (msg.text == '') {
+      }
+
+      if (msg.text == 'step-selectOrg') {
+        const orgs = await this.orgService.orgRetrieveAll({
+          pageNumber: 1,
+          pageSize: 1,
+          search: msg.text
+        })
+        console.log(orgs)
+        this.bot.sendMessage(msg.chat.id, BotTextes.askCategory.uz)
+        // edit step select category
+      }
+
+      if (msg.text == 'step-selectCategory') {
         console.log('ok')
+        // get foods of category depend on org
+        // edit step to select food
+      }
+
+      if (msg.text == 'step-selectFood') {
+        console.log(msg.text)
+        // this.orgService.orgs.findById('as')
+        // send message with inlineButton and Food Info
       }
     } catch (error) {
       console.log(error)
