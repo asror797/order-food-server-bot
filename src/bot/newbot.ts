@@ -1,7 +1,7 @@
 import TelegramBot, { CallbackQuery, Message } from 'node-telegram-bot-api'
 import { BOT_TOKEN } from '@config'
 import { botTexts } from './text'
-import { botSteps } from './constants'
+import { botSteps, categoryEnum } from './constants'
 import { KeyboardMaker } from './helper'
 import {
   FoodService,
@@ -145,7 +145,13 @@ class TelegramBotApi {
         telegramId: msg.chat.id
       })
 
-      console.log(userStep)
+      // switch (userStep) {
+      //   case 'select':
+      //     console.log(userStep)
+      //     break
+      //   default:
+      //     console.log('ok')
+      // }
 
       if (msg.text == botTexts.userNewOrder.uz) {
         const orgs = await this.orgService.orgRetrieveAll({
@@ -184,25 +190,71 @@ class TelegramBotApi {
       }
 
       if (userStep.split('/')[0] == botSteps.selectCategory) {
+        if (!userStep.split('/')[1]) throw new Error('OrgId not found')
+        let category: string | undefined
+
+        switch (msg.text) {
+          case botTexts.dessertCategory.uz:
+            category = categoryEnum.dessert
+            break
+          case botTexts.snackCategory.uz:
+            category = categoryEnum.snack
+            break
+          case botTexts.dessertCategory.uz:
+            category = categoryEnum.dessert
+            break
+        }
+
         const foods = await this.foodService.foodRetrieveAll({
           pageNumber: 1,
           pageSize: 20,
-          category: msg.text,
+          category: category,
           org: userStep.split('/')[1]
         })
 
         console.log(foods)
 
+        this.bot.sendMessage(msg.chat.id, 'Mahsulotni tanlang', {
+          reply_markup: {
+            keyboard: [
+              [
+                { text: botTexts.backAction.uz },
+                { text: foods.foodList[0].name }
+              ]
+            ],
+            resize_keyboard: true
+          }
+        })
+
         await this.storeService.editStep({
           telegramId: msg.chat.id,
-          step: 'viewFood/org'
+          step: `${botSteps.selectFood}/${userStep.split('/')[1]}`
         })
       }
 
-      if (userStep == 'step-selectFood') {
-        console.log(msg.text)
-        // this.orgService.orgs.findById('as')
-        // send message with inlineButton and Food Info
+      if (userStep.split('/')[0] == botSteps.selectFood) {
+        const food = await this.foodService.foodRetrieveAll({
+          pageNumber: 1,
+          pageSize: 1,
+          org: userStep.split('/')[1],
+          search: msg.text
+        })
+
+        if (food.foodList.length == 1) {
+          console.log(food.foodList)
+          this.bot.sendMessage(msg.chat.id, 'mahsulot soni tanlang', {
+            reply_markup: {
+              keyboard: [[{ text: 'ok' }]],
+              resize_keyboard: true
+            }
+          })
+
+          await this.bot.sendMessage(msg.chat.id, 'Tanlangan mahsulot', {
+            reply_markup: {
+              inline_keyboard: [[{ text: 'pepsi', callback_data: 'ds' }]]
+            }
+          })
+        }
       }
     } catch (error) {
       console.log(error)

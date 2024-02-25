@@ -8,13 +8,26 @@ export class FoodController {
   public foodService = new FoodService()
 
   public foodRetrieveAll = async (
-    req: Request,
+    req: Request<ParsedQs>,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
-      res.json('ok')
+      const pageNumber = parseInt(req.query.page as string) || 1
+      const pageSize = parseInt(req.query.size as string) || 10
+      const search = req.query.search as string | undefined
+      const category = req.query.org as string | undefined
+      const org = req.query.org as string | undefined
+
+      res.json(
+        await this.foodService.foodRetrieveAll({
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          category: category,
+          org: org,
+          search: search
+        })
+      )
     } catch (error) {
       next(error)
     }
@@ -39,8 +52,7 @@ export class FoodController {
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
-      res.json('ok')
+      res.json(await this.foodService.foodCreate(req.body))
     } catch (error) {
       next(error)
     }

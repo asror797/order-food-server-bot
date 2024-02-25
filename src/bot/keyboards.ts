@@ -22,7 +22,7 @@ export const FoodCategoryMenuKeyboard: SendMessageOptions = {
         { text: botTexts.dessertCategory.uz },
         { text: botTexts.drinkCategory.uz }
       ],
-      [{ text: botTexts.snakeCategory.uz }]
+      [{ text: botTexts.snackCategory.uz }]
     ],
     resize_keyboard: true
   },

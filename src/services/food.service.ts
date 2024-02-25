@@ -1,6 +1,6 @@
 import { CreateFood, GetFoods, UpdateFoodDto } from '../dtos/food.dto'
 import { HttpException } from '@exceptions'
-import { IFood } from '@interfaces'
+import { FoodCreateRequest, IFood } from '@interfaces'
 import { foodModel, productModel, orgModel } from '@models'
 import { ProductService, ProductLogService } from '@services'
 import { FoodRetrieveAllRequest } from '@interfaces'
@@ -48,8 +48,41 @@ export class FoodService {
   }
 
   public async foodRetrieveOne() {}
-  // public async foodRetrieveByCategory() {}
-  public async foodCreate() {}
+
+  public async foodCreate(payload: FoodCreateRequest) {
+    if (payload.products.length > 0) {
+      await Promise.all(
+        payload.products.map(async (e) => {
+          const product = await this.products.findOne({
+            _id: e.product,
+            org: payload.org
+          })
+
+          if (!product || e.amount >= 0) {
+            throw new HttpException(
+              404,
+              'Product not found or Amount not positive'
+            )
+          }
+        })
+      )
+    }
+
+    if (payload.org) {
+      const org = await this.org.findById(payload.org)
+
+      if (!org) throw new HttpException(404, 'org not found')
+    }
+
+    const food = await this.foods.create({
+      name: payload.name,
+      cost: payload.cost,
+      org: payload.org,
+      products: payload.products
+    })
+
+    return food
+  }
   public async foodUpdate() {}
   public async foodDelete() {}
 

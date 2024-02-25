@@ -4,3 +4,9 @@ export const botSteps = {
   selectFood: 'selectFood',
   selectCategory: 'selectCategory'
 }
+
+export const categoryEnum = {
+  dessert: 'desserts',
+  drink: 'drinks',
+  snack: 'snacks'
+}

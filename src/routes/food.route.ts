@@ -14,42 +14,42 @@ export class FoodRoute {
 
   private initializeRoutes() {
     this.router.get(
-      'food',
+      `${this.path}`,
       checkPermission(FoodPermissions.FOOD_RETRIEVE_ALL),
       this.foodController.foodRetrieveAll
     )
 
     this.router.get(
-      'food',
+      `${this.path}`,
       checkPermission(FoodPermissions.FOOD_RETRIEVE_ONE),
       this.foodController.foodRetrieveOne
     )
 
     this.router.post(
-      'food',
+      `${this.path}`,
       checkPermission(FoodPermissions.FOOD_CREATE),
       this.foodController.foodCreate
     )
 
     this.router.patch(
-      'food',
+      `${this.path}`,
       checkPermission(FoodPermissions.FOOD_UPDATE),
       this.foodController.foodUpdate
     )
 
     this.router.delete(
-      'food',
+      `${this.path}`,
       checkPermission(FoodPermissions.FOOD_DELETE),
       this.foodController.foodDelete
     )
 
-    this.router.get(`${this.path}`, this.foodController.getFoods)
-    this.router.post(`${this.path}`, this.foodController.createFood)
-    this.router.patch(`${this.path}`, this.foodController.updateFoodPic)
-    this.router.patch(
-      `${this.path}/update/:food`,
-      this.foodController.updateFood
-    )
-    this.router.patch(`${this.path}/:food`, this.foodController.changeStatus)
+    // this.router.get(`${this.path}`, this.foodController.getFoods)
+    // this.router.post(`${this.path}`, this.foodController.createFood)
+    // this.router.patch(`${this.path}`, this.foodController.updateFoodPic)
+    // this.router.patch(
+    //   `${this.path}/update/:food`,
+    //   this.foodController.updateFood
+    // )
+    // this.router.patch(`${this.path}/:food`, this.foodController.changeStatus)
   }
 }

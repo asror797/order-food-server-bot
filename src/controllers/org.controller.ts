@@ -7,13 +7,21 @@ export class OrgController {
   public orgService = new OrgService()
 
   public orgRetrieveAll = async (
-    req: Request,
+    req: Request<ParsedQs>,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
-      res.json('')
+      const pageNumber = parseInt(req.query.page as string) || 1
+      const pageSize = parseInt(req.query.size as string) || 10
+      const search = req.query.search as string | undefined
+      res.json(
+        await this.orgService.orgRetrieveAll({
+          pageNumber,
+          pageSize,
+          search
+        })
+      )
     } catch (error) {
       console.log(error)
       next(error)

@@ -44,7 +44,7 @@ export const botTexts = {
     ru: '🥤Ichimlik',
     uz: '🥤Ichimlik'
   },
-  snakeCategory: {
+  snackCategory: {
     ru: '🌮 Gazaklar',
     uz: '🌮 Gazaklar'
   },
