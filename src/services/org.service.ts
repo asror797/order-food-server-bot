@@ -15,18 +15,27 @@ export class OrgService {
   public async orgRetrieveAll(
     payload: OrgRetrieveAllRequest
   ): Promise<OrgRetrieveAllResponse> {
-    console.log(payload)
+    let query = {}
+
+    if (payload.search) {
+      query = { name_org: { $regex: payload.search, $options: 'i' } }
+    }
+
     const orgList = await this.orgs
-      .find()
+      .find(query)
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
-      .select('name_org group_a_id group_b_id')
+      .sort({ createdAt: -1 })
+      .select('-createdAt -updatedAt')
       .exec()
+
+    const count = await this.orgs.countDocuments(query)
+
     return {
-      count: 10,
-      pageNumber: 4,
-      pageCount: 5,
-      pageSize: 5,
+      count: count,
+      pageNumber: payload.pageNumber,
+      pageCount: Math.ceil(count / payload.pageSize),
+      pageSize: payload.pageSize,
       orgList: orgList.map((e) => ({
         _id: e['_id'],
         name_org: e.name_org,

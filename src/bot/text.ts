@@ -1,4 +1,4 @@
-export const BotTextes = {
+export const botTexts = {
   askContact: {
     uz: `<b>Siz ro'yxatdan o'tmagansiz!</b>\nIltimos telefon raqamingizni yuboring.`,
     ru: `<b>Siz ro'yxatdan o'tmagansiz!</b>\nIltimos telefon raqamingizni yuboring.`
@@ -33,7 +33,23 @@ export const BotTextes = {
     ru: 'Balans'
   },
   backAction: {
-    uz: 'Orqaga',
-    ru: 'Orqaga'
+    uz: '⬅️ Orqaga',
+    ru: '⬅️ Orqaga'
+  },
+  dessertCategory: {
+    ru: '🍰 Desert',
+    uz: '🍰 Desert'
+  },
+  drinkCategory: {
+    ru: '🥤Ichimlik',
+    uz: '🥤Ichimlik'
+  },
+  snakeCategory: {
+    ru: '🌮 Gazaklar',
+    uz: '🌮 Gazaklar'
+  },
+  storeAction: {
+    ru: '🛒 Savat',
+    uz: '🛒 Savat'
   }
 }

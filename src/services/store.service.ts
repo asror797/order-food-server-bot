@@ -28,6 +28,28 @@ export class StoreService {
   private redisService = redisService
   private foods = foodModel
 
+  public async editStep(payload: { telegramId: number; step: string }) {
+    try {
+      await this.redisService.setValue(
+        `${payload.telegramId}/steps`,
+        payload.step
+      )
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  public async getStep(payload: { telegramId: number }) {
+    try {
+      const step = await this.redisService.getValue(
+        `${payload.telegramId}/steps`
+      )
+
+      return step
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   public async getStore(id: string) {
     try {
       const store = await this.redisService.getValue(id)

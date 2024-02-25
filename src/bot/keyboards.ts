@@ -1,13 +1,28 @@
 import { ReplyKeyboardMarkup, SendMessageOptions } from 'node-telegram-bot-api'
-import { BotTextes } from './text'
+import { botTexts } from './text'
 
 export const MainMenuKeyboard: SendMessageOptions = {
   reply_markup: {
     keyboard: [
       [
-        { text: BotTextes.userNewOrder.uz },
-        { text: BotTextes.userCheckBalance.uz }
+        { text: botTexts.userNewOrder.uz },
+        { text: botTexts.userCheckBalance.uz }
       ]
+    ],
+    resize_keyboard: true
+  },
+  parse_mode: 'HTML'
+}
+
+export const FoodCategoryMenuKeyboard: SendMessageOptions = {
+  reply_markup: {
+    keyboard: [
+      [{ text: botTexts.backAction.uz }, { text: botTexts.storeAction.uz }],
+      [
+        { text: botTexts.dessertCategory.uz },
+        { text: botTexts.drinkCategory.uz }
+      ],
+      [{ text: botTexts.snakeCategory.uz }]
     ],
     resize_keyboard: true
   },

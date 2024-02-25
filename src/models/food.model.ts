@@ -1,5 +1,5 @@
 import { Document, Schema, model } from 'mongoose'
-import { Category, IFood } from '../interfaces/food.interface'
+import { CategoryEnum, IFood } from '../interfaces/food.interface'
 
 const foodSchema: Schema = new Schema(
   {
@@ -39,7 +39,7 @@ const foodSchema: Schema = new Schema(
     },
     category: {
       type: String,
-      enum: Object.values(Category)
+      enum: Object.values(CategoryEnum)
     },
     is_deleted: {
       type: Boolean,

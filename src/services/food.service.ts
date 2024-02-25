@@ -1,8 +1,9 @@
 import { CreateFood, GetFoods, UpdateFoodDto } from '../dtos/food.dto'
 import { HttpException } from '@exceptions'
-import { IFood } from '../interfaces/food.interface'
+import { IFood } from '@interfaces'
 import { foodModel, productModel, orgModel } from '@models'
 import { ProductService, ProductLogService } from '@services'
+import { FoodRetrieveAllRequest } from '@interfaces'
 
 export class FoodService {
   public foods = foodModel
@@ -11,8 +12,43 @@ export class FoodService {
   public productService = new ProductService()
   public org = orgModel
 
-  public async foodRetrieveAll() {}
+  public async foodRetrieveAll(payload: FoodRetrieveAllRequest): Promise<any> {
+    const categoryEnum = ['drinks', 'snacks', 'dessert']
+    const query: any = {}
+
+    if (payload.category && categoryEnum.includes(payload.category)) {
+      query.category = payload.category
+    }
+
+    if (payload.search) {
+      query.name = { $regex: payload.search.trim(), $options: 'i' }
+    }
+
+    if (payload.org) {
+      const org = await this.org.findById(payload.org).exec()
+      if (!org) throw new HttpException(404, 'Org not found')
+    }
+
+    const foodList = await this.foods
+      .find(query)
+      .skip((payload.pageNumber - 1) * payload.pageSize)
+      .limit(payload.pageSize)
+      .select('name cost')
+      .exec()
+
+    const count = await this.foods.countDocuments(query).exec()
+
+    return {
+      count: count,
+      pageSize: payload.pageSize,
+      pageNumber: payload.pageNumber,
+      pageCount: 5,
+      foodList: foodList
+    }
+  }
+
   public async foodRetrieveOne() {}
+  // public async foodRetrieveByCategory() {}
   public async foodCreate() {}
   public async foodUpdate() {}
   public async foodDelete() {}

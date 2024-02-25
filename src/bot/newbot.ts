@@ -1,14 +1,21 @@
-import TelegramBot from 'node-telegram-bot-api'
-import { CallbackQuery, Message } from 'node-telegram-bot-api'
+import TelegramBot, { CallbackQuery, Message } from 'node-telegram-bot-api'
 import { BOT_TOKEN } from '@config'
-import { FoodService, OrderService, OrgService, UserService } from '@services'
-import { BotTextes } from './text'
+import { botTexts } from './text'
+import { botSteps } from './constants'
+import { KeyboardMaker } from './helper'
+import {
+  FoodService,
+  OrderService,
+  OrgService,
+  StoreService,
+  UserService
+} from '@services'
 import {
   MainMenuKeyboard,
   CookMainkeyboard,
-  ShareContactKeyboard
+  ShareContactKeyboard,
+  FoodCategoryMenuKeyboard
 } from './keyboards'
-import { KeyboardMaker } from './helper'
 
 class TelegramBotApi {
   private bot: TelegramBot
@@ -16,6 +23,7 @@ class TelegramBotApi {
   private orgService = new OrgService()
   private foodService = new FoodService()
   private orderService = new OrderService()
+  private storeService = new StoreService()
 
   constructor(token: string) {
     this.bot = new TelegramBot(token, { polling: true })
@@ -92,19 +100,19 @@ class TelegramBotApi {
       if (data.isExist && data.user && data.user.role == 'user') {
         this.bot.sendMessage(
           msg.chat.id,
-          BotTextes.userMainMenu.uz,
+          botTexts.userMainMenu.uz,
           MainMenuKeyboard
         )
       } else if (data.isExist && data.user && data.user.role == 'cook') {
         this.bot.sendMessage(
           msg.chat.id,
-          BotTextes.cookMainMenu.uz,
+          botTexts.cookMainMenu.uz,
           CookMainkeyboard
         )
       } else {
         this.bot.sendMessage(
           msg.chat.id,
-          BotTextes.askContact.uz,
+          botTexts.askContact.uz,
           ShareContactKeyboard
         )
       }
@@ -133,36 +141,65 @@ class TelegramBotApi {
 
   private async handleUserMessages(msg: Message): Promise<void> {
     try {
-      // get user Step
-      if (msg.text == BotTextes.userNewOrder.uz) {
+      const userStep = await this.storeService.getStep({
+        telegramId: msg.chat.id
+      })
+
+      console.log(userStep)
+
+      if (msg.text == botTexts.userNewOrder.uz) {
         const orgs = await this.orgService.orgRetrieveAll({
           pageNumber: 1,
           pageSize: 5
         })
 
-        await this.bot.sendMessage(msg.chat.id, BotTextes.askOrg.uz, {
+        await this.bot.sendMessage(msg.chat.id, botTexts.askOrg.uz, {
           reply_markup: KeyboardMaker({ data: orgs.orgList })
+        })
+
+        await this.storeService.editStep({
+          telegramId: msg.chat.id,
+          step: botSteps.selectOrg
         })
       }
 
-      if (msg.text == 'step-selectOrg') {
+      if (userStep == botSteps.selectOrg) {
         const orgs = await this.orgService.orgRetrieveAll({
           pageNumber: 1,
           pageSize: 1,
           search: msg.text
         })
-        console.log(orgs)
-        this.bot.sendMessage(msg.chat.id, BotTextes.askCategory.uz)
-        // edit step select category
+
+        if (orgs.orgList.length == 1) {
+          this.bot.sendMessage(
+            msg.chat.id,
+            botTexts.askCategory.uz,
+            FoodCategoryMenuKeyboard
+          )
+          await this.storeService.editStep({
+            telegramId: msg.chat.id,
+            step: `${botSteps.selectCategory}/${orgs.orgList[0]['_id']}`
+          })
+        }
       }
 
-      if (msg.text == 'step-selectCategory') {
-        console.log('ok')
-        // get foods of category depend on org
-        // edit step to select food
+      if (userStep.split('/')[0] == botSteps.selectCategory) {
+        const foods = await this.foodService.foodRetrieveAll({
+          pageNumber: 1,
+          pageSize: 20,
+          category: msg.text,
+          org: userStep.split('/')[1]
+        })
+
+        console.log(foods)
+
+        await this.storeService.editStep({
+          telegramId: msg.chat.id,
+          step: 'viewFood/org'
+        })
       }
 
-      if (msg.text == 'step-selectFood') {
+      if (userStep == 'step-selectFood') {
         console.log(msg.text)
         // this.orgService.orgs.findById('as')
         // send message with inlineButton and Food Info

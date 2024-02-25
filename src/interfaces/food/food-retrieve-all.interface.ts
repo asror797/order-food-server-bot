@@ -1,7 +1,9 @@
 export interface FoodRetrieveAllRequest {
   pageSize: number
   pageNumber: number
-  search: string
+  search?: string
+  category?: string
+  org?: string
 }
 
 export interface FoodList {

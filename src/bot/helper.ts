@@ -1,5 +1,5 @@
 import { KeyboardButton, ReplyKeyboardMarkup } from 'node-telegram-bot-api'
-import { BotTextes } from './text'
+import { botTexts } from './text'
 import { OrgList } from '@interfaces'
 
 export const KeyboardMaker = (payload: {
@@ -11,18 +11,19 @@ export const KeyboardMaker = (payload: {
   let singlerow: KeyboardButton[] = []
   for (let i = 0; i < payload.data.length; i++) {
     const e = payload.data[i]
+    singlerow.push({ text: e.name_org })
     if (singlerow.length == 2) {
       buttonrow.keyboard.push(singlerow)
       singlerow = []
-    } else if (payload.data.length == 1) {
-      singlerow.push({
-        text: e.name_org
-      })
-      buttonrow.keyboard.push(singlerow)
     }
+
+    // if (payload.data.length - 1 === i) {
+    //   singlerow.push({ text: e.name_org })
+    //   buttonrow.keyboard.push(singlerow)
+    // }
   }
 
-  buttonrow.keyboard.unshift([{ text: BotTextes.backAction.uz }])
+  buttonrow.keyboard.unshift([{ text: botTexts.backAction.uz }])
 
   return buttonrow
 }
