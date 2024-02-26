@@ -1,29 +1,45 @@
 import { KeyboardButton, ReplyKeyboardMarkup } from 'node-telegram-bot-api'
 import { botTexts } from './text'
-import { OrgList } from '@interfaces'
 
 export const KeyboardMaker = (payload: {
-  data: OrgList[]
+  data: any[]
 }): ReplyKeyboardMarkup => {
   const buttonrow: ReplyKeyboardMarkup = { keyboard: [], resize_keyboard: true }
-  console.log(payload.data)
-
   let singlerow: KeyboardButton[] = []
-  for (let i = 0; i < payload.data.length; i++) {
-    const e = payload.data[i]
-    singlerow.push({ text: e.name_org })
-    if (singlerow.length == 2) {
-      buttonrow.keyboard.push(singlerow)
+  console.log(payload)
+  payload.data.map((e, index: number) => {
+    singlerow.push({
+      text: e.name
+    })
+
+    if (singlerow.length == 2 || index === payload.data.length - 1) {
+      buttonrow.keyboard.push([...singlerow])
       singlerow = []
     }
-
-    // if (payload.data.length - 1 === i) {
-    //   singlerow.push({ text: e.name_org })
-    //   buttonrow.keyboard.push(singlerow)
-    // }
-  }
+  })
 
   buttonrow.keyboard.unshift([{ text: botTexts.backAction.uz }])
 
   return buttonrow
+}
+
+export const FormatNumberWithSpaces = (payload: number) => {
+  const strNumber = String(payload)
+
+  const [integerPart, decimalPart] = strNumber.split('.')
+
+  let formattedIntegerPart = ''
+  for (let i = integerPart.length - 1, count = 0; i >= 0; i--, count++) {
+    if (count > 0 && count % 3 === 0) {
+      formattedIntegerPart = ' ' + formattedIntegerPart
+    }
+    formattedIntegerPart = integerPart[i] + formattedIntegerPart
+  }
+
+  let formattedNumber = formattedIntegerPart
+  if (decimalPart) {
+    formattedNumber += '.' + decimalPart
+  }
+
+  return formattedNumber
 }

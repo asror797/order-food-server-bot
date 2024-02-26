@@ -10,6 +10,7 @@ export interface FoodList {
   _id: string
   name: string
   cost: number
+  img: string
 }
 
 export interface FoodRetrieveAllResponse {

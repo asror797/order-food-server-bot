@@ -1,4 +1,8 @@
-import { ReplyKeyboardMarkup, SendMessageOptions } from 'node-telegram-bot-api'
+import {
+  InlineKeyboardButton,
+  ReplyKeyboardMarkup,
+  SendMessageOptions
+} from 'node-telegram-bot-api'
 import { botTexts } from './text'
 
 export const MainMenuKeyboard: SendMessageOptions = {
@@ -38,6 +42,22 @@ export const CookMainkeyboard: SendMessageOptions = {
   },
   parse_mode: 'HTML'
 }
+
+export const ViewFoodKeyboard: SendMessageOptions = {
+  reply_markup: {
+    keyboard: [
+      [{ text: botTexts.backAction.uz }, { text: botTexts.storeAction.uz }]
+    ],
+    resize_keyboard: true
+  },
+  parse_mode: 'HTML'
+}
+
+export const CountFoodAmountComponent: InlineKeyboardButton[] = [
+  { text: '-', callback_data: 'command' },
+  { text: '1', callback_data: 'command' },
+  { text: '+', callback_data: 'command' }
+]
 
 export const ShareContactKeyboard: SendMessageOptions = {
   reply_markup: {

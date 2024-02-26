@@ -1,8 +1,13 @@
-import TelegramBot, { CallbackQuery, Message } from 'node-telegram-bot-api'
+import TelegramBot from 'node-telegram-bot-api'
 import { BOT_TOKEN } from '@config'
 import { botTexts } from './text'
 import { botSteps, categoryEnum } from './constants'
-import { KeyboardMaker } from './helper'
+import { FormatNumberWithSpaces, KeyboardMaker } from './helper'
+import type {
+  CallbackQuery,
+  InlineKeyboardMarkup,
+  Message
+} from 'node-telegram-bot-api'
 import {
   FoodService,
   OrderService,
@@ -14,7 +19,9 @@ import {
   MainMenuKeyboard,
   CookMainkeyboard,
   ShareContactKeyboard,
-  FoodCategoryMenuKeyboard
+  FoodCategoryMenuKeyboard,
+  ViewFoodKeyboard,
+  CountFoodAmountComponent
 } from './keyboards'
 
 class TelegramBotApi {
@@ -88,8 +95,7 @@ class TelegramBotApi {
         reply_markup: { remove_keyboard: true }
       })
     } catch (error) {
-      console.log(error)
-      this.bot.sendMessage(msg.chat.id, 'share')
+      this.bot.sendMessage(msg.chat.id, botTexts.noContact.uz)
     }
   }
 
@@ -103,18 +109,34 @@ class TelegramBotApi {
           botTexts.userMainMenu.uz,
           MainMenuKeyboard
         )
+
+        // await this.storeService.editStep({
+        //   telegramId: msg.chat.id,
+        //   step: 'select-order'
+        // })
       } else if (data.isExist && data.user && data.user.role == 'cook') {
         this.bot.sendMessage(
           msg.chat.id,
           botTexts.cookMainMenu.uz,
           CookMainkeyboard
         )
-      } else {
+
+        // await this.storeService.editStep({
+        //   telegramId: msg.chat.id,
+        //   step: 'select-step'
+        // })
+      } else if (!data.isExist) {
         this.bot.sendMessage(
           msg.chat.id,
           botTexts.askContact.uz,
           ShareContactKeyboard
         )
+      } else {
+        this.bot.sendMessage(msg.chat.id, botTexts.noVerified.uz, {
+          reply_markup: {
+            remove_keyboard: true
+          }
+        })
       }
     } catch (error) {
       console.log(error)
@@ -145,14 +167,6 @@ class TelegramBotApi {
         telegramId: msg.chat.id
       })
 
-      // switch (userStep) {
-      //   case 'select':
-      //     console.log(userStep)
-      //     break
-      //   default:
-      //     console.log('ok')
-      // }
-
       if (msg.text == botTexts.userNewOrder.uz) {
         const orgs = await this.orgService.orgRetrieveAll({
           pageNumber: 1,
@@ -160,7 +174,9 @@ class TelegramBotApi {
         })
 
         await this.bot.sendMessage(msg.chat.id, botTexts.askOrg.uz, {
-          reply_markup: KeyboardMaker({ data: orgs.orgList })
+          reply_markup: KeyboardMaker({
+            data: orgs.orgList.map((e) => ({ name: e.name_org }))
+          })
         })
 
         await this.storeService.editStep({
@@ -191,73 +207,92 @@ class TelegramBotApi {
 
       if (userStep.split('/')[0] == botSteps.selectCategory) {
         if (!userStep.split('/')[1]) throw new Error('OrgId not found')
-        let category: string | undefined
+        if (msg.text == botTexts.backAction.uz) {
+          this.bot.sendMessage(msg.chat.id, 'Buyurtma bering', MainMenuKeyboard)
+        } else {
+          let category: string | undefined
 
-        switch (msg.text) {
-          case botTexts.dessertCategory.uz:
-            category = categoryEnum.dessert
-            break
-          case botTexts.snackCategory.uz:
-            category = categoryEnum.snack
-            break
-          case botTexts.dessertCategory.uz:
-            category = categoryEnum.dessert
-            break
-        }
-
-        const foods = await this.foodService.foodRetrieveAll({
-          pageNumber: 1,
-          pageSize: 20,
-          category: category,
-          org: userStep.split('/')[1]
-        })
-
-        console.log(foods)
-
-        this.bot.sendMessage(msg.chat.id, 'Mahsulotni tanlang', {
-          reply_markup: {
-            keyboard: [
-              [
-                { text: botTexts.backAction.uz },
-                { text: foods.foodList[0].name }
-              ]
-            ],
-            resize_keyboard: true
+          switch (msg.text) {
+            case botTexts.dessertCategory.uz:
+              category = categoryEnum.dessert
+              break
+            case botTexts.snackCategory.uz:
+              category = categoryEnum.snack
+              break
+            case botTexts.dessertCategory.uz:
+              category = categoryEnum.dessert
+              break
+            case botTexts.backAction.uz:
+              category = categoryEnum.dessert
+              break
           }
-        })
 
-        await this.storeService.editStep({
-          telegramId: msg.chat.id,
-          step: `${botSteps.selectFood}/${userStep.split('/')[1]}`
-        })
+          const foods = await this.foodService.foodRetrieveAll({
+            pageNumber: 1,
+            pageSize: 30,
+            category: category,
+            org: userStep.split('/')[1]
+          })
+
+          this.bot.sendMessage(msg.chat.id, botTexts.selectFoodAction.uz, {
+            reply_markup: KeyboardMaker({ data: foods.foodList })
+          })
+
+          await this.storeService.editStep({
+            telegramId: msg.chat.id,
+            step: `${botSteps.selectFood}/${userStep.split('/')[1]}`
+          })
+        }
       }
 
       if (userStep.split('/')[0] == botSteps.selectFood) {
-        const food = await this.foodService.foodRetrieveAll({
-          pageNumber: 1,
-          pageSize: 1,
-          org: userStep.split('/')[1],
-          search: msg.text
-        })
-
-        if (food.foodList.length == 1) {
-          console.log(food.foodList)
-          this.bot.sendMessage(msg.chat.id, 'mahsulot soni tanlang', {
-            reply_markup: {
-              keyboard: [[{ text: 'ok' }]],
-              resize_keyboard: true
-            }
+        if (msg.text == botTexts.backAction.uz) {
+          this.bot.sendMessage(
+            msg.chat.id,
+            botTexts.askCategory.uz,
+            FoodCategoryMenuKeyboard
+          )
+          await this.storeService.editStep({
+            telegramId: msg.chat.id,
+            step: `${botSteps.selectCategory}/${userStep.split('/')[1]}`
+          })
+        } else {
+          const food = await this.foodService.foodRetrieveAll({
+            pageNumber: 1,
+            pageSize: 1,
+            org: userStep.split('/')[1],
+            search: msg.text
           })
 
-          await this.bot.sendMessage(msg.chat.id, 'Tanlangan mahsulot', {
-            reply_markup: {
-              inline_keyboard: [[{ text: 'pepsi', callback_data: 'ds' }]]
-            }
-          })
+          if (food.foodList.length == 1) {
+            this.bot.sendMessage(
+              msg.chat.id,
+              botTexts.viewFoodAction.uz,
+              ViewFoodKeyboard
+            )
+
+            await this.bot.sendPhoto(msg.chat.id, food.foodList[0].img, {
+              caption: `Mahsulot nomi: <b>${food.foodList[0].name}</b>\nOshxona: <b>${food.foodList[0].org}</b>\nNarxi: <b>${FormatNumberWithSpaces(food.foodList[0].cost)} so'm</b>`,
+              reply_markup: this.#_inlineKeyboardMaker({ id: 'sasas' }),
+              parse_mode: 'HTML'
+            })
+          }
         }
       }
     } catch (error) {
       console.log(error)
+      this.bot.sendMessage(msg.chat.id, botTexts.errorMessage.uz, {
+        parse_mode: 'HTML'
+      })
+    }
+  }
+
+  #_inlineKeyboardMaker(payload: { id: string }): InlineKeyboardMarkup {
+    return {
+      inline_keyboard: [
+        CountFoodAmountComponent,
+        [{ text: 'Store', callback_data: payload.id }]
+      ]
     }
   }
 }

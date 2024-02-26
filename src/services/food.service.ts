@@ -33,7 +33,8 @@ export class FoodService {
       .find(query)
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
-      .select('name cost')
+      .populate('org', 'name_org')
+      .select('name cost img')
       .exec()
 
     const count = await this.foods.countDocuments(query).exec()
@@ -43,7 +44,13 @@ export class FoodService {
       pageSize: payload.pageSize,
       pageNumber: payload.pageNumber,
       pageCount: 5,
-      foodList: foodList
+      foodList: foodList.map((e) => ({
+        _id: e['_id'],
+        name: e.name,
+        cost: e.cost,
+        img: e.img,
+        org: e.org.name_org
+      }))
     }
   }
 

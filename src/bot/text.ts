@@ -3,6 +3,14 @@ export const botTexts = {
     uz: `<b>Siz ro'yxatdan o'tmagansiz!</b>\nIltimos telefon raqamingizni yuboring.`,
     ru: `<b>Siz ro'yxatdan o'tmagansiz!</b>\nIltimos telefon raqamingizni yuboring.`
   },
+  noVerified: {
+    uz: 'Siz tasdiqlanmagansiz',
+    ru: 'Siz tasdiqlanmagansiz'
+  },
+  noContact: {
+    uz: 'Iltimos telefon raqam yuboring',
+    ru: 'Iltimos telefon raqam yuboring'
+  },
   askOrg: {
     uz: 'Oshxonani tanlang',
     ru: 'Oshxonani tanlang'
@@ -22,34 +30,47 @@ export const botTexts = {
     ru: '<b>Xush kelibsiz!!!</b>\nSiz oshpaz ro`lidasiz'
   },
   userMainMenu: {
-    uz: '<b>Xush kelibsiz!!!</b>'
+    uz: '<b>Xush kelibsiz!!!</b>',
+    ru: '<b>Xush kelibsiz!!!</b>'
   },
   userNewOrder: {
-    uz: 'Buyurtma berish',
-    ru: 'Buyurtma berish'
+    uz: '🛍 Buyurtma berish',
+    ru: '🛍 Buyurtma berish'
   },
   userCheckBalance: {
-    uz: 'Balans',
-    ru: 'Balans'
+    uz: '💳 Balans',
+    ru: '💳 Balans'
   },
   backAction: {
     uz: '⬅️ Orqaga',
     ru: '⬅️ Orqaga'
   },
+  selectFoodAction: {
+    uz: 'Mahsulotni tanlang',
+    ru: 'Mahsulotni tanlang'
+  },
+  viewFoodAction: {
+    uz: 'Tanlangan mahsulot',
+    ru: 'Tanlangan mahsulot'
+  },
   dessertCategory: {
-    ru: '🍰 Desert',
-    uz: '🍰 Desert'
+    uz: '🍰 Desert',
+    ru: '🍰 Desert'
   },
   drinkCategory: {
-    ru: '🥤Ichimlik',
-    uz: '🥤Ichimlik'
+    uz: '🥤Ichimlik',
+    ru: '🥤Ichimlik'
   },
   snackCategory: {
-    ru: '🌮 Gazaklar',
-    uz: '🌮 Gazaklar'
+    uz: '🌮 Gazaklar',
+    ru: '🌮 Gazaklar'
   },
   storeAction: {
-    ru: '🛒 Savat',
-    uz: '🛒 Savat'
+    uz: '🛒 Savat',
+    ru: '🛒 Savat'
+  },
+  errorMessage: {
+    uz: '<i><b>Error.message unhandle</b></i>',
+    ru: '<i><b>Error.message unhandle</b></i>'
   }
 }
