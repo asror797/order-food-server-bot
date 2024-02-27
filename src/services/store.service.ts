@@ -83,6 +83,7 @@ export class StoreService {
     try {
       const Food = await this.foods.findById(payload.food)
       if (!Food) throw new Error('not found food')
+
       const store: any = await this.getStoreByOrg({
         chatId: payload.chatId,
         org: payload.org

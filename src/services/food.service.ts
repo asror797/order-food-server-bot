@@ -85,6 +85,7 @@ export class FoodService {
       name: payload.name,
       cost: payload.cost,
       org: payload.org,
+      category: payload.category,
       products: payload.products
     })
 

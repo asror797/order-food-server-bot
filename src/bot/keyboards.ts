@@ -4,6 +4,7 @@ import {
   SendMessageOptions
 } from 'node-telegram-bot-api'
 import { botTexts } from './text'
+import { botCallbackData } from './constants'
 
 export const MainMenuKeyboard: SendMessageOptions = {
   reply_markup: {
@@ -11,6 +12,10 @@ export const MainMenuKeyboard: SendMessageOptions = {
       [
         { text: botTexts.userNewOrder.uz },
         { text: botTexts.userCheckBalance.uz }
+      ],
+      [
+        { text: botTexts.feedbackAction.uz },
+        { text: botTexts.settingsAction.uz }
       ]
     ],
     resize_keyboard: true
@@ -54,9 +59,9 @@ export const ViewFoodKeyboard: SendMessageOptions = {
 }
 
 export const CountFoodAmountComponent: InlineKeyboardButton[] = [
-  { text: '-', callback_data: 'command' },
-  { text: '1', callback_data: 'command' },
-  { text: '+', callback_data: 'command' }
+  { text: '-', callback_data: botCallbackData.decreaseAmount },
+  { text: '1', callback_data: botCallbackData.showCount },
+  { text: '+', callback_data: botCallbackData.increaseAmount }
 ]
 
 export const ShareContactKeyboard: SendMessageOptions = {

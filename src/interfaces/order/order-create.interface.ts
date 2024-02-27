@@ -1,11 +1,9 @@
+import { ObjectId } from 'mongoose'
 import { FoodWithamountDefinition } from './order-retrieve-all.interface'
 
 export interface OrderCreateRequest {
   foods: FoodWithamountDefinition[]
-  total_cost: number
-  client: string
-  is_canceled: boolean
-  is_accepted: boolean
+  client: string | ObjectId
   org: string
 }
 

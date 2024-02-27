@@ -7,7 +7,14 @@ export const botSteps = {
 }
 
 export const categoryEnum = {
-  dessert: 'desserts',
+  dessert: 'dessert',
   drink: 'drinks',
   snack: 'snacks'
+}
+
+export const botCallbackData = {
+  increaseAmount: 'increase-amount',
+  decreaseAmount: 'decrease-amount',
+  saveToStore: 'save-to-store',
+  showCount: 'show-count'
 }

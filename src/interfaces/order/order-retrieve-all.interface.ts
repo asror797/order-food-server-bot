@@ -1,6 +1,6 @@
 export interface FoodWithamountDefinition {
   food: string
-  amount: string
+  amount: number
 }
 
 export interface OrderRetrieveAllRequest {

@@ -33,6 +33,10 @@ export const botTexts = {
     uz: '<b>Xush kelibsiz!!!</b>',
     ru: '<b>Xush kelibsiz!!!</b>'
   },
+  backMainMenu: {
+    uz: '<b>Buyurtma bering</b>👇',
+    ru: '<b>Buyurtma bering</b>👇'
+  },
   userNewOrder: {
     uz: '🛍 Buyurtma berish',
     ru: '🛍 Buyurtma berish'
@@ -68,6 +72,22 @@ export const botTexts = {
   storeAction: {
     uz: '🛒 Savat',
     ru: '🛒 Savat'
+  },
+  storeToCartAction: {
+    uz: `Savatga qo'shish 📥`,
+    ru: `Savatga qo'shish 📥`
+  },
+  storedAction: {
+    uz: `Savatga qo'shildi`,
+    ru: `Savatga qo'shildi`
+  },
+  feedbackAction: {
+    uz: `Taklif/E'tiroz yuborish`,
+    ru: `Taklif/E'tiroz yuborish`
+  },
+  settingsAction: {
+    uz: `Sozlamalar ⚙️`,
+    ru: `Sozlamalar ⚙️`
   },
   errorMessage: {
     uz: '<i><b>Error.message unhandle</b></i>',
