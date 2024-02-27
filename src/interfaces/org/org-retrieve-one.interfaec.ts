@@ -4,6 +4,7 @@ export interface OrgRetrieveOneRequest {
 
 export interface OrgRetrieveOneResponse {
   _id: string
-  name: string
-  cost: number
+  name_org: string
+  group_a_id: number
+  group_b_id: number
 }

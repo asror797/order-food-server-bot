@@ -158,8 +158,29 @@ class TelegramBotApi {
       ) {
         if (msg.data?.split('/')[0] == botCallbackData.saveToStore) {
           await this.#_storeFoodToCart(msg)
-          console.log(user.user['_id'].toString())
         }
+
+        if (
+          msg.data?.split('/')[0] == botCallbackData.clearStore &&
+          msg.message
+        ) {
+          this.bot.deleteMessage(msg.from.id, msg.message.message_id)
+          await this.storeService.clearStoreByOrg({
+            chat: msg.from.id,
+            org: msg.data?.split('/')[1]
+          })
+          this.bot.sendMessage(msg.from.id, botTexts.clearedStore.uz)
+        }
+
+        if (
+          msg.data?.split('/')[0] == botCallbackData.buyStore &&
+          msg.message
+        ) {
+          this.bot.deleteMessage(msg.from.id, msg.message.message_id)
+          this.bot.sendMessage(msg.from.id, 'Buy')
+          // user['_id'] | org | foods |
+        }
+
         if (
           msg.data == botCallbackData.decreaseAmount ||
           botCallbackData.increaseAmount ||
@@ -198,7 +219,20 @@ class TelegramBotApi {
         if (msg.text == botTexts.userNewOrder.uz) {
           await this.#_OrgMenuComponent(msg)
         } else if (msg.text == botTexts.userCheckBalance.uz) {
-          this.bot.sendMessage(msg.chat.id, 'Sizning balas')
+          const user = await this.userService.checkUser({
+            telegramId: msg.chat.id
+          })
+          if (user.user) {
+            this.bot.sendMessage(
+              msg.chat.id,
+              `Balans: <b>${FormatNumberWithSpaces(user.user.balance)} so'm</b>`,
+              { parse_mode: 'HTML' }
+            )
+          }
+        } else if (msg.text == botTexts.settingsAction.uz) {
+          this.bot.sendMessage(msg.chat.id, botTexts.soonMessage.uz)
+        } else if (msg.text == botTexts.feedbackAction.uz) {
+          this.bot.sendMessage(msg.chat.id, botTexts.soonMessage.uz)
         }
       }
 
@@ -239,11 +273,39 @@ class TelegramBotApi {
         if (msg.text == botTexts.backAction.uz) {
           await this.#_OrgMenuComponent(msg)
         } else if (msg.text == botTexts.storeAction.uz) {
-          this.bot.sendMessage(msg.chat.id, 'Store')
+          const store = await this.storeService.getStoreByOrg({
+            chatId: msg.chat.id,
+            org: userStep.split('/')[1]
+          })
+
+          if (store.length > 0) {
+            this.bot.sendMessage(
+              msg.chat.id,
+              this.#_storedFoodsCaptionGenerator(store),
+              {
+                reply_markup: {
+                  inline_keyboard: [
+                    [
+                      {
+                        text: botTexts.clearStoreAction.uz,
+                        callback_data: `${botCallbackData.clearStore}/${userStep.split('/')[1]}`
+                      },
+                      {
+                        text: botTexts.buyStoreAction.uz,
+                        callback_data: `${botCallbackData.buyStore}/${userStep.split('/')[1]}`
+                      }
+                    ]
+                  ]
+                },
+                parse_mode: 'HTML'
+              }
+            )
+          } else {
+            this.bot.sendMessage(msg.chat.id, `Savat bo'sh`)
+          }
         } else {
           if (!userStep.split('/')[1]) throw new Error('OrgId not found')
           let category: string | undefined
-          console.log('User Step:', userStep)
 
           switch (msg.text) {
             case botTexts.dessertCategory.uz:
@@ -254,7 +316,6 @@ class TelegramBotApi {
               break
             case botTexts.drinkCategory.uz:
               category = categoryEnum.drink
-              console.log(category, msg.text)
               break
           }
 
@@ -262,7 +323,8 @@ class TelegramBotApi {
             const foods = await this.foodService.foodRetrieveAll({
               pageNumber: 1,
               pageSize: 30,
-              category: category
+              category: category,
+              org: userStep.split('/')[1]
             })
 
             this.bot.sendMessage(msg.chat.id, botTexts.selectFoodAction.uz, {
@@ -305,13 +367,16 @@ class TelegramBotApi {
               ViewFoodKeyboard
             )
 
-            await this.bot.sendPhoto(msg.chat.id, food.foodList[0].img, {
-              caption: this.#_foodCaptionGenerator(food.foodList[0]),
-              reply_markup: this.#_inlineKeyboardMaker({
-                id: userStep.split('/')[1]
-              }),
-              parse_mode: 'HTML'
-            })
+            setTimeout(async () => {
+              await this.bot.sendPhoto(msg.chat.id, food.foodList[0].img, {
+                caption: this.#_foodCaptionGenerator(food.foodList[0]),
+                reply_markup: this.#_inlineKeyboardMaker({
+                  id: food.foodList[0]['_id'],
+                  org: userStep.split('/')[1]
+                }),
+                parse_mode: 'HTML'
+              })
+            }, 100)
           }
         }
       }
@@ -323,14 +388,17 @@ class TelegramBotApi {
     }
   }
 
-  #_inlineKeyboardMaker(payload: { id: string }): InlineKeyboardMarkup {
+  #_inlineKeyboardMaker(payload: {
+    id: string
+    org: string
+  }): InlineKeyboardMarkup {
     return {
       inline_keyboard: [
         CountFoodAmountComponent,
         [
           {
             text: botTexts.storeToCartAction.uz,
-            callback_data: `${botCallbackData.saveToStore}/${payload.id}`
+            callback_data: `${botCallbackData.saveToStore}/${payload.id}/${payload.org}`
           }
         ]
       ]
@@ -343,6 +411,24 @@ class TelegramBotApi {
     org: string
   }): string {
     return `Mahsulot nomi: <b>${payload.name}</b>\nOshxona: <b>${payload.org}</b>\nNarxi: <b>${FormatNumberWithSpaces(payload.cost)}</b> so'm`
+  }
+
+  #_storedFoodsCaptionGenerator(data: any[]): string {
+    const caption: string[] = []
+    console.log(data)
+    let totalCost = 0
+    data.map((e, i) => {
+      caption.push(
+        `${i + 1}. <b>${e.food.food}</b> - ${e.amount} dona\n${FormatNumberWithSpaces(Number(e.food.cost))} so'm * ${e.amount} dona = <b>${FormatNumberWithSpaces(Number(e.food.cost) * Number(e.amount))} so'm</b>\n\n`
+      )
+      totalCost += e.food.cost * e.amount
+    })
+
+    caption.push(
+      `<code>--------------------------------</code>\n<i>Jami:</i> ${FormatNumberWithSpaces(totalCost)} so'm`
+    )
+
+    return caption.join('')
   }
 
   #_amountChanger(payload: { msg: CallbackQuery }) {
@@ -359,8 +445,7 @@ class TelegramBotApi {
     if (payload.msg.data == botCallbackData.increaseAmount) {
       if (Number(count) == 10) {
         this.bot.answerCallbackQuery(payload.msg.id, {
-          text: 'Maximum equal to 10',
-          show_alert: true
+          text: 'Maximum equal to 10'
         })
       } else {
         this.bot.editMessageReplyMarkup(
@@ -386,8 +471,7 @@ class TelegramBotApi {
     } else if (payload.msg.data == botCallbackData.decreaseAmount) {
       if (Number(count) == 1) {
         this.bot.answerCallbackQuery(payload.msg.id, {
-          text: 'Minimum equal to 1',
-          show_alert: true
+          text: 'Minimum equal to 1'
         })
       } else {
         this.bot.editMessageReplyMarkup(
@@ -412,10 +496,30 @@ class TelegramBotApi {
       }
     } else if (payload.msg.data == botCallbackData.showCount) {
       this.bot.answerCallbackQuery(payload.msg.id, {
-        text: count,
-        show_alert: true
+        text: count
       })
     }
+  }
+
+  async #_createOrder(payload: {
+    msg: CallbackQuery
+    org: string
+    user: string
+  }) {
+    const org = await this.orgService.orgRetrieveOne({ id: payload.org })
+
+    const store = await this.storeService.getStoreByOrg({
+      chatId: payload.msg.from.id,
+      org: org['_id']
+    })
+
+    const order = await this.orderService.createOrder({
+      client: payload.user,
+      foods: store,
+      org: org['_id']
+    })
+
+    console.log(order)
   }
 
   async #_OrgMenuComponent(msg: Message) {
@@ -438,7 +542,7 @@ class TelegramBotApi {
 
   async #_storeFoodToCart(msg: CallbackQuery) {
     try {
-      if (msg.message?.reply_markup) {
+      if (msg.message?.reply_markup && msg.data) {
         await this.bot.deleteMessage(msg.from.id, msg.message.message_id)
 
         const count =
@@ -448,9 +552,8 @@ class TelegramBotApi {
 
         await this.storeService.saveToStoreByOrg({
           amount: Number(count),
-          food: '',
-          chatId: msg.message.chat.id,
-          org: ''
+          food: msg.data.split('/')[1],
+          chatId: msg.message.chat.id
         })
 
         await this.storeService.editStep({
@@ -466,6 +569,9 @@ class TelegramBotApi {
       }
     } catch (error) {
       console.log(error)
+      this.bot.sendMessage(msg.from.id, botTexts.errorMessage.uz, {
+        parse_mode: 'HTML'
+      })
     }
   }
 }

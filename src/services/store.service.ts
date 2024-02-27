@@ -1,28 +1,10 @@
-import { foodModel } from '@models'
 import redisService from './redis.service'
-
-interface Food {
-  name: string
-  cost: number
-}
-
-interface FoodWithAmount {
-  id: string
-  food: Food
-  amount: number
-}
-
-interface GetStoreByOrg {
-  chatId: number
-  org: string
-}
-
-interface SaveToStoreByOrg {
-  org: string
-  food: string
-  amount: number
-  chatId: number
-}
+import { foodModel } from '@models'
+import {
+  FoodWithAmountStore,
+  SaveToStoreByOrg,
+  GetStoreByOrg
+} from '@interfaces'
 
 export class StoreService {
   private redisService = redisService
@@ -38,6 +20,7 @@ export class StoreService {
       console.log(error)
     }
   }
+
   public async getStep(payload: { telegramId: number }) {
     try {
       const step = await this.redisService.getValue(
@@ -50,53 +33,45 @@ export class StoreService {
     }
   }
 
-  public async getStore(id: string) {
-    try {
-      const store = await this.redisService.getValue(id)
-      if (store == null) {
-        return []
-      } else {
-        return JSON.parse(store)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  public async getStoreByOrg(payload: GetStoreByOrg) {
+  public async getStoreByOrg(
+    payload: GetStoreByOrg
+  ): Promise<FoodWithAmountStore[]> {
     try {
       const store = await this.redisService.getValue(
         `${payload.chatId}/${payload.org}`
       )
-      console.log(`${payload.chatId}/${payload.org}`)
-      if (store == null) {
-        return []
-      } else {
-        return JSON.parse(store)
-      }
+      if (store == null) return []
+
+      return JSON.parse(store)
     } catch (error) {
       console.log(error)
+      throw error
     }
   }
 
   public async saveToStoreByOrg(payload: SaveToStoreByOrg) {
     try {
-      const Food = await this.foods.findById(payload.food)
-      if (!Food) throw new Error('not found food')
+      console.log(payload)
+      const Food = await this.foods
+        .findById(payload.food)
+        .select('name cost org')
+        .exec()
+
+      if (!Food || !Food.org) throw new Error('Food not found')
+      if (!payload.chatId) throw new Error('Chat not found')
 
       const store: any = await this.getStoreByOrg({
         chatId: payload.chatId,
-        org: payload.org
+        org: Food.org.toString()
       })
-      console.log(`${payload.chatId}/${payload.org}`, payload.org)
-      console.log(payload, 'payload')
+
       const stored = await this.redisService.setValue(
-        `${payload.chatId}/${payload.org}`,
+        `${payload.chatId}/${Food.org.toString()}`,
         JSON.stringify([
           ...store,
           {
             food: {
-              id: payload.food,
+              id: Food['_id'].toString(),
               food: Food.name,
               cost: Food.cost
             },
@@ -107,35 +82,6 @@ export class StoreService {
 
       return stored
     } catch (error) {
-      console.log(error)
-    }
-  }
-
-  public async saveToStore(id: string, food: string, amount: string) {
-    try {
-      const Food = await this.foods.findById(food)
-      if (!Food) throw new Error('not found food')
-      const store: FoodWithAmount[] = await this.getStore(id)
-      const stored = await this.redisService.setValue(
-        id,
-        JSON.stringify([
-          ...store,
-          {
-            food: {
-              id: Food['_id'],
-              food: Food.name,
-              cost: Food.cost
-            },
-            amount: amount
-          }
-        ])
-      )
-
-      console.log(stored)
-
-      return stored
-    } catch (error) {
-      console.log(error)
       throw error
     }
   }
@@ -148,19 +94,6 @@ export class StoreService {
       )
       return response
     } catch (error) {
-      throw error
-    }
-  }
-
-  public async clear(id: number) {
-    try {
-      const response = await this.redisService.setValue(
-        id.toString(),
-        JSON.stringify([])
-      )
-      return response
-    } catch (error) {
-      console.log(error)
       throw error
     }
   }

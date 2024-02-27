@@ -82,12 +82,28 @@ export const botTexts = {
     ru: `Savatga qo'shildi`
   },
   feedbackAction: {
-    uz: `Taklif/E'tiroz yuborish`,
-    ru: `Taklif/E'tiroz yuborish`
+    uz: `✍️ Izoh qoldirish`,
+    ru: `✍️ Izoh qoldirish`
+  },
+  clearStoreAction: {
+    uz: `Savat bo'shatish`,
+    ru: `Savat bo'shatish`
+  },
+  clearedStore: {
+    uz: `Savat bo'shatildi`,
+    ru: `Savat bo'shatildi`
+  },
+  soonMessage: {
+    uz: `Vaqtincha ishlamaydi`,
+    ru: `Vaqtincha ishlamaydi`
+  },
+  buyStoreAction: {
+    uz: `Sotib olish`,
+    ru: `Sotib olish`
   },
   settingsAction: {
-    uz: `Sozlamalar ⚙️`,
-    ru: `Sozlamalar ⚙️`
+    uz: `⚙️ Sozlamalar`,
+    ru: `⚙️ Sozlamalar`
   },
   errorMessage: {
     uz: '<i><b>Error.message unhandle</b></i>',

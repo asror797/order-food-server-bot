@@ -16,5 +16,7 @@ export const botCallbackData = {
   increaseAmount: 'increase-amount',
   decreaseAmount: 'decrease-amount',
   saveToStore: 'save-to-store',
-  showCount: 'show-count'
+  showCount: 'show-count',
+  clearStore: 'clear-store',
+  buyStore: 'buy-store'
 }

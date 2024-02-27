@@ -6,7 +6,6 @@ export const KeyboardMaker = (payload: {
 }): ReplyKeyboardMarkup => {
   const buttonrow: ReplyKeyboardMarkup = { keyboard: [], resize_keyboard: true }
   let singlerow: KeyboardButton[] = []
-  console.log(payload)
   payload.data.map((e, index: number) => {
     singlerow.push({
       text: e.name

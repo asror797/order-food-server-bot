@@ -90,8 +90,6 @@ export class OrderService {
       client: user['_id'],
       org: org['_id'],
       foods: [],
-      is_accepted: false,
-      is_canceled: false,
       total_cost: total_cost
     })
 
@@ -233,19 +231,15 @@ export class OrderService {
     }
   }
 
-  public async createOrder(orderData: CreateOrderDto) {
-    const { foods, client, org } = orderData
-
-    const Client = await this.users.findById(client)
-
+  public async createOrder(payload: CreateOrderDto) {
+    const Client = await this.users.findById(payload.client)
     if (!Client) throw new HttpException(400, 'client not found')
 
     const foodObjects = []
     let total_cost: number = 0
 
-    for (const { food, amount } of foods) {
+    for (const { food, amount } of payload.foods) {
       const isExist = await this.foods.findById(food)
-
       if (!isExist) throw new HttpException(400, `This food ${food} not found`)
 
       foodObjects.push({ food: isExist['_id'], amount: amount })
@@ -253,8 +247,8 @@ export class OrderService {
     }
 
     const newOrder = await this.orders.create({
-      client,
-      org,
+      client: payload.client,
+      org: payload.org,
       total_cost,
       foods: foodObjects
     })

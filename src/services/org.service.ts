@@ -3,6 +3,7 @@ import {
   OrgDeleteRequest,
   OrgRetrieveAllRequest,
   OrgRetrieveAllResponse,
+  OrgRetrieveOneResponse,
   OrgUpdateRequest
 } from '@interfaces'
 import { orgModel } from '@models'
@@ -44,10 +45,23 @@ export class OrgService {
       }))
     }
   }
-  public async orgRetrieveOne(payload: { id: string }): Promise<any> {
-    const org = await this.orgs.findById(payload.id).exec()
 
-    return org
+  public async orgRetrieveOne(payload: {
+    id: string
+  }): Promise<OrgRetrieveOneResponse> {
+    const org = await this.orgs
+      .findById(payload.id)
+      .select('name_org group_a_id group_b_id')
+      .exec()
+
+    if (!org) throw new HttpException(404, 'Org not found')
+
+    return {
+      _id: org['_id'],
+      name_org: org.name_org,
+      group_a_id: org.group_a_id,
+      group_b_id: org.group_b_id
+    }
   }
 
   public async orgCreate(payload: OrgCreateRequest): Promise<any> {

@@ -27,6 +27,7 @@ export class FoodService {
     if (payload.org) {
       const org = await this.org.findById(payload.org).exec()
       if (!org) throw new HttpException(404, 'Org not found')
+      query.org = payload.org
     }
 
     const foodList = await this.foods
