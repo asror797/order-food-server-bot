@@ -41,6 +41,18 @@ export const botTexts = {
     uz: '🛍 Buyurtma berish',
     ru: '🛍 Buyurtma berish'
   },
+  cookNewPoll: {
+    uz: `📢 Yangi E'lon`,
+    ru: `📢 Yangi E'lon`
+  },
+  cookViewPoll: {
+    uz: `📋 E'lonni ko'rish`,
+    ru: `📋 E'lonni ko'rish`
+  },
+  cookViewLunchBase: {
+    uz: `Ovqatni tanlang`,
+    ru: `Ovqatni tanlang`
+  },
   userCheckBalance: {
     uz: '💳 Balans',
     ru: '💳 Balans'

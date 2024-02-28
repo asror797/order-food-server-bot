@@ -67,13 +67,6 @@ export class UserService {
     }
   }
 
-  public async userUpdate(payload: any): Promise<any> {
-    const user = await this.userRetrieveOne({
-      id: payload.telegram_id
-    })
-    console.log(user)
-  }
-
   public async registerUser(payload: UserRegisterPayload): Promise<any> {
     const user = await this.users.create({
       telegram_id: payload.telegramId,
@@ -197,7 +190,7 @@ export class UserService {
     }
   }
 
-  public async editUser(payload: EditUserDto) {
+  public async userUpdate(payload: EditUserDto) {
     const { id, first_name, last_name, org, role } = payload
     const User = await this.users.findById(id)
     if (!User) throw new HttpException(400, 'user not found')

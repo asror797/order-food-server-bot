@@ -38,16 +38,6 @@ export const FoodCategoryMenuKeyboard: SendMessageOptions = {
   parse_mode: 'HTML'
 }
 
-export const CookMainkeyboard: SendMessageOptions = {
-  reply_markup: {
-    keyboard: [
-      [{ text: 'Yangi elon yaratish' }, { text: 'yaratilgan elon korish' }]
-    ],
-    resize_keyboard: true
-  },
-  parse_mode: 'HTML'
-}
-
 export const ViewFoodKeyboard: SendMessageOptions = {
   reply_markup: {
     keyboard: [
@@ -63,6 +53,16 @@ export const CountFoodAmountComponent: InlineKeyboardButton[] = [
   { text: '1', callback_data: botCallbackData.showCount },
   { text: '+', callback_data: botCallbackData.increaseAmount }
 ]
+
+export const CookMainMenu: SendMessageOptions = {
+  reply_markup: {
+    keyboard: [
+      [{ text: botTexts.cookNewPoll.uz }, { text: botTexts.cookViewPoll.uz }]
+    ],
+    resize_keyboard: true
+  },
+  parse_mode: 'HTML'
+}
 
 export const ShareContactKeyboard: SendMessageOptions = {
   reply_markup: {

@@ -125,10 +125,19 @@ export class UserController {
     }
   }
 
-  public editUser = async (req: Request, res: Response, next: NextFunction) => {
+  public userUpdate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      const payload: EditUserDto = req.body
-      res.json(await this.userService.editUser(payload))
+      const userId = req.params.id as string
+      const payload: EditUserDto = {
+        id: userId,
+        ...req.body
+      }
+
+      res.json(await this.userService.userUpdate(payload))
     } catch (error) {
       next(error)
     }

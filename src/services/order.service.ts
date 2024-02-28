@@ -100,9 +100,8 @@ export class OrderService {
       foods: [],
       is_accepted: false,
       is_canceled: false,
-      total_cost: 450
+      total_cost: total_cost
     }
-    // Org foods name price , status, total_cost
   }
 
   public async orderUpdate(): Promise<any> {}

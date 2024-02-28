@@ -33,7 +33,7 @@ export class UserRoute {
     this.router.patch(
       `${this.path}/:id`,
       checkPermission(UserPermissions.USER_UPDATE),
-      this.userController.editUser
+      this.userController.userUpdate
     )
 
     this.router.get(`${this.path}/search`, this.userController.SearchUser)
@@ -54,6 +54,6 @@ export class UserRoute {
     this.router.put(`${this.path}/org/:user`, this.userController.updateOrg)
     this.router.patch(`${this.path}/payment`, this.userController.payment)
     this.router.patch(`${this.path}/role`, this.userController.updateUserRole)
-    this.router.patch(`${this.path}/edit-info`, this.userController.editUser)
+    // this.router.patch(`${this.path}/edit-info`, this.userController.editUser)
   }
 }

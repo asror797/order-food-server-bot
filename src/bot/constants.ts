@@ -3,7 +3,9 @@ export const botSteps = {
   mainMenu: 'mainMenu',
   selectFood: 'selectFood',
   selectCategory: 'selectCategory',
-  viewFood: 'viewFood'
+  viewFood: 'viewFood',
+  cookNewPoll: 'newPoll',
+  cookMainMenu: 'cookMainMenu'
 }
 
 export const categoryEnum = {
