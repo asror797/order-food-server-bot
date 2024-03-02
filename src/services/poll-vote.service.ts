@@ -54,7 +54,6 @@ export class PollVoteService {
       .populate('org', 'name_org group_b_id')
       .select('meal')
       .exec()
-    console.log(meal_poll)
 
     if (!meal_poll) throw new HttpException(404, 'Meal Poll not found')
 

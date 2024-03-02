@@ -191,18 +191,17 @@ class TelegramBotApi {
 
         if (
           msg.data?.split('/')[0] == botCallbackData.selectLunch &&
-          msg.message
+          msg.message &&
+          msg.data
         ) {
-          const vote = await this.pollVoteService.pollVoteCreate({
-            meal: msg.data?.split('/')[2],
-            meal_poll: msg.data?.split('/')[1],
-            user: user.user['_id']
-          })
-
           this.bot.deleteMessage(msg.from.id, msg.message.message_id)
-          this.bot.sendMessage(msg.from.id, 'Yuborildi')
-          this.bot.sendMessage(vote.org.groupId, 'yangi ovoz')
-          console.log(vote)
+          this.bot.sendMessage(msg.from.id, 'olish uchun keldim')
+          await this.#_createPollVote({
+            lunch: msg.data.split('/')[2],
+            meal: msg.data.split('/')[1],
+            user: user.user['_id'].toString(),
+            org: user.user.org['_id']
+          })
         }
       } else {
         this.bot.sendMessage(msg.from.id, botTexts.noVerified.uz)
@@ -799,8 +798,27 @@ class TelegramBotApi {
     }
   }
 
-  async #_createPollVote(payload: { meal: string }) {
-    console.log('ok', payload)
+  async #_createPollVote(payload: {
+    meal: string
+    lunch: string
+    user: string
+    org: string
+  }) {
+    const vote = await this.pollVoteService.pollVoteCreate({
+      meal: payload.lunch,
+      meal_poll: payload.meal,
+      user: payload.user
+    })
+
+    await this.paymentService.paymentCreate({
+      amount: vote.cost,
+      client: payload.user,
+      org: payload.org,
+      type: false
+    })
+
+    this.bot.sendMessage(vote.org.groupId, 'Olish uchun keldim')
+    this.bot.sendMessage(vote.org.groupId, 'tanlandi')
   }
 }
 

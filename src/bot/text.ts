@@ -11,6 +11,10 @@ export const botTexts = {
     uz: 'Iltimos telefon raqam yuboring',
     ru: 'Iltimos telefon raqam yuboring'
   },
+  sendPhoneNumber: {
+    uz: 'Telefon raqam yuborish 📞',
+    ru: 'Telefon raqam yuborish 📞'
+  },
   askOrg: {
     uz: 'Oshxonani tanlang',
     ru: 'Oshxonani tanlang'
