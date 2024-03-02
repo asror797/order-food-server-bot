@@ -25,10 +25,9 @@ export class PaymentService {
       .findById(payload.client)
       .select('balance')
       .exec()
-
     if (!user) throw new HttpException(404, 'User not found')
 
-    if (user.balance < payload.amount)
+    if (!payload.type && user.balance < payload.amount)
       throw new HttpException(400, 'Influnce balance')
 
     await this.users.findByIdAndUpdate(payload.client, {
