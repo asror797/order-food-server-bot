@@ -57,6 +57,10 @@ class TelegramBotApi {
     })
   }
 
+  public sendMessage(payload: { text: string; chatId: number }) {
+    this.bot.sendMessage(payload.chatId, payload.text, { parse_mode: 'HTML' })
+  }
+
   private async handleMessage(msg: Message) {
     const chatId = msg.chat.id
     const chatType = msg.chat.type

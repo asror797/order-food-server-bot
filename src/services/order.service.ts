@@ -287,14 +287,6 @@ export class OrderService {
 
       if (!updatedOrder) throw new HttpException(400, 'something went wrong')
 
-      const updatedUser = await this.paymentService.dicrease({
-        amount: updatedOrder?.total_cost,
-        user: updatedOrder?.client,
-        org: updatedOrder.org
-      })
-
-      if (!updatedUser) throw new HttpException(400, 'something wnet wrong')
-
       const populatedOrder = (await this.orders
         .findById(updatedOrder['_id'])
         .populate('client', 'first_name last_name telegram_id phone_number')

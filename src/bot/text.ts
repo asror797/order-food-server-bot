@@ -124,5 +124,13 @@ export const botTexts = {
   errorMessage: {
     uz: '<i><b>Error.message unhandle</b></i>',
     ru: '<i><b>Error.message unhandle</b></i>'
+  },
+  decreaseBalance: {
+    uz: `yechib olindi`,
+    ru: `yechib olindi`
+  },
+  increaseBalance: {
+    uz: `to'ldirildi`,
+    ru: `to'ldirildi`
   }
 }

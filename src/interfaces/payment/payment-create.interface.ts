@@ -1,6 +1,8 @@
+import { ObjectId } from 'mongoose'
+
 export interface PaymentCreateRequest {
   type: boolean
-  client: string
+  client: string | ObjectId
   org: string
   amount: number
 }

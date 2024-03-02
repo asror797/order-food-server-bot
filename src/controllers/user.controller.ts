@@ -237,17 +237,7 @@ export class UserController {
 
   public payment = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { type, amount, user } = req.body
-      if (type == true) {
-        res.json(await this.paymentService.increase({ user, amount }))
-      } else if (type == false) {
-        res.json(await this.paymentService.dicrease({ user, amount }))
-      } else {
-        res.json({
-          message: 'bad request',
-          status: 400
-        })
-      }
+      res.json(req.body)
     } catch (error) {
       next(error)
     }

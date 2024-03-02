@@ -299,11 +299,11 @@ export class TripService {
         .exec()
       console.log(updatedTrip)
       if (!updatedTrip) throw new HttpException(400, 'something went wrong')
-      const payment = await this.paymentService.dicrease({
-        user: user['_id'],
-        amount: Lunch.cost
-      })
-      console.log('Payment', payment)
+      // const payment = await this.paymentService.dicrease({
+      //   user: user['_id'],
+      //   amount: Lunch.cost
+      // })
+      // console.log('Payment', payment)
 
       return {
         status: true,
@@ -353,11 +353,11 @@ export class TripService {
         .exec()
       console.log(updatedTrip)
       if (!updatedTrip) throw new HttpException(400, 'something went wrong')
-      const payment = await this.paymentService.dicrease({
-        user: user['_id'],
-        amount: updatedTrip.meal.cost
-      })
-      console.log('Payment', payment)
+      // const payment = await this.paymentService.dicrease({
+      //   user: user['_id'],
+      //   amount: updatedTrip.meal.cost
+      // })
+      // console.log('Payment', payment)
 
       return {
         status: true,
