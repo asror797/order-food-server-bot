@@ -49,10 +49,20 @@ export class PollVoteService {
   public async pollVoteCreate(
     payload: PollVoteCreateRequest
   ): Promise<PollVoteCreateResponse> {
-    const meal_poll = await this.mealpolls.findById(payload.meal_poll)
+    const meal_poll: any = await this.mealpolls
+      .findById(payload.meal_poll)
+      .populate('org', 'name_org group_b_id')
+      .select('meal')
+      .exec()
+    console.log(meal_poll)
+
     if (!meal_poll) throw new HttpException(404, 'Meal Poll not found')
 
-    const meal = await this.lunches.findById(payload.meal)
+    const meal = await this.lunches
+      .findById(payload.meal)
+      .select('cost name')
+      .exec()
+
     if (!meal) throw new HttpException(404, 'Meal not found')
 
     const user = await this.users.findById(payload.user)
@@ -62,14 +72,18 @@ export class PollVoteService {
       meal: payload.meal,
       meal_poll: payload.meal_poll,
       user: payload.user,
-      cost: payload.cost
+      cost: meal.cost
     })
 
     return {
       cost: pollvote.cost,
       meal: pollvote.meal,
       meal_poll: pollvote.meal_poll,
-      user: pollvote.user
+      user: pollvote.user,
+      org: {
+        name: meal_poll.org.name_org,
+        groupId: meal_poll.org.group_b_id
+      }
     }
   }
 

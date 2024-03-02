@@ -1,12 +1,13 @@
-export interface WorkPlaceMenuCreateRequest {
-  pageSize: number
-  pageNumber: number
-  search: string
+export interface PaymentCreateRequest {
+  type: boolean
+  client: string
+  org: string
+  amount: number
 }
 
-export interface WorkPlaceMenuCreateResponse {
-  count: number
-  pageSize: number
-  pageCount: number
-  pageNumber: number
+export interface PaymentCreateResponse {
+  type: boolean
+  client: string
+  org: string
+  amount: number
 }

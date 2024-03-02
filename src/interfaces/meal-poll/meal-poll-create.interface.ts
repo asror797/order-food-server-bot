@@ -3,10 +3,27 @@ export interface MealPollCreateRequest {
   org: string
 }
 
-export interface MealPollCreateResponse {
+export interface MealPollLunchbaseDefinition {
   _id: string
-  meal: string
-  org: string
-  sent_at: number
-  createdAt: string
+  name: string
+}
+
+export interface MealPollOrgDefinition {
+  _id: string
+  trip_timeout: number
+  name_org: string
+}
+
+export interface MealPollCreateDefinition {
+  _id?: string
+  meal?: MealPollLunchbaseDefinition
+  org?: MealPollOrgDefinition
+  sent_at?: number
+  createdAt?: string
+  diffrence?: number
+}
+
+export interface MealPollCreateResponse {
+  status: boolean
+  data: MealPollCreateDefinition
 }

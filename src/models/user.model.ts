@@ -14,7 +14,8 @@ const userSchema: Schema = new Schema(
     },
     telegram_id: {
       type: Number,
-      nullable: false
+      nullable: false,
+      unique: true
     },
     is_active: {
       type: Boolean,

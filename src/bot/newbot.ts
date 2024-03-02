@@ -15,7 +15,9 @@ import {
   OrgService,
   StoreService,
   UserService,
-  MealPollService
+  MealPollService,
+  PollVoteService,
+  PaymentService
 } from '@services'
 import {
   MainMenuKeyboard,
@@ -37,6 +39,8 @@ class TelegramBotApi {
   private storeService = new StoreService()
   private lunchService = new LunchService()
   private mealPollService = new MealPollService()
+  private pollVoteService = new PollVoteService()
+  private paymentService = new PaymentService()
   private lunchbases = lunchBaseModel
 
   constructor(token: string) {
@@ -101,11 +105,17 @@ class TelegramBotApi {
           parse_mode: 'HTML'
         })
       } else {
-        this.bot.sendMessage(
-          msg.chat.id,
-          botTexts.askContact.uz,
-          ShareContactKeyboard
-        )
+        if (chatType == 'private') {
+          this.bot.sendMessage(
+            msg.chat.id,
+            botTexts.askContact.uz,
+            ShareContactKeyboard
+          )
+        } else {
+          if (msg.text == '/group') {
+            this.bot.sendMessage(msg.chat.id, `GroupId: ${msg.chat.id}`)
+          }
+        }
       }
     } catch (error) {
       console.log(error)
@@ -129,55 +139,6 @@ class TelegramBotApi {
       this.bot.sendMessage(msg.chat.id, botTexts.noContact.uz)
     }
   }
-
-  // private async handleStart(msg: Message) {
-  //   try {
-  //     const data = await this.userService.checkUser({ telegramId: msg.chat.id })
-  //     console.log(data)
-
-  //     if (data.isExist && data.user && data.user.role == 'user') {
-  //       this.bot.sendMessage(
-  //         msg.chat.id,
-  //         botTexts.userMainMenu.uz,
-  //         MainMenuKeyboard
-  //       )
-
-  //       await this.storeService.editStep({
-  //         telegramId: msg.chat.id,
-  //         step: botSteps.mainMenu
-  //       })
-  //     } else if (data.isExist && data.user && data.user.role == 'cook') {
-  //       this.bot.sendMessage(
-  //         msg.chat.id,
-  //         botTexts.cookMainMenu.uz,
-  //         CookMainMenu
-  //       )
-
-  //       await this.storeService.editStep({
-  //         telegramId: msg.chat.id,
-  //         step: botSteps.cookMainMenu
-  //       })
-  //     } else if (!data.isExist) {
-  //       this.bot.sendMessage(
-  //         msg.chat.id,
-  //         botTexts.askContact.uz,
-  //         ShareContactKeyboard
-  //       )
-  //     } else if (
-  //       data.user &&
-  //       (data.user?.is_verified == false || data.user?.is_active == false)
-  //     ) {
-  //       this.bot.sendMessage(msg.chat.id, botTexts.noVerified.uz, {
-  //         reply_markup: {
-  //           remove_keyboard: true
-  //         }
-  //       })
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //     this.bot.sendMessage(msg.chat.id, 'hello')
-  //   }
-  // }
 
   private async handleCallbackQuery(msg: CallbackQuery) {
     try {
@@ -222,6 +183,22 @@ class TelegramBotApi {
           botCallbackData.showCount
         ) {
           this.#_amountChanger({ msg: msg })
+        }
+
+        if (
+          msg.data?.split('/')[0] == botCallbackData.selectLunch &&
+          msg.message
+        ) {
+          const vote = await this.pollVoteService.pollVoteCreate({
+            meal: msg.data?.split('/')[2],
+            meal_poll: msg.data?.split('/')[1],
+            user: user.user['_id']
+          })
+
+          this.bot.deleteMessage(msg.from.id, msg.message.message_id)
+          this.bot.sendMessage(msg.from.id, 'Yuborildi')
+          this.bot.sendMessage(vote.org.groupId, 'yangi ovoz')
+          console.log(vote)
         }
       } else {
         this.bot.sendMessage(msg.from.id, botTexts.noVerified.uz)
@@ -317,7 +294,7 @@ class TelegramBotApi {
 
               console.log(lunch)
 
-              if (lunch.lunchList.length > 1) {
+              if (lunch.lunchList.length >= 1) {
                 this.bot.sendMessage(
                   msg.chat.id,
                   `<b>E'lon !!!</b>\n\n<b>Tayyorlanmoqchi: </b>${lunchbase.name}\n\n<b>Oshxona:</b> ${user.org.name_org}\n\n<b>Porsiyalari:</b>\n\n${caption.join('\n')}\n\n <i>Diqqat e'lon barcha oshxonalar ishchilariga yuboriladi.</i>`,
@@ -786,7 +763,7 @@ class TelegramBotApi {
       const lunches = await this.lunchService.lunchRetrieveAll({
         pageNumber: 1,
         pageSize: 5,
-        lunchbase: mealpoll.data['_id'],
+        lunchbase: mealpoll.data.meal,
         org: payload.org,
         is_bot: true
       })
@@ -794,23 +771,32 @@ class TelegramBotApi {
       const activeUsers = await this.userService.retrieveActiveUsers()
 
       activeUsers.map((e) => {
-        this.bot.sendMessage(e.telegram_id, 'Iltimos ovqatni tanlang', {
-          reply_markup: {
-            inline_keyboard: lunches.lunchList.map((e: any) => [
-              {
-                text: `${e.name} - ${FormatNumberWithSpaces(e.cost)} so'm`,
-                callback_data: `${botCallbackData.selectLunch}/${mealpoll.data['_id']}/${e['_id']}`
-              }
-            ])
+        this.bot.sendMessage(
+          e.telegram_id,
+          `<b>Iltimos ovqatni tanlang</b>\n\nTayyorlanyabdi: <b>${mealpoll.data.meal?.name}</b>\nOshxona: <b>${mealpoll.data.org?.name_org}</b>\nPorsiyalar: `,
+          {
+            reply_markup: {
+              inline_keyboard: lunches.lunchList.map((x: any) => [
+                {
+                  text: `${x.name} - ${FormatNumberWithSpaces(x.cost)} so'm`,
+                  callback_data: `${botCallbackData.selectLunch}/${mealpoll.data['_id']}/${x['_id']}`
+                }
+              ])
+            },
+            parse_mode: 'HTML'
           }
-        })
+        )
       })
     } else {
       this.bot.sendMessage(
         payload.cook,
-        `${Math.floor(mealpoll.data.diffrence)} minut vaqt qoldi yangi elon yaratish uchun`
+        `${Math.floor(mealpoll.data?.diffrence || 0)} minut vaqt qoldi yangi elon yaratish uchun`
       )
     }
+  }
+
+  async #_createPollVote(payload: { meal: string }) {
+    console.log('ok', payload)
   }
 }
 

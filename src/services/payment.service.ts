@@ -11,21 +11,49 @@ import {
   startOfMonth
 } from 'date-fns'
 import { uz } from 'date-fns/locale'
+import { PaymentCreateRequest } from '@interfaces'
 
 export class PaymentService {
-  private userRepo = userModel
-  private paymentRepo = paymentModel
+  private users = userModel
+  private payments = paymentModel
 
   public async paymentRetrieveAll(): Promise<any> {}
   public async paymentRetrieveOne(): Promise<any> {}
-  public async paymentCreate(): Promise<any> {}
+
+  public async paymentCreate(payload: PaymentCreateRequest): Promise<any> {
+    const user = await this.users
+      .findById(payload.client)
+      .select('balance')
+      .exec()
+
+    if (!user) throw new HttpException(404, 'User not found')
+
+    if (user.balance < payload.amount)
+      throw new HttpException(400, 'Influnce balance')
+
+    await this.users.findByIdAndUpdate(payload.client, {
+      balance: payload.type
+        ? user.balance + payload.amount
+        : user.balance - payload.amount
+    })
+
+    const newPayment = await this.payments.create({
+      type: payload.type,
+      amount: payload.amount,
+      org: payload.org,
+      client: user['_id']
+    })
+
+    return newPayment
+  }
+
   public async paymentUpdate(): Promise<any> {}
   public async paymentDelete(): Promise<any> {}
 
   public async getRetrieveAll(payload: any) {
     const { page, size } = payload
     const skip = (page - 1) * size
-    const payments = await this.paymentRepo
+    const payments = await this.payments
       .find()
       .sort({ createdAt: 'desc' })
       .skip(skip)
@@ -35,7 +63,7 @@ export class PaymentService {
       .populate('client', 'first_name last_name phone_number roles')
       .exec()
 
-    const totalPayments = await this.paymentRepo.countDocuments().exec()
+    const totalPayments = await this.payments.countDocuments().exec()
     const totalPages = Math.ceil(totalPayments / size)
 
     return {
@@ -49,10 +77,10 @@ export class PaymentService {
 
   public async increase(paymentData: CreatePaymentDto) {
     const { user, amount } = paymentData
-    const User = await this.userRepo.findById(user)
+    const User = await this.users.findById(user)
     if (!User) throw new HttpException(400, 'user not found')
 
-    const updatedUser = await this.userRepo.findByIdAndUpdate(
+    const updatedUser = await this.users.findByIdAndUpdate(
       user,
       {
         balance: Number(User.balance) + Number(amount)
@@ -64,7 +92,7 @@ export class PaymentService {
     //   User.telegram_id,
     //   `🟢 Hisobingizga ${amount} so'm pul tushurildi`
     // )
-    await this.paymentRepo.create({
+    await this.payments.create({
       type: true,
       org: User.org,
       client: User['_id'],
@@ -76,10 +104,10 @@ export class PaymentService {
 
   public async dicrease(paymentData: CreatePaymentDto) {
     const { user, amount, org } = paymentData
-    const User = await this.userRepo.findById(user)
+    const User = await this.users.findById(user)
     if (!User) throw new HttpException(400, 'user not found')
 
-    const updatedUser = await this.userRepo.findByIdAndUpdate(
+    const updatedUser = await this.users.findByIdAndUpdate(
       user,
       {
         balance: Number(User.balance) - Number(amount)
@@ -87,7 +115,7 @@ export class PaymentService {
       { new: true }
     )
 
-    await this.paymentRepo.create({
+    await this.payments.create({
       type: false,
       org: User.org || org,
       client: User['_id'],
@@ -108,7 +136,7 @@ export class PaymentService {
     start?: string
     end?: string
   }) {
-    const User = await this.userRepo.findById(payload.user)
+    const User = await this.users.findById(payload.user)
     if (!User) throw new HttpException(400, 'user not found')
 
     const options: any = {}
@@ -133,7 +161,7 @@ export class PaymentService {
     const allPayments: IPayment[] = []
     await Promise.all(
       daysOfTimeSequance.map(async (day, i: number) => {
-        const payments = await this.paymentRepo
+        const payments = await this.payments
           .find({
             ...options,
             client: payload.user,

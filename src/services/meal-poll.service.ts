@@ -1,6 +1,7 @@
 import { HttpException } from '@exceptions'
 import {
   MealPollCreateRequest,
+  MealPollCreateResponse,
   MealPollDeleteRequest,
   MealPollRetrieveAllRequest,
   MealPollRetrieveAllResponse,
@@ -40,11 +41,21 @@ export class MealPollService {
     return mealpoll
   }
 
-  public async mealPollCreate(payload: MealPollCreateRequest): Promise<any> {
-    const org = await this.orgs.findById(payload.org).select('trip_timeout')
+  public async mealPollCreate(
+    payload: MealPollCreateRequest
+  ): Promise<MealPollCreateResponse> {
+    const org = await this.orgs
+      .findById(payload.org)
+      .select('trip_timeout name_org')
+      .exec()
+
     if (!org) throw new HttpException(404, 'Org not found')
 
-    const lunchbase = await this.lunchbase.findById(payload.meal)
+    const lunchbase = await this.lunchbase
+      .findById(payload.meal)
+      .select('name')
+      .exec()
+
     if (!lunchbase) throw new HttpException(404, 'Meal not found')
 
     const getLatestMealPoll = await this.mealpolls
@@ -63,12 +74,16 @@ export class MealPollService {
         const newmealpoll = await this.mealpolls.create({
           sent_at: Math.floor(Date.now() / 1000),
           meal: payload.meal,
-          org: org
+          org: payload.org
         })
 
         return {
           status: true,
-          data: newmealpoll
+          data: {
+            ...newmealpoll.toObject(),
+            meal: lunchbase,
+            org: org
+          }
         }
       } else {
         return {
@@ -82,13 +97,15 @@ export class MealPollService {
       const newmealpoll = await this.mealpolls.create({
         sent_at: Math.floor(Date.now() / 1000),
         meal: payload.meal,
-        org: org
+        org: payload.org
       })
 
       return {
         status: true,
         data: {
-          meal: newmealpoll
+          ...newmealpoll.toObject(),
+          meal: lunchbase,
+          org: org
         }
       }
     }

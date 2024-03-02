@@ -4,7 +4,6 @@ export interface PollVoteCreateRequest {
   user: string | ObjectId
   meal_poll: string | ObjectId
   meal: string | ObjectId
-  cost: number
 }
 
 export interface PollVoteCreateResponse {
@@ -12,4 +11,5 @@ export interface PollVoteCreateResponse {
   meal_poll: string | ObjectId
   meal: string | ObjectId
   cost: number
+  org: any
 }
