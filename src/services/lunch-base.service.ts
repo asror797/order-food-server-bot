@@ -1,9 +1,9 @@
-import {
-  CreateLunchBaseDto,
-  GetLunchBaseDto,
-  UpdateLunchBaseDto
-} from '../dtos/lunch-base.dto'
 import { HttpException } from '@exceptions'
+import {
+  LunchBaseCreateRequest,
+  LunchBaseRetrieveAllRequest,
+  LunchBaseRetrieveAllResponse
+} from '@interfaces'
 import { lunchBaseModel, lunchModel, orgModel } from '@models'
 
 export class LunchBaseService {
@@ -11,14 +11,55 @@ export class LunchBaseService {
   readonly orgs = orgModel
   public lunches = lunchModel
 
-  public async lunchBaseRetrieveAll(): Promise<any> {}
-  public async lunchBaseRetrieveOne(): Promise<any> {}
-  public async lunchBaseCreate(): Promise<any> {}
-  public async lunchBaseUpdate(): Promise<any> {}
-  public async lunchBaseDelete(): Promise<any> {}
-  async #_checkName() {}
+  public async lunchBaseRetrieveAll(
+    payload: LunchBaseRetrieveAllRequest
+  ): Promise<LunchBaseRetrieveAllResponse> {
+    console.log(payload)
 
-  async retrieveAllLunchBases(payload: GetLunchBaseDto) {
+    return {
+      count: 11,
+      lunchList: [],
+      pageCount: 1,
+      pageNumber: 1,
+      pageSize: 4
+    }
+  }
+
+  public async lunchBaseRetrieveOne(): Promise<any> {}
+
+  public async lunchBaseCreate(payload: LunchBaseCreateRequest): Promise<any> {
+    const org = await this.orgs.findById(payload.org)
+    if (!org) throw new HttpException(404, 'Org not found')
+
+    await this.#_checkName({ name: payload.name, org: payload.org })
+
+    const lunchbase = await this.lunchbase.create({
+      name: payload.name,
+      org: payload.org
+    })
+    return lunchbase
+  }
+
+  public async lunchBaseUpdate(payload: any): Promise<any> {
+    const lunchbase = await this.lunchBaseRetrieveOne()
+
+    if (payload.name) {
+      await this.#_checkName({ name: payload.name, org: lunchbase.org })
+    }
+  }
+
+  public async lunchBaseDelete(): Promise<any> {}
+
+  async #_checkName(payload: { name: string; org: string }) {
+    const lunchbase = await this.lunchbase.find({
+      name: payload.name,
+      org: payload.org
+    })
+    console.log(payload, lunchbase)
+    if (!lunchbase) throw new HttpException(400, 'Already name used')
+  }
+
+  async retrieveAllLunchBases(payload: any) {
     const skip = (payload.page - 1) * payload.size
 
     const query: any = {}
@@ -100,45 +141,5 @@ export class LunchBaseService {
     )
 
     return updatedBase
-  }
-
-  async createLunchBase(payload: CreateLunchBaseDto) {
-    const Org = await this.orgs.findById({
-      _id: payload.org
-    })
-
-    if (!Org) throw new HttpException(400, 'org not found')
-
-    const createdBase = await this.lunchbase.create({
-      name: payload.name,
-      org: payload.org
-    })
-
-    return createdBase
-  }
-
-  async updateLunchBase(payload: UpdateLunchBaseDto) {
-    await this.retrieveLunchBase(payload.id)
-    const updateField: any = {}
-
-    if (payload.name) {
-      updateField.name = payload.name
-    }
-    if (payload.org) {
-      const Org = await this.orgs.findById({
-        _id: payload.org
-      })
-
-      if (!Org) throw new HttpException(400, 'org not found')
-
-      updateField.Org = payload.org
-    }
-
-    const updatedAtBase = await this.lunchbase.findByIdAndUpdate(
-      payload.id,
-      updateField,
-      { new: true }
-    )
-    return updatedAtBase
   }
 }

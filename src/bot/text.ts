@@ -53,6 +53,10 @@ export const botTexts = {
     uz: `Ovqatni tanlang`,
     ru: `Ovqatni tanlang`
   },
+  createMealPoll: {
+    uz: `E'lonni yuborish`,
+    ru: `E'lonni yuborish`
+  },
   userCheckBalance: {
     uz: '💳 Balans',
     ru: '💳 Balans'

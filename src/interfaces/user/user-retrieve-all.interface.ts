@@ -17,7 +17,12 @@ export interface UserList {
   language_code: string
   balance: number
   role: string
-  org?: string
+  org?: any
+}
+
+export interface ActiveUserList {
+  _id: string | ObjectId
+  telegram_id: number
 }
 
 export interface UserRetrieveAllResponse {

@@ -14,7 +14,8 @@ import { IUser } from '../interfaces/user.interface'
 import {
   UserRegisterPayload,
   UserCheckResponse,
-  UserRetrieveAllRequest
+  UserRetrieveAllRequest,
+  ActiveUserList
 } from '@interfaces'
 
 export class UserService {
@@ -65,6 +66,19 @@ export class UserService {
       isExist: !!user,
       user: user
     }
+  }
+
+  public async retrieveActiveUsers(): Promise<ActiveUserList[]> {
+    const users = await this.users
+      .find({
+        is_active: true,
+        is_verified: true,
+        role: 'user'
+      })
+      .select('telegram_id')
+      .exec()
+
+    return users
   }
 
   public async registerUser(payload: UserRegisterPayload): Promise<any> {

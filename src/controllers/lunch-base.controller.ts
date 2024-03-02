@@ -4,7 +4,7 @@ import { ParsedQs } from 'qs'
 import { HttpException } from '@exceptions'
 
 export class LunchBaseController {
-  readonly service = new LunchBaseService()
+  readonly lunchbaseService = new LunchBaseService()
 
   public lunchBaseRetrieveOne = () => {}
   public lunchBaseDelete = () => {}
@@ -18,7 +18,13 @@ export class LunchBaseController {
       const page = parseInt(req.query.page as string) || 1
       const size = parseInt(req.query.size as string) || 10
       const search = req.query.search as string
-      res.json(await this.service.retrieveAllLunchBases({ page, size, search }))
+      res.json(
+        await this.lunchbaseService.retrieveAllLunchBases({
+          page,
+          size,
+          search
+        })
+      )
     } catch (error) {
       next(error)
     }
@@ -30,7 +36,7 @@ export class LunchBaseController {
     next: NextFunction
   ) => {
     try {
-      res.json(await this.service.createLunchBase(req.body))
+      res.json(await this.lunchbaseService.lunchBaseCreate(req.body))
     } catch (error) {
       next(error)
     }
@@ -43,7 +49,7 @@ export class LunchBaseController {
   ) => {
     try {
       const lunchBase = req.params.base as string
-      res.json(await this.service.retrieveLunches(lunchBase))
+      res.json(await this.lunchbaseService.retrieveLunches(lunchBase))
     } catch (error) {
       next(error)
     }
@@ -59,7 +65,7 @@ export class LunchBaseController {
       if (!baseId) {
         throw new HttpException(400, 'baseId is required')
       }
-      res.json(await this.service.toggleStatus({ id: baseId }))
+      res.json(await this.lunchbaseService.toggleStatus({ id: baseId }))
     } catch (error) {
       next(error)
     }
@@ -84,7 +90,7 @@ export class LunchBaseController {
     try {
       const id = req.params.lunch as string
 
-      res.json(await this.service.getById(id))
+      res.json(await this.lunchbaseService.getById(id))
     } catch (error) {
       next(error)
     }

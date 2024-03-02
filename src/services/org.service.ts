@@ -16,10 +16,10 @@ export class OrgService {
   public async orgRetrieveAll(
     payload: OrgRetrieveAllRequest
   ): Promise<OrgRetrieveAllResponse> {
-    let query = {}
+    const query: any = {}
 
     if (payload.search) {
-      query = { name_org: { $regex: payload.search, $options: 'i' } }
+      query.name_org = { $regex: payload.search, $options: 'i' }
     }
 
     const orgList = await this.orgs

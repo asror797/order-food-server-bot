@@ -1,7 +1,8 @@
 export interface LunchBaseRetrieveAllRequest {
   pageSize: number
   pageNumber: number
-  search: string
+  search?: string
+  org?: string
 }
 
 export interface LunchBaseList {

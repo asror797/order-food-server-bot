@@ -5,7 +5,9 @@ export const botSteps = {
   selectCategory: 'selectCategory',
   viewFood: 'viewFood',
   cookNewPoll: 'newPoll',
-  cookMainMenu: 'cookMainMenu'
+  cookMainMenu: 'cookMainMenu',
+  cookSelectMeal: 'cookSelectMeal',
+  cookNewPollSend: 'cookNewPollSend'
 }
 
 export const categoryEnum = {
@@ -20,5 +22,6 @@ export const botCallbackData = {
   saveToStore: 'save-to-store',
   showCount: 'show-count',
   clearStore: 'clear-store',
-  buyStore: 'buy-store'
+  buyStore: 'buy-store',
+  selectLunch: 'select-lunch'
 }

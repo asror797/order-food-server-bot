@@ -1,6 +1,6 @@
 export interface LunchBaseCreateRequest {
-  name: number
-  org: number
+  name: string
+  org: string
 }
 
 export interface LunchBaseCreateResponse {

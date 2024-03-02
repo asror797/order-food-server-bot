@@ -7,9 +7,48 @@ import { HttpException } from '@exceptions'
 export class LunchController {
   readonly lunchService = new LunchService()
 
-  public lunchRetrieveAll = () => {}
+  public lunchRetrieveAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const pageNumber = parseInt(req.query.page as string) || 1
+      const pageSize = parseInt(req.query.size as string) || 10
+      const search = req.query.search as string | undefined
+      // const lunchbase = req.query.lunchbase  as string
+
+      res.json(
+        await this.lunchService.lunchRetrieveAll({
+          pageNumber,
+          pageSize,
+          search
+        })
+      )
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
   public lunchRetrieveOne = () => {}
-  public lunchCreate = () => {}
+
+  public lunchCreate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      res.json(
+        await this.lunchService.lunchCreate({
+          ...req.body
+        })
+      )
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
   public lunchDelete = () => {}
 
   public getLunch = async (

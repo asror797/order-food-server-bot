@@ -10,10 +10,12 @@ import type {
 } from 'node-telegram-bot-api'
 import {
   FoodService,
+  LunchService,
   OrderService,
   OrgService,
   StoreService,
-  UserService
+  UserService,
+  MealPollService
 } from '@services'
 import {
   MainMenuKeyboard,
@@ -21,7 +23,8 @@ import {
   FoodCategoryMenuKeyboard,
   ViewFoodKeyboard,
   CountFoodAmountComponent,
-  CookMainMenu
+  CookMainMenu,
+  CreateMealPoll
 } from './keyboards'
 import { lunchBaseModel } from '@models'
 
@@ -32,6 +35,8 @@ class TelegramBotApi {
   private foodService = new FoodService()
   private orderService = new OrderService()
   private storeService = new StoreService()
+  private lunchService = new LunchService()
+  private mealPollService = new MealPollService()
   private lunchbases = lunchBaseModel
 
   constructor(token: string) {
@@ -39,7 +44,6 @@ class TelegramBotApi {
   }
 
   public initializeBot() {
-    this.bot.onText(/\/start/, this.handleStart.bind(this))
     this.bot.on('message', this.handleMessage.bind(this))
     this.bot.on('contact', this.handleContact.bind(this))
     this.bot.on('callback_query', this.handleCallbackQuery.bind(this))
@@ -54,33 +58,54 @@ class TelegramBotApi {
     const chatType = msg.chat.type
     try {
       const data = await this.userService.checkUser({ telegramId: chatId })
+      console.log(data)
       if (
         data.isExist &&
         data.user &&
         data.user.is_active &&
         data.user.is_verified
       ) {
-        if (
-          data.user.role == 'user' &&
-          chatType == 'private' &&
-          msg.text !== '/start'
-        ) {
-          await this.handleUserMessages(msg)
-        } else if (
-          data.user.role == 'cook' &&
-          chatType == 'private' &&
-          msg.text !== '/start'
-        ) {
-          if (data.user.org) {
-            await this.handleCookMessages(msg, data.user.org)
+        if (data.user.role == 'user' && chatType == 'private') {
+          if (msg.text == '/start') {
+            this.bot.sendMessage(
+              msg.chat.id,
+              botTexts.userMainMenu.uz,
+              MainMenuKeyboard
+            )
+
+            await this.storeService.editStep({
+              telegramId: msg.chat.id,
+              step: botSteps.mainMenu
+            })
           } else {
-            this.bot.sendMessage(msg.chat.id, 'Oshxona biriktirilmagan')
+            await this.handleUserMessages(msg)
+          }
+        } else if (data.user.role == 'cook' && chatType == 'private') {
+          if (data.user.org) {
+            await this.handleCookMessages(msg, data.user)
+          } else {
+            this.bot.sendMessage(msg.chat.id, 'Oshxona biriktirilmagan', {
+              reply_markup: {
+                remove_keyboard: true
+              }
+            })
           }
         }
-      } else {
+      } else if (
+        data.isExist &&
+        data.user &&
+        !data.user.is_active &&
+        !data.user.is_verified
+      ) {
         this.bot.sendMessage(chatId, `<b>Siz Tasdiqlanmagansiz</b>`, {
           parse_mode: 'HTML'
         })
+      } else {
+        this.bot.sendMessage(
+          msg.chat.id,
+          botTexts.askContact.uz,
+          ShareContactKeyboard
+        )
       }
     } catch (error) {
       console.log(error)
@@ -105,53 +130,54 @@ class TelegramBotApi {
     }
   }
 
-  private async handleStart(msg: Message) {
-    try {
-      const data = await this.userService.checkUser({ telegramId: msg.chat.id })
+  // private async handleStart(msg: Message) {
+  //   try {
+  //     const data = await this.userService.checkUser({ telegramId: msg.chat.id })
+  //     console.log(data)
 
-      if (data.isExist && data.user && data.user.role == 'user') {
-        this.bot.sendMessage(
-          msg.chat.id,
-          botTexts.userMainMenu.uz,
-          MainMenuKeyboard
-        )
+  //     if (data.isExist && data.user && data.user.role == 'user') {
+  //       this.bot.sendMessage(
+  //         msg.chat.id,
+  //         botTexts.userMainMenu.uz,
+  //         MainMenuKeyboard
+  //       )
 
-        await this.storeService.editStep({
-          telegramId: msg.chat.id,
-          step: botSteps.mainMenu
-        })
-      } else if (data.isExist && data.user && data.user.role == 'cook') {
-        this.bot.sendMessage(
-          msg.chat.id,
-          botTexts.cookMainMenu.uz,
-          CookMainMenu
-        )
+  //       await this.storeService.editStep({
+  //         telegramId: msg.chat.id,
+  //         step: botSteps.mainMenu
+  //       })
+  //     } else if (data.isExist && data.user && data.user.role == 'cook') {
+  //       this.bot.sendMessage(
+  //         msg.chat.id,
+  //         botTexts.cookMainMenu.uz,
+  //         CookMainMenu
+  //       )
 
-        await this.storeService.editStep({
-          telegramId: msg.chat.id,
-          step: botSteps.cookMainMenu
-        })
-      } else if (!data.isExist) {
-        this.bot.sendMessage(
-          msg.chat.id,
-          botTexts.askContact.uz,
-          ShareContactKeyboard
-        )
-      } else if (
-        data.user &&
-        (data.user?.is_verified == false || data.user?.is_active == false)
-      ) {
-        this.bot.sendMessage(msg.chat.id, botTexts.noVerified.uz, {
-          reply_markup: {
-            remove_keyboard: true
-          }
-        })
-      }
-    } catch (error) {
-      console.log(error)
-      this.bot.sendMessage(msg.chat.id, 'hello')
-    }
-  }
+  //       await this.storeService.editStep({
+  //         telegramId: msg.chat.id,
+  //         step: botSteps.cookMainMenu
+  //       })
+  //     } else if (!data.isExist) {
+  //       this.bot.sendMessage(
+  //         msg.chat.id,
+  //         botTexts.askContact.uz,
+  //         ShareContactKeyboard
+  //       )
+  //     } else if (
+  //       data.user &&
+  //       (data.user?.is_verified == false || data.user?.is_active == false)
+  //     ) {
+  //       this.bot.sendMessage(msg.chat.id, botTexts.noVerified.uz, {
+  //         reply_markup: {
+  //           remove_keyboard: true
+  //         }
+  //       })
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //     this.bot.sendMessage(msg.chat.id, 'hello')
+  //   }
+  // }
 
   private async handleCallbackQuery(msg: CallbackQuery) {
     try {
@@ -208,32 +234,132 @@ class TelegramBotApi {
     }
   }
 
-  private async handleCookMessages(msg: Message, org: string): Promise<void> {
+  private async handleCookMessages(msg: Message, user: any): Promise<void> {
     try {
-      const step = await this.storeService.getStep({ telegramId: msg.chat.id })
+      const org = user.org['_id']
 
-      if (step == botSteps.cookMainMenu) {
-        if (msg.text == botTexts.cookNewPoll.uz) {
-          const lunchbases = await this.lunchbases.find({
-            org: org,
-            is_active: true
-          })
+      if (msg.text == '/start') {
+        this.bot.sendMessage(
+          msg.chat.id,
+          botTexts.cookMainMenu.uz,
+          CookMainMenu
+        )
 
-          this.bot.sendMessage(msg.chat.id, botTexts.cookViewLunchBase.uz, {
-            reply_markup: KeyboardMaker({
-              data: lunchbases.map((e) => ({ name: e.name }))
-            }),
-            parse_mode: 'HTML'
-          })
+        await this.storeService.editStep({
+          telegramId: msg.chat.id,
+          step: botSteps.cookMainMenu
+        })
+      } else {
+        const step = await this.storeService.getStep({
+          telegramId: msg.chat.id
+        })
 
-          await this.storeService.editStep({
-            telegramId: msg.chat.id,
-            step: 'select-food'
-          })
+        if (step == botSteps.cookMainMenu) {
+          if (msg.text == botTexts.cookNewPoll.uz) {
+            const lunchbases = await this.lunchbases.find({
+              org: org,
+              is_active: true
+            })
+
+            this.bot.sendMessage(msg.chat.id, botTexts.cookViewLunchBase.uz, {
+              reply_markup: KeyboardMaker({
+                data: lunchbases.map((e) => ({ name: e.name }))
+              }),
+              parse_mode: 'HTML'
+            })
+
+            await this.storeService.editStep({
+              telegramId: msg.chat.id,
+              step: `${botSteps.cookSelectMeal}/${org}`
+            })
+          }
+
+          if (msg.text == botTexts.cookViewPoll.uz) {
+            this.bot.sendMessage(msg.chat.id, 'latest MealPoll Info')
+          }
         }
 
-        if (msg.text == botTexts.cookViewPoll.uz) {
-          this.bot.sendMessage(msg.chat.id, 'Salom')
+        if (step.split('/')[0] == botSteps.cookSelectMeal) {
+          if (msg.text == botTexts.backAction.uz) {
+            this.bot.sendMessage(
+              msg.chat.id,
+              botTexts.cookMainMenu.uz,
+              CookMainMenu
+            )
+
+            await this.storeService.editStep({
+              telegramId: msg.chat.id,
+              step: botSteps.cookMainMenu
+            })
+          } else {
+            const lunchbase = await this.lunchbases
+              .findOne({
+                name: msg.text,
+                org: step.split('/')[1]
+              })
+              .select('name org')
+              .exec()
+            console.log(lunchbase, step)
+
+            if (lunchbase) {
+              const lunch = await this.lunchService.lunchRetrieveAll({
+                pageNumber: 1,
+                pageSize: 10,
+                org: step.split('/')[1],
+                lunchbase: lunchbase['_id'],
+                is_bot: true
+              })
+
+              const caption = lunch.lunchList.map(
+                (e: any) =>
+                  `* <b>${e.name}</b> - ${FormatNumberWithSpaces(e.cost)} so'm`
+              )
+
+              console.log(lunch)
+
+              if (lunch.lunchList.length > 1) {
+                this.bot.sendMessage(
+                  msg.chat.id,
+                  `<b>E'lon !!!</b>\n\n<b>Tayyorlanmoqchi: </b>${lunchbase.name}\n\n<b>Oshxona:</b> ${user.org.name_org}\n\n<b>Porsiyalari:</b>\n\n${caption.join('\n')}\n\n <i>Diqqat e'lon barcha oshxonalar ishchilariga yuboriladi.</i>`,
+                  CreateMealPoll
+                )
+
+                await this.storeService.editStep({
+                  telegramId: msg.chat.id,
+                  step: `${botSteps.cookNewPollSend}/${lunchbase['_id']}/${step.split('/')[1]}`
+                })
+              }
+            }
+          }
+        }
+
+        if (step.split('/')[0] == botSteps.cookNewPollSend) {
+          if (msg.text == botTexts.backAction.uz) {
+            await this.bot.deleteMessage(msg.chat.id, msg.message_id)
+            await this.storeService.editStep({
+              telegramId: msg.chat.id,
+              step: botSteps.cookMainMenu
+            })
+
+            this.bot.sendMessage(msg.chat.id, 'Siz oshpasiz', CookMainMenu)
+          }
+
+          if (msg.text == botTexts.createMealPoll.uz) {
+            await this.bot.deleteMessage(msg.chat.id, msg.message_id)
+
+            await this.storeService.editStep({
+              telegramId: msg.chat.id,
+              step: botSteps.cookMainMenu
+            })
+
+            this.bot.sendMessage(msg.chat.id, 'Siz oshpasiz', CookMainMenu)
+
+            await this.#_createMealPoll({
+              meal: step.split('/')[1],
+              org: step.split('/')[2],
+              cook: msg.chat.id
+            })
+          }
         }
       }
     } catch (error) {
@@ -643,6 +769,47 @@ class TelegramBotApi {
       this.bot.sendMessage(msg.from.id, botTexts.errorMessage.uz, {
         parse_mode: 'HTML'
       })
+    }
+  }
+
+  async #_createMealPoll(payload: {
+    meal: string
+    org: string
+    cook: number
+  }): Promise<void> {
+    const mealpoll = await this.mealPollService.mealPollCreate({
+      meal: payload.meal,
+      org: payload.org
+    })
+
+    if (mealpoll.status && mealpoll.data) {
+      const lunches = await this.lunchService.lunchRetrieveAll({
+        pageNumber: 1,
+        pageSize: 5,
+        lunchbase: mealpoll.data['_id'],
+        org: payload.org,
+        is_bot: true
+      })
+
+      const activeUsers = await this.userService.retrieveActiveUsers()
+
+      activeUsers.map((e) => {
+        this.bot.sendMessage(e.telegram_id, 'Iltimos ovqatni tanlang', {
+          reply_markup: {
+            inline_keyboard: lunches.lunchList.map((e: any) => [
+              {
+                text: `${e.name} - ${FormatNumberWithSpaces(e.cost)} so'm`,
+                callback_data: `${botCallbackData.selectLunch}/${mealpoll.data['_id']}/${e['_id']}`
+              }
+            ])
+          }
+        })
+      })
+    } else {
+      this.bot.sendMessage(
+        payload.cook,
+        `${Math.floor(mealpoll.data.diffrence)} minut vaqt qoldi yangi elon yaratish uchun`
+      )
     }
   }
 }

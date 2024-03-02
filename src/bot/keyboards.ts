@@ -64,6 +64,17 @@ export const CookMainMenu: SendMessageOptions = {
   parse_mode: 'HTML'
 }
 
+export const CreateMealPoll: SendMessageOptions = {
+  reply_markup: {
+    keyboard: [
+      [{ text: botTexts.createMealPoll.uz }],
+      [{ text: botTexts.backAction.uz }]
+    ],
+    resize_keyboard: true
+  },
+  parse_mode: 'HTML'
+}
+
 export const ShareContactKeyboard: SendMessageOptions = {
   reply_markup: {
     keyboard: [
