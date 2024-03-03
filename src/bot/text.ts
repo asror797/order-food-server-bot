@@ -125,6 +125,18 @@ export const botTexts = {
     uz: `⚙️ Sozlamalar`,
     ru: `⚙️ Sozlamalar`
   },
+  showInflunceBalance: {
+    uz: `Hisobda pul yetarli emas`,
+    ru: `Hisobda pul yetarli emas`
+  },
+  cometotakeLunch: {
+    uz: 'Olish uchun keldim ✅',
+    ru: 'Olish uchun keldim ✅'
+  },
+  donePollVote: {
+    uz: 'Bajarish ✅',
+    ru: 'Bajarish ✅'
+  },
   errorMessage: {
     uz: '<i><b>Error.message unhandle</b></i>',
     ru: '<i><b>Error.message unhandle</b></i>'

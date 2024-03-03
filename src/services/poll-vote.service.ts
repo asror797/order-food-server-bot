@@ -51,11 +51,14 @@ export class PollVoteService {
   ): Promise<PollVoteCreateResponse> {
     const meal_poll: any = await this.mealpolls
       .findById(payload.meal_poll)
-      .populate('org', 'name_org group_b_id')
-      .select('meal')
+      .populate('org', 'name_org trip_timeout group_b_id')
+      .select('meal sent_at')
       .exec()
 
     if (!meal_poll) throw new HttpException(404, 'Meal Poll not found')
+
+    const diffrence = (Math.floor(Date.now() / 1000) - meal_poll.sent_at) / 60
+    console.log(diffrence)
 
     const meal = await this.lunches
       .findById(payload.meal)
@@ -64,24 +67,44 @@ export class PollVoteService {
 
     if (!meal) throw new HttpException(404, 'Meal not found')
 
-    const user = await this.users.findById(payload.user)
+    const user = await this.users
+      .findById(payload.user)
+      .select('balance')
+      .exec()
+
     if (!user) throw new HttpException(404, 'User not found')
 
-    const pollvote = await this.pollvotes.create({
-      meal: payload.meal,
-      meal_poll: payload.meal_poll,
-      user: payload.user,
-      cost: meal.cost
-    })
+    if (user.balance >= meal.cost && diffrence < meal_poll.org.trip_timeout) {
+      const pollvote = await this.pollvotes.create({
+        meal: payload.meal,
+        meal_poll: payload.meal_poll,
+        user: payload.user,
+        cost: meal.cost
+      })
 
-    return {
-      cost: pollvote.cost,
-      meal: pollvote.meal,
-      meal_poll: pollvote.meal_poll,
-      user: pollvote.user,
-      org: {
-        name: meal_poll.org.name_org,
-        groupId: meal_poll.org.group_b_id
+      return {
+        status: true,
+        cost: pollvote.cost,
+        meal: meal.name,
+        meal_poll: pollvote.meal_poll,
+        user: pollvote.user,
+        org: {
+          name: meal_poll.org.name_org,
+          groupId: meal_poll.org.group_b_id
+        }
+      }
+    } else {
+      return {
+        status: false,
+        cost: meal.cost,
+        meal: meal.name,
+        meal_poll: meal_poll['_id'],
+        user: user['_id'],
+        org: {
+          name: meal_poll.org.name_org,
+          groupId: meal_poll.org.group_b_id
+        },
+        timeout: diffrence > meal_poll.org.trip_timeout
       }
     }
   }

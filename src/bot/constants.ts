@@ -23,5 +23,7 @@ export const botCallbackData = {
   showCount: 'show-count',
   clearStore: 'clear-store',
   buyStore: 'buy-store',
-  selectLunch: 'select-lunch'
+  selectLunch: 'select-lunch',
+  comeToTakeLunch: 'come-to-take-lunch',
+  donePollVoteOfUser: 'done-pollvote-user'
 }

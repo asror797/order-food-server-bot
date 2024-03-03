@@ -194,14 +194,69 @@ class TelegramBotApi {
           msg.message &&
           msg.data
         ) {
-          this.bot.deleteMessage(msg.from.id, msg.message.message_id)
-          this.bot.sendMessage(msg.from.id, 'olish uchun keldim')
+          this.bot.answerCallbackQuery({
+            callback_query_id: msg.id
+          })
+
           await this.#_createPollVote({
             lunch: msg.data.split('/')[2],
             meal: msg.data.split('/')[1],
-            user: user.user['_id'].toString(),
-            org: user.user.org['_id']
+            user: user.user,
+            org: user.user.org['_id'],
+            message: msg.message,
+            callbackId: msg.id
           })
+        }
+
+        if (
+          msg.data &&
+          msg.data.split('/')[0] == botCallbackData.comeToTakeLunch &&
+          msg.message?.text
+        ) {
+          this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
+
+          this.bot.sendMessage(
+            msg.message.chat.id,
+            `${msg.message.text}\nStatus: Yuborildi`,
+            {
+              parse_mode: 'HTML'
+            }
+          )
+
+          this.bot.sendMessage(
+            parseInt(msg.data.split('/')[1]),
+            msg.message.text,
+            {
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text: botTexts.donePollVote.uz,
+                      callback_data: `${botCallbackData.donePollVoteOfUser}/${parseInt(msg.data.split('/')[1])}`
+                    }
+                  ]
+                ]
+              }
+            }
+          )
+        }
+
+        if (
+          msg.data &&
+          msg.data.split('/')[0] == botCallbackData.donePollVoteOfUser &&
+          msg.message?.text
+        ) {
+          this.bot.deleteMessage(
+            parseInt(msg.data.split('/')[1]),
+            msg.message.message_id
+          )
+          this.bot.sendMessage(
+            parseInt(msg.data.split('/')[1]),
+            `${msg.message.text}\n<b>Status</b>: Bajarildi ✅`,
+            {
+              parse_mode: 'HTML'
+            }
+          )
         }
       } else {
         this.bot.sendMessage(msg.from.id, botTexts.noVerified.uz)
@@ -776,7 +831,7 @@ class TelegramBotApi {
       activeUsers.map((e) => {
         this.bot.sendMessage(
           e.telegram_id,
-          `<b>Iltimos ovqatni tanlang</b>\n\nTayyorlanyabdi: <b>${mealpoll.data.meal?.name}</b>\nOshxona: <b>${mealpoll.data.org?.name_org}</b>\nPorsiyalar: `,
+          `<b>Iltimos ovqatni tanlang!!!</b>\n\n<b>Tayyorlanyabdi</b>: ${mealpoll.data.meal?.name}\n<b>Oshxona</b>: ${mealpoll.data.org?.name_org}\n<b>Porsiyalar</b>: `,
           {
             reply_markup: {
               inline_keyboard: lunches.lunchList.map((x: any) => [
@@ -801,24 +856,80 @@ class TelegramBotApi {
   async #_createPollVote(payload: {
     meal: string
     lunch: string
-    user: string
+    user: any
     org: string
+    message: any
+    callbackId: any
   }) {
     const vote = await this.pollVoteService.pollVoteCreate({
       meal: payload.lunch,
       meal_poll: payload.meal,
-      user: payload.user
+      user: payload.user['_id']
     })
 
-    await this.paymentService.paymentCreate({
-      amount: vote.cost,
-      client: payload.user,
-      org: payload.org,
-      type: false
-    })
+    if (vote.status) {
+      await this.paymentService.paymentCreate({
+        amount: vote.cost,
+        client: payload.user['_id'],
+        org: payload.org,
+        type: false
+      })
 
-    this.bot.sendMessage(vote.org.groupId, 'Olish uchun keldim')
-    this.bot.sendMessage(vote.org.groupId, 'tanlandi')
+      this.bot.deleteMessage(
+        payload.user.telegram_id,
+        payload.message.message_id
+      )
+
+      this.bot.sendMessage(
+        payload.user.telegram_id,
+        `<b>Kimga</b>: ${payload.user.first_name} ${payload.user.last_name}\n<b>Telefon</b>: ${payload.user.phone_number}\n<b>Oshxona</b>: ${vote.org.name} \n<b>Porsiya</b>: ${vote.meal}\n<b>Narxi</b>: ${FormatNumberWithSpaces(vote.cost)} so'm`,
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: botTexts.cometotakeLunch.uz,
+                  callback_data: `${botCallbackData.comeToTakeLunch}/${vote.org.groupId}`
+                }
+              ]
+            ]
+          },
+          parse_mode: 'HTML'
+        }
+      )
+
+      this.bot.sendMessage(
+        vote.org.groupId,
+        `<b>Kimga</b>: ${payload.user.first_name} ${payload.user.last_name}\n<b>Telefon</b>: ${payload.user.phone_number}\n<b>Oshxona</b>: ${vote.org.name} \n<b>Porsiya</b>: ${vote.meal}\n<b>Narxi</b>: ${FormatNumberWithSpaces(vote.cost)} so'm`,
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: botTexts.donePollVote.uz,
+                  callback_data: `${botCallbackData.donePollVoteOfUser}/${vote.org.groupId}`
+                }
+              ]
+            ]
+          },
+          parse_mode: 'HTML'
+        }
+      )
+    } else {
+      if (vote.timeout) {
+        this.bot.deleteMessage(
+          payload.user.telegram_id,
+          payload.message.message_id
+        )
+        this.bot.sendMessage(payload.user.telegram_id, 'Vaqt otib ketdi')
+      } else {
+        this.bot.answerCallbackQuery(payload.callbackId)
+        this.bot.sendMessage(
+          payload.user.telegram_id,
+          'Hisobda pul yetarli emas'
+        )
+      }
+    }
   }
 }
 
