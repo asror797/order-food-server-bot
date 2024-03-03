@@ -29,6 +29,8 @@ import {
   CreateMealPoll
 } from './keyboards'
 import { lunchBaseModel } from '@models'
+import { format } from 'date-fns'
+import { uz } from 'date-fns/locale'
 
 class TelegramBotApi {
   private bot: TelegramBot
@@ -176,8 +178,8 @@ class TelegramBotApi {
           this.bot.deleteMessage(msg.from.id, msg.message.message_id)
           await this.#_createOrder({
             msg: msg,
-            user: msg.data?.split('/')[1],
-            org: msg.data?.split('/')[2]
+            user: user.user['_id'].toString(),
+            org: msg.data?.split('/')[1]
           })
         }
 
@@ -257,6 +259,23 @@ class TelegramBotApi {
               parse_mode: 'HTML'
             }
           )
+        }
+
+        if (
+          msg.data &&
+          msg.data.split('/')[0] == botCallbackData.acceptOrder &&
+          msg.message
+        ) {
+          this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
+          // this.bot.sendMessage()
+        }
+
+        if (
+          msg.data &&
+          msg.data.split('/')[0] == botCallbackData.cancelOrder &&
+          msg.message
+        ) {
+          this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
         }
       } else {
         this.bot.sendMessage(msg.from.id, botTexts.noVerified.uz)
@@ -738,19 +757,49 @@ class TelegramBotApi {
         org: org['_id']
       })
 
-      console.log(store[0].food.cost)
+      console.log(store)
 
-      const order = await this.orderService.createOrder({
+      const order = await this.orderService.orderCreate({
         client: payload.user,
-        foods: [],
+        foods: store.map((e: any) => ({ food: e.food.id, amount: e.amount })),
         org: org['_id']
       })
 
-      this.bot.sendMessage(payload.msg.from.id, order?.org.name_org)
-      this.bot.sendMessage(org.group_a_id, '')
+      const productsCaption = this.#_storedFoodsCaptionGenerator(
+        order.foods.map((e: any) => ({
+          food: { food: e.name, cost: e.cost },
+          amount: e.amount
+        }))
+      )
+      this.bot.sendMessage(payload.msg.from.id, 'order?.org.name_org')
+      this.bot.sendMessage(
+        org.group_a_id,
+        `<i>Buyurtma haqida:</i>\n<b>Buyurtmachi</b>:  ${order.user.fullname}\n<b>Telefon raqami</b>:  ${order.user.phone_number}\n<b>Tanlangan oshxona</b>:  ${order.org}\n<b>Buyurtma sanasi</b>:  ${format(order.createdAt, 'd MMM HH:mm y', { locale: uz })}\n<b>Mahsulotlar</b>:\n${productsCaption}`,
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: botTexts.acceptOrder.uz,
+                  callback_data: `${botCallbackData.acceptOrder}/${order['_id']}`
+                }
+              ],
+              [
+                {
+                  text: botTexts.cancelOrder.uz,
+                  callback_data: `${botCallbackData.cancelOrder}/${order['_id']}`
+                }
+              ]
+            ]
+          },
+          parse_mode: 'HTML'
+        }
+      )
     } catch (error) {
       console.log(error)
-      this.bot.sendMessage(payload.msg.from.id, botTexts.errorMessage.uz)
+      this.bot.sendMessage(payload.msg.from.id, botTexts.errorMessage.uz, {
+        parse_mode: 'HTML'
+      })
     }
   }
 

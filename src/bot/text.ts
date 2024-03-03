@@ -137,6 +137,14 @@ export const botTexts = {
     uz: 'Bajarish ✅',
     ru: 'Bajarish ✅'
   },
+  acceptOrder: {
+    uz: 'Bajarish ✅',
+    ru: 'Bajarish ✅'
+  },
+  cancelOrder: {
+    uz: 'Bekor qilish 🚫',
+    ru: 'Bekor qilish 🚫'
+  },
   errorMessage: {
     uz: '<i><b>Error.message unhandle</b></i>',
     ru: '<i><b>Error.message unhandle</b></i>'

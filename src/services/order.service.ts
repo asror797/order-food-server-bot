@@ -60,15 +60,17 @@ export class OrderService {
     console.log(orderList)
   }
   public async orderCreate(payload: OrderCreateRequest): Promise<any> {
+    console.log('Payload', payload)
     const user = await this.users.findById(payload.client)
     if (!user) throw new HttpException(404, 'User not found')
 
     const org = await this.orgs
-      .findById(payload.client, { is_deleted: false })
+      .findById(payload.org, { is_deleted: false })
       .select('name_org')
       .exec()
     if (!org) throw new HttpException(404, 'Org not found')
 
+    const orderFoods: any = []
     let total_cost: number = 0
     await Promise.all(
       payload.foods.map(async (e) => {
@@ -77,19 +79,29 @@ export class OrderService {
           .select('name org cost products')
           .exec()
 
-        if (!food || e.amount <= 0 || food.org !== org['_id']) {
-          throw new HttpException(404, 'Food is not valid')
+        if (!food) {
+          throw new HttpException(404, 'Food not found')
         }
 
+        if (e.amount <= 0) {
+          throw new HttpException(404, 'Food amount not valid')
+        }
+
+        orderFoods.push({
+          id: food['_id'],
+          name: food.name,
+          cost: food.cost,
+          amount: e.amount
+        })
         total_cost += food.cost * e.amount
         // check products of food from warehouse
       })
     )
 
-    const order = await this.orders.create({
+    const order: any = await this.orders.create({
       client: user['_id'],
       org: org['_id'],
-      foods: [],
+      foods: orderFoods.map((e: any) => ({ food: e.id, amount: e.amount })),
       total_cost: total_cost
     })
 
@@ -97,10 +109,19 @@ export class OrderService {
       _id: order['_id'],
       client: user['_id'],
       org: org.name_org,
-      foods: [],
+      foods: orderFoods.map((e: any) => ({
+        name: e.name,
+        cost: e.cost,
+        amount: e.amount
+      })),
       is_accepted: false,
       is_canceled: false,
-      total_cost: total_cost
+      total_cost: total_cost,
+      user: {
+        fullname: `${user.first_name} ${user.last_name}`,
+        phone_number: user.phone_number
+      },
+      createdAt: order.createdAt
     }
   }
 
