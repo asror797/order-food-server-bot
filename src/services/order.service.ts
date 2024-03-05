@@ -60,7 +60,6 @@ export class OrderService {
     console.log(orderList)
   }
   public async orderCreate(payload: OrderCreateRequest): Promise<any> {
-    console.log('Payload', payload)
     const user = await this.users.findById(payload.client)
     if (!user) throw new HttpException(404, 'User not found')
 
@@ -125,7 +124,15 @@ export class OrderService {
     }
   }
 
-  public async orderUpdate(): Promise<any> {}
+  public async orderUpdate(payload: any): Promise<any> {
+    const updatedOrder = await this.orders.findByIdAndUpdate(payload.id, {
+      is_accepted: true,
+      is_canceled: false
+    })
+
+    return UpdateOrder
+  }
+
   public async orderDelete(): Promise<any> {}
 
   public async getOrders(page: number, size: number) {
