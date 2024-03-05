@@ -1,5 +1,4 @@
 export * from './user.model'
-export * from './trip.model'
 export * from './productlog.model'
 export * from './product.model'
 export * from './payment.model'

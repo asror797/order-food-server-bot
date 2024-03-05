@@ -1,5 +1,5 @@
 import { Document, Schema, model } from 'mongoose'
-import { IProductLog } from '../interfaces/productlog.interface'
+import { IProductLog } from '@interfaces'
 
 const productLog: Schema = new Schema(
   {

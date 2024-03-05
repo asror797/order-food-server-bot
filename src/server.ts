@@ -10,7 +10,6 @@ import {
   OrgRoute,
   PaymentRoute,
   ProductLogRoute,
-  TripRoute,
   ProductRoute,
   RoleRoute
 } from '@routes'
@@ -24,7 +23,6 @@ const app = new App([
   new OrderRoute(),
   new LunchRoute(),
   new AdminRoute(),
-  new TripRoute(),
   new ProductLogRoute(),
   new PaymentRoute(),
   new LunchBaseRoute(),

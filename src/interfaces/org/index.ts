@@ -1,5 +1,6 @@
-export type * from './org-retrieve-all.interface'
-export type * from './org-retrieve-one.interfaec'
+export * from './order.schema.interface'
 export type * from './org-create.interface'
 export type * from './org-update.interface'
 export type * from './org-delete.interface'
+export type * from './org-retrieve-all.interface'
+export type * from './org-retrieve-one.interfaec'

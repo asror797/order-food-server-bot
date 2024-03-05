@@ -1,5 +1,5 @@
-import { IRole } from './../interfaces'
 import { Document, Schema, model } from 'mongoose'
+import { IRole } from '@interfaces'
 
 const roleSchema: Schema = new Schema(
   {

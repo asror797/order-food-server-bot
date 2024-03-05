@@ -1,5 +1,4 @@
 import { Types } from 'mongoose'
-import { IOrg } from './org.interface'
 
 export enum CategoryEnum {
   DRINKS = 'drinks',
@@ -18,7 +17,7 @@ export interface IFood extends Document {
   name: string
   cost: number
   img: string
-  org: IOrg['_id']
+  org: string
   category: CategoryEnum
   is_deleted: boolean
 }

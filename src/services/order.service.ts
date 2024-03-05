@@ -12,12 +12,12 @@ import {
   startOfWeek,
   startOfYear
 } from 'date-fns'
-import {
-  CreateOrderDto,
-  OrderRetrieveAllDto,
-  OrderRetrieveByUserDto,
-  UpdateOrder
-} from '../dtos/order.dto'
+// import {
+//   CreateOrderDto,
+//   OrderRetrieveAllDto,
+//   OrderRetrieveByUserDto,
+//   UpdateOrder
+// } from '../dtos/order.dto'
 import { foodModel, orderModel, orgModel, userModel } from '@models'
 import { HttpException } from '@exceptions'
 import { PaymentService, FoodService } from '@services'
@@ -130,7 +130,7 @@ export class OrderService {
       is_canceled: false
     })
 
-    return UpdateOrder
+    return updatedOrder
   }
 
   public async orderDelete(): Promise<any> {}
@@ -201,7 +201,7 @@ export class OrderService {
     return Orders
   }
 
-  public async getByUser(payload: OrderRetrieveByUserDto) {
+  public async getByUser(payload: any) {
     const { id, size, page } = payload
     const orderWithStatus: any = []
     const skip = (page - 1) * size
@@ -258,7 +258,7 @@ export class OrderService {
     }
   }
 
-  public async createOrder(payload: CreateOrderDto) {
+  public async createOrder(payload: any) {
     const Client = await this.users.findById(payload.client)
     if (!Client) throw new HttpException(400, 'client not found')
 
@@ -287,7 +287,7 @@ export class OrderService {
     return Order
   }
 
-  public async acceptOrder(orderData: UpdateOrder) {
+  public async acceptOrder(orderData: any) {
     const { order } = orderData
 
     const Order = await this.orders.findById(order)
@@ -333,7 +333,7 @@ export class OrderService {
     }
   }
 
-  public async cancelOrder(orderData: UpdateOrder) {
+  public async cancelOrder(orderData: any) {
     const { order } = orderData
 
     const Order = await this.orders.findById(order)
@@ -358,7 +358,7 @@ export class OrderService {
     return populatedOrder
   }
 
-  public async getTotalSpent(payload: OrderRetrieveAllDto) {
+  public async getTotalSpent(payload: any) {
     const { user, type } = payload
 
     const User = await this.users
@@ -548,7 +548,7 @@ export class OrderService {
     }
   }
 
-  public async getOldAnaltics(payload: OrderRetrieveAllDto) {
+  public async getOldAnaltics(payload: any) {
     const { user, type } = payload
 
     const User = await this.users

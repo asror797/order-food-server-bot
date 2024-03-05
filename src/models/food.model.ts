@@ -1,5 +1,5 @@
 import { Document, Schema, model } from 'mongoose'
-import { CategoryEnum, IFood } from '../interfaces/food.interface'
+import { CategoryEnum, IFood } from '@interfaces'
 
 const foodSchema: Schema = new Schema(
   {

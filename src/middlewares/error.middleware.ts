@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { HttpException } from '@exceptions'
 
-const errorMiddleware = (
+export const errorMiddleware = (
   error: HttpException,
   req: Request,
   res: Response,
@@ -19,5 +19,3 @@ const errorMiddleware = (
     next(error)
   }
 }
-
-export default errorMiddleware

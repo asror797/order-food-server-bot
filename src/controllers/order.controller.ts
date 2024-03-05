@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import OrderService from '../services/order.service'
 import { ParsedQs } from 'qs'
-import { CreateOrderDto } from '../dtos/order.dto'
+// import { CreateOrderDto } from '../dtos/order.dto'
 import { HttpException } from '@exceptions'
 
 export class OrderController {
@@ -92,7 +92,7 @@ export class OrderController {
     next: NextFunction
   ) => {
     try {
-      const orderData: CreateOrderDto = req.body
+      const orderData: any = req.body
       res.json(await this.orderService.createOrder(orderData))
     } catch (error) {
       next(error)

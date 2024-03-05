@@ -1,5 +1,6 @@
-export type * from './order-retrieve-all.interface'
-export type * from './order-retrieve-one.interface'
+export * from './order.schema.interface'
 export type * from './order-create.interface'
 export type * from './order-update.interface'
 export type * from './order-delete.interface'
+export type * from './order-retrieve-all.interface'
+export type * from './order-retrieve-one.interface'

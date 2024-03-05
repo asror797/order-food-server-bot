@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import { IOrg } from '../interfaces/org.interface'
+import { IOrg } from '@interfaces'
 
 const orgSchema: Schema = new Schema(
   {

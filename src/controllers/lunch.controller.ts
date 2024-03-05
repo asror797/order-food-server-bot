@@ -16,7 +16,6 @@ export class LunchController {
       const pageNumber = parseInt(req.query.page as string) || 1
       const pageSize = parseInt(req.query.size as string) || 10
       const search = req.query.search as string | undefined
-      // const lunchbase = req.query.lunchbase  as string
 
       res.json(
         await this.lunchService.lunchRetrieveAll({

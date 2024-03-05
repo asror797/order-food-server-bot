@@ -1,5 +1,4 @@
 import { Document } from 'mongoose'
-import { IOrg } from './org.interface'
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -16,6 +15,6 @@ export interface IUser extends Document {
   telegram_id: number
   language_code: string
   role: UserRole
-  org: IOrg['_id']
+  org: string
   balance: number
 }

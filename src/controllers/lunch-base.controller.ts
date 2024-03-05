@@ -6,7 +6,18 @@ import { HttpException } from '@exceptions'
 export class LunchBaseController {
   readonly lunchbaseService = new LunchBaseService()
 
-  public lunchBaseRetrieveOne = () => {}
+  public lunchBaseRetrieveOne = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      res.json(req.body)
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
   public lunchBaseDelete = () => {}
 
   public lunchBaseRetrieveAll = async (

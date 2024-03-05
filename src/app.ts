@@ -1,14 +1,14 @@
 import express from 'express'
 import cors from 'cors'
-import errorMiddleware from './middlewares/error.middleware'
-import { Routes } from './interfaces/route.interface'
-import { connect } from 'mongoose'
-import { dbConnection } from '@database'
+import { PORT } from '@config'
 import { botInstance } from '@bot'
+import { Routes } from '@interfaces'
+import { dbConnection } from '@database'
 import { autoCancelOrder } from '@utils'
+import { errorMiddleware } from '@middlewares'
+import { connect } from 'mongoose'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
-import { PORT } from '@config'
 
 class App {
   public app: express.Application

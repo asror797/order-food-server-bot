@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import { IRole } from './role.interface'
+import { IRole } from './../role'
 
 export interface DataStoredToken {
   _id: string

@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express'
-import { RequestWithUser } from '../interfaces/auth.interface'
+import { RequestWithUser } from '@interfaces'
 import { HttpException } from '@exceptions'
 import { verify } from 'jsonwebtoken'
 

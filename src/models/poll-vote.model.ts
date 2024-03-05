@@ -1,5 +1,5 @@
-import { PollVoteInterface } from '@interfaces'
 import { Document, Schema, model } from 'mongoose'
+import { PollVoteInterface } from '@interfaces'
 
 const pollVoteSchema: Schema = new Schema(
   {

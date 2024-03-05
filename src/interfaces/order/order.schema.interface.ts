@@ -1,5 +1,4 @@
-import { Document } from 'mongoose'
-import { IOrg } from './org.interface'
+import { Document, ObjectId } from 'mongoose'
 
 export interface FoodWithAmount {
   food: string
@@ -12,5 +11,5 @@ export interface IOrder extends Document {
   client: string
   is_canceled: boolean
   is_accepted: boolean
-  org: IOrg['_id']
+  org: ObjectId
 }

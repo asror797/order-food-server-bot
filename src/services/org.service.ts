@@ -75,8 +75,12 @@ export class OrgService {
   }
 
   public async orgUpdate(payload: OrgUpdateRequest): Promise<any> {
-    console.log(payload)
+    const updateObj: any = {}
+    const updatedOrg = await this.orgs.findByIdAndUpdate(payload.id, updateObj)
+
+    return updatedOrg
   }
+
   public async orgDelete(payload: OrgDeleteRequest): Promise<any> {
     console.log(payload)
   }
