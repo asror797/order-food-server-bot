@@ -18,7 +18,7 @@ class App {
   constructor(routes: Routes[]) {
     console.log(PORT)
     this.app = express()
-    this.port = 9070 || PORT
+    this.port = 3030
     this.bot = botInstance
 
     this.connectToDatabase()
