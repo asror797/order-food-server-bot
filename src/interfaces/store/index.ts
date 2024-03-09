@@ -1,1 +1,1 @@
-export type * from './store.interface'
+export * from './store.interface'

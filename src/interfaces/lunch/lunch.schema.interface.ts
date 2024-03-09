@@ -9,6 +9,7 @@ export interface ILunch extends Document {
   org: string | ObjectId
   name: string
   cost: number
+  base: string
   products: IProduct[]
   is_active: boolean
 }

@@ -1,7 +1,5 @@
 export interface LunchBaseRetrieveOneRequest {
-  pageSize: number
-  pageNumber: number
-  search: string
+  id: string
 }
 
 export interface LunchBaseRetrieveOneResponse {

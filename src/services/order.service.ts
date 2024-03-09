@@ -93,7 +93,6 @@ export class OrderService {
           amount: e.amount
         })
         total_cost += food.cost * e.amount
-        // check products of food from warehouse
       })
     )
 
@@ -323,10 +322,10 @@ export class OrderService {
 
       for (let i = 0; i < populatedOrder.foods.length; i++) {
         const { food, amount } = populatedOrder.foods[i]
-        await this.foodService.DecreaseProductsOfFood({
-          amount: amount,
-          food: food
-        })
+        // await this.foodService.DecreaseProductsOfFood({
+        //   amount: amount,
+        //   food: food
+        // })
       }
       console.log('Order', populatedOrder)
       return populatedOrder

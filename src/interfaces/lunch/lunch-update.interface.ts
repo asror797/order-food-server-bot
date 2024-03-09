@@ -8,6 +8,7 @@ export interface LunchUpdateRequest {
   products?: LunchProductsDefinition[]
   org?: string
   persent_cook?: number
+  is_active?: boolean
 }
 
 export interface LunchUpdateResponse {

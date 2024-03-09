@@ -18,6 +18,10 @@ export class OrgService {
   ): Promise<OrgRetrieveAllResponse> {
     const query: any = {}
 
+    if(payload.is_bot) {
+      query.is_active = true
+    }
+
     if (payload.search) {
       query.name_org = { $regex: payload.search, $options: 'i' }
     }
@@ -41,7 +45,9 @@ export class OrgService {
         _id: e['_id'],
         name_org: e.name_org,
         group_a_id: e.group_a_id,
-        group_b_id: e.group_b_id
+        group_b_id: e.group_b_id,
+        is_active: e.is_active,
+        trip_timeout: e.trip_timeout
       }))
     }
   }

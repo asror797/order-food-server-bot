@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { AdminService } from '@services'
 import { ParsedQs } from 'qs'
-import { AdminCreateDto } from 'dtos'
 // import { HttpException } from '@exceptions'
 
 export class AdminController {
@@ -51,7 +50,7 @@ export class AdminController {
     next: NextFunction
   ) => {
     try {
-      const adminData: AdminCreateDto = req.body
+      const adminData = req.body
       // const error = await validate(adminData)
       // console.log(error)
 

@@ -12,6 +12,7 @@ import {
 } from '@interfaces'
 import { adminModel, orgModel, roleModel } from '@models'
 import { HttpException } from '@exceptions'
+import { hash, compare } from 'bcrypt'
 
 export class AdminService {
   public admins = adminModel
@@ -40,7 +41,7 @@ export class AdminService {
       adminList: adminList.map((e) => ({
         _id: e['_id'],
         fullname: e.fullname,
-        role: e.role?.title,
+        role: e.role,
         phone_number: e.phone_number,
         org: e.org,
         password: '',
@@ -80,17 +81,17 @@ export class AdminService {
       phone_number: payload.phone_number,
       org: payload.org,
       role: payload.role,
-      password: payload.password
+      password: hash(payload.password, 10)
     })
 
     return {
       _id: admin['_id'],
       fullname: admin.fullname,
-      password: '',
+      password: '*****',
       phone_number: admin.phone_number,
       org: admin.org,
       role: admin.role,
-      createdAt: ''
+      createdAt: admin.fullname
     }
   }
 

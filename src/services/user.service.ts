@@ -10,7 +10,7 @@ import {
   SendMessae,
   UpdateUserDto
 } from '../dtos/user.dto'
-import { IUser } from '../interfaces/user.interface'
+import { IUser } from '@interfaces'
 import {
   UserRegisterPayload,
   UserCheckResponse,
@@ -123,7 +123,7 @@ export class UserService {
         last_name: e.last_name,
         phone_number: e.phone_number,
         role: e.role,
-        org: e.org?.name_org,
+        org: e.org,
         balance: e.balance
       }))
     }

@@ -1,15 +1,16 @@
+import { lunchBaseModel, lunchModel, orgModel } from '@models'
 import { HttpException } from '@exceptions'
 import {
   LunchBaseCreateRequest,
   LunchBaseRetrieveAllRequest,
-  LunchBaseRetrieveAllResponse
+  LunchBaseRetrieveAllResponse,
+  LunchBaseRetrieveOneRequest
 } from '@interfaces'
-import { lunchBaseModel, lunchModel, orgModel } from '@models'
 
 export class LunchBaseService {
-  readonly lunchbase = lunchBaseModel
-  readonly orgs = orgModel
-  public lunches = lunchModel
+  private orgs = orgModel
+  private lunches = lunchModel
+  private lunchbase = lunchBaseModel
 
   public async lunchBaseRetrieveAll(
     payload: LunchBaseRetrieveAllRequest
@@ -25,7 +26,12 @@ export class LunchBaseService {
     }
   }
 
-  public async lunchBaseRetrieveOne(): Promise<any> {}
+  public async lunchBaseRetrieveOne(payload: LunchBaseRetrieveOneRequest): Promise<any> {
+    const lunch = await this.lunches.findById(payload.id).select('name cost unit')
+    return {
+      ...lunch
+    }
+  }
 
   public async lunchBaseCreate(payload: LunchBaseCreateRequest): Promise<any> {
     const org = await this.orgs.findById(payload.org)
@@ -35,17 +41,20 @@ export class LunchBaseService {
 
     const lunchbase = await this.lunchbase.create({
       name: payload.name,
-      org: payload.org
+      org: payload.org,
     })
+
     return lunchbase
   }
 
   public async lunchBaseUpdate(payload: any): Promise<any> {
-    const lunchbase = await this.lunchBaseRetrieveOne()
+    await this.lunchBaseRetrieveOne({ id: payload.id })
 
-    if (payload.name) {
-      await this.#_checkName({ name: payload.name, org: lunchbase.org })
-    }
+    // if (payload.name) {
+    //   await this.#_checkName({ name: payload.name, org: lunchbase.org })
+    // }
+
+    // return lunchbase
   }
 
   public async lunchBaseDelete(): Promise<any> {}
@@ -55,7 +64,6 @@ export class LunchBaseService {
       name: payload.name,
       org: payload.org
     })
-    console.log(payload, lunchbase)
     if (!lunchbase) throw new HttpException(400, 'Already name used')
   }
 
@@ -75,6 +83,7 @@ export class LunchBaseService {
       .limit(payload.size)
       .populate('org', 'name_org')
       .exec()
+    
     const totalLunchBases = await this.lunchbase.countDocuments().exec()
     const totalPages = Math.ceil(totalLunchBases / payload.size)
     return {
@@ -86,52 +95,14 @@ export class LunchBaseService {
     }
   }
 
-  public async getByOrg(org: string) {
-    const lunches = await this.lunchbase.find({
-      org: org
-    })
-
-    return lunches
-  }
-
-  public async getById(lunch: string) {
-    return await this.lunchbase.findById(lunch)
-  }
-
-  public async retrieveAllBasesByBase(id: string) {
-    const lunches =
-      (await this.lunchbase.find({
-        where: {
-          base: id,
-          is_active: true
-        }
-      })) || []
-
-    return lunches
-  }
-
-  public async retrieveLunches(id: string) {
-    const lunches = await this.lunches.find({
-      base: id
-    })
-
-    return lunches
-  }
-
-  public async retrieveLunchBase(id: string) {
-    const base = await this.lunchbase.findById(id).select('name org createdAt')
-    if (!base) throw new HttpException(400, 'lunch-base not found')
-    return base
-  }
-
   public async toggleStatus(payload: { id: string }) {
     const base = await this.lunchbase
-      .findById(payload.id)
-      .select('name is_active')
-      .exec()
+        .findById(payload.id)
+        .select('name is_active')
+        .exec()
 
     if (!base) {
-      throw new HttpException(400, 'not found base')
+      throw new HttpException(400, 'Base not found')
     }
 
     const updatedBase = await this.lunchbase.findByIdAndUpdate(

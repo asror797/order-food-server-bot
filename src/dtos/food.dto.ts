@@ -7,7 +7,7 @@ import {
   IsString,
   ValidateNested
 } from 'class-validator'
-import { Category } from '../interfaces/food.interface'
+import { CategoryEnum } from '@interfaces'
 import { Type } from 'class-transformer'
 
 class ProductWithAmount {
@@ -28,7 +28,7 @@ export class CreateFood {
   @IsString()
   org: string
 
-  @IsEnum(Category)
+  @IsEnum(CategoryEnum)
   category: string
 
   @IsArray()

@@ -34,7 +34,7 @@ export class LunchRoute {
     this.router.patch(
       `${this.path}/:id`,
       checkPermission(LunchPermissions.LUNCH_UPDATE),
-      this.lunchController.lunchUpdate
+      this.lunchController.lunchCreate
     )
 
     this.router.delete(
@@ -43,37 +43,9 @@ export class LunchRoute {
       this.lunchController.lunchDelete
     )
 
-    // this.router.get(`${this.path}`, this.lunchController.getLunch)
-    // this.router.get(`${this.path}/:base`, this.lunchController.getByBase)
-    // this.router.get(
-    //   `${this.path}/products/:lunch`,
-    //   this.lunchController.getById
-    // )
-    // this.router.post(`${this.path}/:base`, this.lunchController.createLunch)
-    // this.router.post(
-    //   `${this.path}/product/:lunch`,
-    //   this.lunchController.pushProduct
-    // )
-    // this.router.patch(
-    //   `${this.path}/product/:lunch`,
-    //   this.lunchController.updateProducts
-    // )
-    // this.router.patch(
-    //   `${this.path}/update/:lunch`,
-    //   this.lunchController.updateLunch
-    // )
-    // this.router.patch(
-    //   `${this.path}/products/update/:lunch`,
-    //   this.lunchController.fullUpdateProducts
-    // )
-    // this.router.delete(
-    //   `${this.path}/:lunchId/products/:productId`,
-    //   this.lunchController.deleteProducts
-    // )
-    // this.router.delete(`${this.path}/:id`, this.lunchController.deleteLunch)
     this.router.patch(
       `${this.path}/status/:id`,
-      this.lunchController.toggleStatus
+      this.lunchController.lunchCreate
     )
   }
 }

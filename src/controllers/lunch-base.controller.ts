@@ -53,18 +53,18 @@ export class LunchBaseController {
     }
   }
 
-  public retrieveBase = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const lunchBase = req.params.base as string
-      res.json(await this.lunchbaseService.retrieveLunches(lunchBase))
-    } catch (error) {
-      next(error)
-    }
-  }
+  // public retrieveBase = async (
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ) => {
+  //   try {
+  //     const lunchBase = req.params.base as string
+  //     res.json(await this.lunchbaseService.retrieveLunches(lunchBase))
+  //   } catch (error) {
+  //     next(error)
+  //   }
+  // }
 
   public toggleStatusBase = async (
     req: Request,
@@ -93,17 +93,17 @@ export class LunchBaseController {
     }
   }
 
-  public getByBase = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const id = req.params.lunch as string
+  // public getByBase = async (
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ) => {
+  //   try {
+  //     const id = req.params.lunch as string
 
-      res.json(await this.lunchbaseService.getById(id))
-    } catch (error) {
-      next(error)
-    }
-  }
+  //     res.json(await this.lunchbaseService.getById(id))
+  //   } catch (error) {
+  //     next(error)
+  //   }
+  // }
 }

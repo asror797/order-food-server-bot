@@ -68,7 +68,7 @@ class TelegramBotApi {
     const chatType = msg.chat.type
     try {
       const data = await this.userService.checkUser({ telegramId: chatId })
-      console.log(data)
+
       if (
         data.isExist &&
         data.user &&
@@ -466,7 +466,8 @@ class TelegramBotApi {
           const orgs = await this.orgService.orgRetrieveAll({
             pageNumber: 1,
             pageSize: 1,
-            search: msg.text
+            search: msg.text,
+            is_bot: true
           })
 
           if (orgs.orgList.length == 1) {
@@ -750,20 +751,40 @@ class TelegramBotApi {
     user: string
   }) {
     try {
+      // retrieve food from cart
       const org = await this.orgService.orgRetrieveOne({ id: payload.org })
 
       const store = await this.storeService.getStoreByOrg({
         chatId: payload.msg.from.id,
         org: org['_id']
       })
+      // end
 
-      console.log(store)
+      // check foods of order and collect valid foods
+      const validFoods: any = []
+      await Promise.all(store.map(async(e) => {
+        const isValid = await this.foodService.checkFoodProducts({ food: e.id, amount: e.amount })
+        if (isValid) {
+          validFoods.push(e)
+        }
+      }))
+      // end
 
+      // check balance of user
+      // end
+
+      // create order depend on validated foods of cart
       const order = await this.orderService.orderCreate({
         client: payload.user,
-        foods: store.map((e: any) => ({ food: e.food.id, amount: e.amount })),
+        foods: validFoods.map((e: any) => ({ food: e.food.id, amount: e.amount })),
         org: org['_id']
       })
+      // end
+
+      /*
+        - decrease amount of product of foods after order creating
+        - if cancel order => retunr product amount
+      */
 
       const productsCaption = this.#_storedFoodsCaptionGenerator(
         order.foods.map((e: any) => ({
@@ -774,7 +795,7 @@ class TelegramBotApi {
       this.bot.sendMessage(payload.msg.from.id, 'order?.org.name_org')
       this.bot.sendMessage(
         org.group_a_id,
-        `<i>Buyurtma haqida:</i>\n<b>Buyurtmachi</b>:  ${order.user.fullname}\n<b>Telefon raqami</b>:  ${order.user.phone_number}\n<b>Tanlangan oshxona</b>:  ${order.org}\n<b>Buyurtma sanasi</b>:  ${format(order.createdAt, 'd MMM HH:mm y', { locale: uz })}\n<b>Mahsulotlar</b>:\n${productsCaption}`,
+        `Buyurtma haqida:\n<b>Buyurtmachi</b>:  ${order.user.fullname}\n<b>Telefon raqami</b>:  ${order.user.phone_number}\n<b>Tanlangan oshxona</b>:  ${order.org}\n<b>Buyurtma sanasi</b>:  ${format(order.createdAt, 'd MMM HH:mm y', { locale: uz })}\n<b>Mahsulotlar</b>:\n${productsCaption}`,
         {
           reply_markup: {
             inline_keyboard: [
@@ -806,7 +827,8 @@ class TelegramBotApi {
   async #_OrgMenuComponent(msg: Message) {
     const orgs = await this.orgService.orgRetrieveAll({
       pageNumber: 1,
-      pageSize: 5
+      pageSize: 5,
+      is_bot: true
     })
 
     await this.bot.sendMessage(msg.chat.id, botTexts.askOrg.uz, {

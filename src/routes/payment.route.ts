@@ -46,7 +46,7 @@ export class PaymentRoute {
     this.router.get(`${this.path}`, this.paymentController.paymentRetrieveAll)
     this.router.get(
       `${this.path}/spents`,
-      this.paymentController.calculateSpents
+      this.paymentController.paymentDelete
     )
   }
 }

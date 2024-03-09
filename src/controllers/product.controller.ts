@@ -5,7 +5,7 @@ import {
   CreateProductBody,
   UpdateAmountWithType
 } from '../dtos/product.dto'
-import { RequestWithUser } from '../interfaces/auth.interface'
+import { RequestWithUser } from '@interfaces'
 import { HttpException } from '@exceptions'
 import { ProductLogService, ProductService } from '@services'
 

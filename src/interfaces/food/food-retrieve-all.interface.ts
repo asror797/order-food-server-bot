@@ -11,6 +11,7 @@ export interface FoodList {
   name: string
   cost: number
   img: string
+  org: string
 }
 
 export interface FoodRetrieveAllResponse {

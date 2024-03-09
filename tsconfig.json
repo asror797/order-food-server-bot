@@ -13,6 +13,9 @@
     "skipLibCheck": true,
     "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
+    "baseUrl": "src",
+    "rootDir": "src",
+    "outDir": "dist",
     "paths": {
       "@services": ["./services"],
       "@bot": ["./bot"],
@@ -26,11 +29,8 @@
       "@exceptions": ["./exceptions"],
       "@routes": ["./routes"],
       "@database": ["./database"]
-    },
-    "baseUrl": "src",
-    "rootDir": "src",
-    "outDir": "dist",
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"],
 }
