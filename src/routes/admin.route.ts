@@ -38,11 +38,10 @@ export class AdminRoute {
     )
 
     this.router.delete(
-      `${this.path}`,
+      `${this.path}/:id`,
       checkPermission(AdminPermissions.ADMIN_DELETE),
-      this.adminController.adminUpdate
+      this.adminController.adminDelete
     )
-
     // this.router.get(`${this.path}`, this.adminController.getAdmins)
     // this.router.post(`${this.path}`, this.adminController.createAdmin)
     // this.router.post(`${this.path}/create`, this.adminController.create)

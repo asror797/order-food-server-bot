@@ -12,6 +12,9 @@ export const MainMenuKeyboard: SendMessageOptions = {
       [
         { text: botTexts.feedbackAction.uz },
         { text: botTexts.settingsAction.uz }
+      ],
+      [
+        { text: botTexts.myOrders.uz }
       ]
     ],
     resize_keyboard: true

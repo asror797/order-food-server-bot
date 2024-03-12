@@ -11,7 +11,9 @@ import {
   PaymentRoute,
   ProductLogRoute,
   ProductRoute,
-  RoleRoute
+  RoleRoute,
+  MealPollRoute,
+  PollVoteRoute
 } from '@routes'
 
 const app = new App([
@@ -26,7 +28,9 @@ const app = new App([
   new ProductLogRoute(),
   new PaymentRoute(),
   new LunchBaseRoute(),
-  new RoleRoute()
+  new RoleRoute(),
+  new MealPollRoute(),
+  new PollVoteRoute()
 ])
 
 app.listen()

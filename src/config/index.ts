@@ -1,8 +1,6 @@
 import { config } from 'dotenv'
 config({ path: `.env` })
 
-
-console.log(process.env)
 export const {
   ORDER_CANCEL_TIME,
   JWT_ACCESS_TOKEN_SECRET_KEY,

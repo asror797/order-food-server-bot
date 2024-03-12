@@ -3,5 +3,5 @@ export interface AdminDeleteRequest {
 }
 
 export interface AdminDeleteResponse {
-  _id: string
+  
 }

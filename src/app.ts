@@ -16,7 +16,6 @@ class App {
   public bot: any
 
   constructor(routes: Routes[]) {
-    console.log(PORT)
     this.app = express()
     this.port = 3030
     this.bot = botInstance

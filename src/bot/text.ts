@@ -156,5 +156,9 @@ export const botTexts = {
   increaseBalance: {
     uz: `to'ldirildi`,
     ru: `to'ldirildi`
+  },
+  myOrders: {
+    uz: `Buyurtmalar tarixi`,
+    ru: `Buyurtmalar tarixi`
   }
 }

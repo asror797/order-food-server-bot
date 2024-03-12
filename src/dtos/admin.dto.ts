@@ -13,23 +13,6 @@ export class AdminLoginDto {
   password: string
 }
 
-export class CreateAdmin {
-  @IsString()
-  phone_number: string
-
-  @IsString()
-  fullname: string
-
-  @IsString()
-  password: string
-
-  @IsString()
-  org: string
-
-  @IsString()
-  role: string
-}
-
 export class AdminCreateDto implements AdminCreateRequest {
   @IsString()
   @IsNotEmpty()

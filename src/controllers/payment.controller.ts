@@ -11,9 +11,9 @@ export class PaymentController {
     next: NextFunction
   ) => {
     try {
-      const page = parseInt(req.query.page as string) || 1
-      const size = parseInt(req.query.size as string) || 10
-      res.json({ page, size })
+      const pageNumber = parseInt(req.query.page as string) || 1
+      const pageSize = parseInt(req.query.size as string) || 10
+      res.json(await this.paymentService.paymentRetrieveAll({ pageNumber, pageSize }))
     } catch (error) {
       next(error)
     }

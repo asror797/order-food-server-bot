@@ -4,6 +4,7 @@ export interface FoodRetrieveAllRequest {
   search?: string
   category?: string
   org?: string
+  isDashboard?: boolean
 }
 
 export interface FoodList {
@@ -12,6 +13,8 @@ export interface FoodList {
   cost: number
   img: string
   org: string
+  category?: string
+  is_private?: boolean
 }
 
 export interface FoodRetrieveAllResponse {

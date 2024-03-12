@@ -13,5 +13,4 @@ export interface AdminCreateResponse {
   org: string
   role: string
   phone_number: string
-  createdAt: string
 }

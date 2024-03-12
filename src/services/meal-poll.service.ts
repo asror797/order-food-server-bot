@@ -11,8 +11,8 @@ import {
 import { lunchBaseModel, mealPollModel, orgModel } from '@models'
 
 export class MealPollService {
-  private mealpolls = mealPollModel
   private orgs = orgModel
+  private mealpolls = mealPollModel
   private lunchbase = lunchBaseModel
 
   public async mealPollRetrieveAll(
@@ -23,13 +23,17 @@ export class MealPollService {
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .exec()
 
-    console.log(mealpollList)
     return {
       count: 0,
       pageNumber: 5,
       pageSize: 5,
       pageCount: 5,
-      lunchList: []
+      mealpollList: mealpollList.map((e) => ({
+        _id: '',
+        org: '',
+        meal: '',
+        createdAt: ''
+      }))
     }
   }
 

@@ -107,7 +107,7 @@ export class UserService {
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
       .populate('org', 'name_org')
-      .select('first_name last_name role balance phone_number')
+      .select('first_name last_name role balance phone_number org')
       .exec()
 
     const count = await this.users.countDocuments(query)
@@ -123,7 +123,7 @@ export class UserService {
         last_name: e.last_name,
         phone_number: e.phone_number,
         role: e.role,
-        org: e.org,
+        org: e.org.name_org || null,
         balance: e.balance
       }))
     }

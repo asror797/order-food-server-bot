@@ -1,14 +1,21 @@
+import 'reflect-metadata'
+import { Type } from 'class-transformer'
 import {
   IsArray,
-  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
+  IsPositive,
   IsString,
+  IsUrl,
   ValidateNested
 } from 'class-validator'
-import { CategoryEnum } from '@interfaces'
-import { Type } from 'class-transformer'
+import {
+  CategoryEnum,
+  FoodCreateRequest,
+  FoodProductsDefinition
+} from '@interfaces'
 
 class ProductWithAmount {
   @IsString()
@@ -16,6 +23,30 @@ class ProductWithAmount {
 
   @IsNumber()
   amount: number
+}
+
+export class FoodCreateDto implements FoodCreateRequest {
+  @IsString()
+  @IsNotEmpty()
+  category: string
+
+  @IsPositive()
+  @IsNotEmpty()
+  cost: number
+
+  @IsString()
+  @IsUrl()
+  @IsOptional()
+  img?: string
+
+  @IsString()
+  @IsNotEmpty()
+  name: string
+
+  @IsString()
+  @IsNotEmpty()
+  org: string
+  products: FoodProductsDefinition[]
 }
 
 export class CreateFood {
@@ -35,42 +66,4 @@ export class CreateFood {
   @ValidateNested({ each: true })
   @Type(() => ProductWithAmount)
   products: ProductWithAmount[]
-}
-
-export class GetFoods {
-  @IsNumber()
-  page?: number
-
-  @IsNumber()
-  size?: number
-
-  @IsString()
-  category: string
-
-  @IsString()
-  org: string
-}
-
-export class UpdateFoodDto {
-  @IsNotEmpty()
-  @IsString()
-  food: string
-
-  @IsString()
-  name?: string
-
-  @IsNumber()
-  cost?: number
-
-  @IsString()
-  org?: string
-
-  @IsString()
-  category?: string
-
-  @IsString()
-  img?: string
-
-  @IsBoolean()
-  is_deleted?: boolean
 }

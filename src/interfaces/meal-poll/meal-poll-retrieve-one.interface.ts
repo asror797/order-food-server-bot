@@ -1,6 +1,5 @@
 export interface MealPollRetrieveOneRequest {
-  pageSize: number
-  pageNumber: number
+  id: string
   search: string
 }
 

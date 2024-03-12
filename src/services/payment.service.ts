@@ -7,8 +7,37 @@ export class PaymentService {
   private users = userModel
   private payments = paymentModel
 
-  public async paymentRetrieveAll(): Promise<any> {}
-  public async paymentRetrieveOne(): Promise<any> {}
+  public async paymentRetrieveAll(payload: any): Promise<any> {
+
+    const paymentList = await this.payments
+      .find()
+      .populate('client', 'first_name last_name')
+      .populate('org', 'name_org')
+      .select('amount client org type')
+      .exec()
+
+    const count = await this.payments.countDocuments()
+
+
+    return {
+      count: count,
+      pageNumber: payload.pageNumber,
+      pageSize: 10,
+      pageCount: Math.ceil(count / payload.pageSize),
+      paymentList: paymentList
+    }
+  }
+  public async paymentRetrieveOne(payload: any): Promise<any> {
+
+    const payment = await this.payments.create({
+      client: '',
+      org: payload.org,
+      amount: payload.amount,
+      type: false
+    })
+
+    return payment
+  }
 
   public async paymentCreate(payload: PaymentCreateRequest): Promise<any> {
     const user = await this.users

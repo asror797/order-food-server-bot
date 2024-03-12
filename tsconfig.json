@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2017",                                  
+    "target": "ES2018",                                  
     "esModuleInterop": true,    
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -19,6 +19,7 @@
     "paths": {
       "@services": ["./services"],
       "@bot": ["./bot"],
+      "@dtos": ["./dtos"],
       "@config": ["./config"],
       "@constants": ["./constants"],
       "@controllers": ["./controllers"],

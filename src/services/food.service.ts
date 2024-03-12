@@ -8,19 +8,22 @@ import {
   FoodRetrieveOneResponse,
   FoodRetrieveAllRequest,
   FoodUpdateRequest, 
-  FoodUpdateResponse
+  FoodUpdateResponse,
+  FoodRetrieveAllResponse
 } from '@interfaces'
 import { foodModel, productModel, orgModel } from '@models'
-import { ProductService, ProductLogService } from '@services'
+import { ProductService, ProductLogService, ValidationService } from '@services'
+import { FoodCreateDto } from '@dtos'
 
 export class FoodService {
   public foods = foodModel
   public products = productModel
   public productLog = new ProductLogService()
   public productService = new ProductService()
+  private validateService = new ValidationService()
   public org = orgModel
 
-  public async foodRetrieveAll(payload: FoodRetrieveAllRequest): Promise<any> {
+  public async foodRetrieveAll(payload: FoodRetrieveAllRequest): Promise<FoodRetrieveAllResponse> {
     const categoryEnum = ['drinks', 'snacks', 'dessert']
     const query: any = {}
 
@@ -43,7 +46,7 @@ export class FoodService {
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
       .populate('org', 'name_org')
-      .select('name cost img')
+      .select(payload.isDashboard ? 'name cost img category is_deleted' : 'name cost img')
       .exec()
 
     const count = await this.foods.countDocuments(query).exec()
@@ -58,7 +61,9 @@ export class FoodService {
         name: e.name,
         cost: e.cost,
         img: e.img,
-        org: e.org.name_org
+        org: e.org.name_org,
+        category: e.category,
+        is_private: e.is_deleted
       }))
     }
   }
@@ -71,6 +76,7 @@ export class FoodService {
   }
 
   public async foodCreate(payload: FoodCreateRequest):Promise<FoodCreateResponse> {
+    await this.validateService.validateDto(FoodCreateDto)
     if (payload.org) {
       const org = await this.org.findById(payload.org)
       if (!org) throw new HttpException(404, 'Org not found')
@@ -78,8 +84,10 @@ export class FoodService {
 
     await Promise.all(
       payload.products.map(async (e: any) => {
-        const product = await this.foods.findById(e['_id']).select('org').exec()
-
+        const product = await this.foods
+          .findById(e['_id'])
+          .select('org')
+          .exec()
         if (!product || e.amount >= 0) {
           throw new HttpException(
             404,
@@ -101,7 +109,6 @@ export class FoodService {
   }
 
   public async foodUpdate(payload: FoodUpdateRequest): Promise<FoodUpdateResponse> {
-    console.log(payload.id)
     return {
       _id: ''
     }
@@ -113,7 +120,7 @@ export class FoodService {
     const food = await this.foods.findByIdAndDelete(payload.id)
 
     return {
-      ...food
+      _id: food ? food['_id'] : payload.id 
     }
   }
 

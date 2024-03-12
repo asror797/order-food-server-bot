@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { FoodService } from '@services'
 import { ParsedQs } from 'qs'
-import { CreateFood, UpdateFoodDto } from '../dtos/food.dto'
-import { HttpException } from '@exceptions'
 
 export class FoodController {
   public foodService = new FoodService()
@@ -25,7 +23,8 @@ export class FoodController {
           pageSize: pageSize,
           category: category,
           org: org,
-          search: search
+          search: search,
+          isDashboard: true
         })
       )
     } catch (error) {

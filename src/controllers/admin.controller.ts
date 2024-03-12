@@ -50,11 +50,7 @@ export class AdminController {
     next: NextFunction
   ) => {
     try {
-      const adminData = req.body
-      // const error = await validate(adminData)
-      // console.log(error)
-
-      res.json(await this.adminService.adminCreate(adminData))
+      res.json(await this.adminService.adminCreate(req.body))
     } catch (error) {
       console.log(error)
       next(error)

@@ -20,7 +20,7 @@ export class PaymentRoute {
     )
 
     this.router.get(
-      `${this.path}`,
+      `${this.path}/:id`,
       checkPermission(PaymentPermissions.PAYMENT_RETRIEVE_ONE),
       this.paymentController.paymentRetrieveOne
     )

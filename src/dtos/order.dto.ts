@@ -11,6 +11,8 @@
 //   ValidateNested
 // } from 'class-validator'
 
+import { IsBoolean, IsString } from 'class-validator'
+
 // export class GetOrderDto {
 //   @IsNumber()
 //   page: number
@@ -39,13 +41,13 @@
 //   foods: FoodWithAmount[]
 // }
 
-// export class UpdateOrder {
-//   @IsString()
-//   order: string
+export class UpdateOrder {
+  @IsString()
+  order: string
 
-//   @IsBoolean()
-//   type: boolean
-// }
+  @IsBoolean()
+  type: boolean
+}
 
 // export class OrderRetrieveByUserDto {
 //   @IsString()
