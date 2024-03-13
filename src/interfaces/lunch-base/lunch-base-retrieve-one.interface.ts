@@ -3,5 +3,11 @@ export interface LunchBaseRetrieveOneRequest {
 }
 
 export interface LunchBaseRetrieveOneResponse {
-  id: string
+  _id: string
+  name: string
+  org: {
+    _id: string
+    name_org: string
+  }
+  is_active: boolean
 }

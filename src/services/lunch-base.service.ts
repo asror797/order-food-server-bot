@@ -4,7 +4,8 @@ import {
   LunchBaseCreateRequest,
   LunchBaseRetrieveAllRequest,
   LunchBaseRetrieveAllResponse,
-  LunchBaseRetrieveOneRequest
+  LunchBaseRetrieveOneRequest,
+  LunchBaseRetrieveOneResponse
 } from '@interfaces'
 
 export class LunchBaseService {
@@ -28,12 +29,23 @@ export class LunchBaseService {
 
   public async lunchBaseRetrieveOne(
     payload: LunchBaseRetrieveOneRequest
-  ): Promise<any> {
-    const lunch = await this.lunches
+  ): Promise<LunchBaseRetrieveOneResponse> {
+    const lunchbase: any = await this.lunchbase
       .findById(payload.id)
-      .select('name cost unit')
+      .populate('org', 'name_org')
+      .select('name org is_active')
+      .exec()
+
+    if (!lunchbase) throw new HttpException(404, 'Lunchbase not found')
+
     return {
-      ...lunch
+      _id: lunchbase['_id'],
+      name: lunchbase.name,
+      org: {
+        _id: lunchbase.org['_id'],
+        name_org: lunchbase.org.name_org
+      },
+      is_active: lunchbase.is_active
     }
   }
 
@@ -52,13 +64,33 @@ export class LunchBaseService {
   }
 
   public async lunchBaseUpdate(payload: any): Promise<any> {
-    await this.lunchBaseRetrieveOne({ id: payload.id })
+    const lunchbase = await this.lunchBaseRetrieveOne({ id: payload.id })
+    const updateObj: any = {}
 
-    // if (payload.name) {
-    //   await this.#_checkName({ name: payload.name, org: lunchbase.org })
-    // }
+    if (payload.name) {
+      await this.#_checkName({ name: payload.name, org: lunchbase.org['_id'] })
+      updateObj.name = payload.name
+    }
 
-    // return lunchbase
+    if (payload.is_active) {
+      updateObj.is_active = payload.is_active
+    }
+
+    if (payload.org) {
+      const org = await this.orgs
+        .findById(payload.org)
+        .select('name_org')
+        .exec()
+      if (!org) throw new HttpException(404, 'Org not found')
+      updateObj.org = payload.org
+    }
+
+    const newLunchbase = await this.lunchbase
+      .findByIdAndUpdate(payload.id, updateObj, { new: true })
+      .select('name org is_active')
+      .exec()
+
+    return newLunchbase
   }
 
   public async lunchBaseDelete(): Promise<any> {}
@@ -66,9 +98,10 @@ export class LunchBaseService {
   async #_checkName(payload: { name: string; org: string }) {
     const lunchbase = await this.lunchbase.find({
       name: payload.name,
-      org: payload.org
+      org: payload.org,
+      is_active: true
     })
-    if (!lunchbase) throw new HttpException(400, 'Already name used')
+    if (lunchbase) throw new HttpException(400, 'Already name used')
   }
 
   async retrieveAllLunchBases(payload: any) {

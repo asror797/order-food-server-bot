@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction, Request, Response, json } from 'express'
 import { LunchBaseService } from '@services'
 import { ParsedQs } from 'qs'
 import { HttpException } from '@exceptions'
@@ -88,22 +88,10 @@ export class LunchBaseController {
     next: NextFunction
   ) => {
     try {
+      const lunchbaseId = req.params.id as string
+      res.json(await this.lunchbaseService.lunchBaseUpdate({ ...req.body, id: lunchbaseId }))
     } catch (error) {
       next(error)
     }
   }
-
-  // public getByBase = async (
-  //   req: Request,
-  //   res: Response,
-  //   next: NextFunction
-  // ) => {
-  //   try {
-  //     const id = req.params.lunch as string
-
-  //     res.json(await this.lunchbaseService.getById(id))
-  //   } catch (error) {
-  //     next(error)
-  //   }
-  // }
 }

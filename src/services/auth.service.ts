@@ -14,7 +14,30 @@ export class AuthService {
 
   public async decodeRefreshToken(payload: {}) {}
 
-  public async genereateAccessToken() {}
+  public async genereateAccessToken(payload: any) {
+    /**
+     * org
+     * userId
+     * role {
+     *   modules: [
+     *      uri
+     *      permission
+     *      actions: [
+     *        {
+     *          permission
+     *          uri
+     *        }
+     *      ]
+     *   ]
+     * }
+     *
+     *
+     *
+     */
+
+    return jwt.sign(payload.data, 'secret_key', { expiresIn: 500 })
+  }
+
   public async decodeAccessToken(token: string) {}
 
   public async adminAuthSignIn(payload: {
@@ -25,17 +48,19 @@ export class AuthService {
       .findOne({
         phone_number: payload.phoneNumber
       })
-      .select('phone_number password')
+      .populate('role')
+      .select('phone_number password role org')
       .exec()
 
     if (!admin) throw new HttpException(400, 'PhoneNumber or Password is wrong')
 
     const isPasswordCorrect = await compare(admin.password, payload.password)
-    if (!isPasswordCorrect)
+    if (!isPasswordCorrect) {
       throw new HttpException(400, 'PhoneNumber or Password is wrong')
+    }
 
     return {
-      accessToken: await this.genereateAccessToken(),
+      accessToken: await this.genereateAccessToken({}),
       refreshToken: await this.generateRefreshToken({ id: '' })
     }
   }

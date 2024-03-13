@@ -36,7 +36,6 @@ export class UserRoute {
       this.userController.userUpdate
     )
 
-    this.router.get(`${this.path}/search`, this.userController.SearchUser)
     this.router.get(
       `${this.path}/telegram/:telegramid`,
       this.userController.findUser
@@ -52,8 +51,5 @@ export class UserRoute {
       this.userController.sendMessage
     )
     this.router.put(`${this.path}/org/:user`, this.userController.updateOrg)
-    this.router.patch(`${this.path}/payment`, this.userController.payment)
-    this.router.patch(`${this.path}/role`, this.userController.updateUserRole)
-    // this.router.patch(`${this.path}/edit-info`, this.userController.editUser)
   }
 }

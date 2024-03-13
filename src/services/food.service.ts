@@ -131,8 +131,53 @@ export class FoodService {
   public async foodUpdate(
     payload: FoodUpdateRequest
   ): Promise<FoodUpdateResponse> {
+    await this.foodRetrieveOne({ id: payload.id })
+    const updateObj: any = {}
+
+    if (payload.img) { 
+      updateObj.img = payload.img
+    }
+
+    if (payload.cost) {
+      updateObj.cost = payload.cost
+    }
+
+    if (payload.category) {
+      updateObj.category = payload.category
+    }
+
+    if (payload.name) {
+      updateObj.name = payload.name
+    }
+
+    const updatedFood = await this.foods.findByIdAndUpdate(payload.id, updateObj, { new: true }).select('-created -updatedAt -products').exec()
     return {
-      _id: ''
+      _id: updatedFood ? updatedFood['_id'] : payload.id
+    }
+  }
+
+  public async foodProductAdd(payload: any) {}
+  
+  public async foodProductUpdate(payload: { foodId: string, productId: string, amount: number}) {
+    const updatedFoodProduct = await this.foods.updateOne()
+
+    return {
+
+    }
+  }
+
+  public async foodProductDelete(payload: {
+    foodId: string
+    productId: string
+  }) {
+    await this.foodRetrieveOne({ id: payload.foodId })
+
+    const productDeleted = await this.foods.findByIdAndUpdate(payload.foodId, {
+      $pull: { products: { product: payload.productId } }
+    })
+
+    return {
+      _id: productDeleted ? productDeleted['_id'] : payload.productId
     }
   }
 
@@ -173,3 +218,9 @@ export class FoodService {
     return true
   }
 }
+
+/**
+ * Add Product
+ * Drop Product
+ * Edit Product
+ */

@@ -42,5 +42,10 @@ export class FoodRoute {
       checkPermission(FoodPermissions.FOOD_DELETE),
       this.foodController.foodDelete
     )
+
+    this.router.delete(
+      `${this.path}/products/:food/:product`,
+      this.foodController.foodProductDelete
+    )
   }
 }

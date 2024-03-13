@@ -70,6 +70,21 @@ export class FoodController {
     }
   }
 
+  public foodProductDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const foodId = req.params.food as string
+      const productId = req.params.product as string
+
+      res.json(await this.foodService.foodProductDelete({ foodId, productId }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public foodDelete = async (
     req: Request,
     res: Response,

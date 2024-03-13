@@ -15,7 +15,6 @@ import { HttpException } from '@exceptions'
 import { hash, compare } from 'bcrypt'
 import { ValidationService } from '@services'
 import { AdminCreateDto } from '@dtos'
-import { id } from 'date-fns/locale'
 
 export class AdminService {
   private admins = adminModel
@@ -135,7 +134,7 @@ export class AdminService {
     }
 
     const admin = await this.admins
-      .findByIdAndUpdate(payload.id, updateObj)
+      .findByIdAndUpdate(payload.id, updateObj, { new: true })
       .select('fullname phone_number org role')
       .populate('org', 'name_org')
       .populate('role', 'title')
