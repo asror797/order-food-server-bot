@@ -26,8 +26,12 @@ export class LunchBaseService {
     }
   }
 
-  public async lunchBaseRetrieveOne(payload: LunchBaseRetrieveOneRequest): Promise<any> {
-    const lunch = await this.lunches.findById(payload.id).select('name cost unit')
+  public async lunchBaseRetrieveOne(
+    payload: LunchBaseRetrieveOneRequest
+  ): Promise<any> {
+    const lunch = await this.lunches
+      .findById(payload.id)
+      .select('name cost unit')
     return {
       ...lunch
     }
@@ -41,7 +45,7 @@ export class LunchBaseService {
 
     const lunchbase = await this.lunchbase.create({
       name: payload.name,
-      org: payload.org,
+      org: payload.org
     })
 
     return lunchbase
@@ -81,9 +85,10 @@ export class LunchBaseService {
       .select('-updatedAt')
       .skip(skip)
       .limit(payload.size)
+      .sort({ createdAt: -1 })
       .populate('org', 'name_org')
       .exec()
-    
+
     const totalLunchBases = await this.lunchbase.countDocuments().exec()
     const totalPages = Math.ceil(totalLunchBases / payload.size)
     return {
@@ -97,9 +102,9 @@ export class LunchBaseService {
 
   public async toggleStatus(payload: { id: string }) {
     const base = await this.lunchbase
-        .findById(payload.id)
-        .select('name is_active')
-        .exec()
+      .findById(payload.id)
+      .select('name is_active')
+      .exec()
 
     if (!base) {
       throw new HttpException(400, 'Base not found')

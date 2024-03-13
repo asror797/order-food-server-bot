@@ -44,7 +44,9 @@ export class OrderService {
       .find()
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
+      .sort({ createdAt: -1 })
       .exec()
+
     const orderCount = await this.orders.countDocuments().exec()
     return {
       count: orderCount,

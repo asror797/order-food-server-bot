@@ -38,8 +38,8 @@ export class FoodController {
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
-      res.json('ok')
+      const foodId = req.params.id as string
+      res.json(await this.foodService.foodRetrieveOne({ id: foodId }))
     } catch (error) {
       next(error)
     }
@@ -76,8 +76,8 @@ export class FoodController {
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
-      res.json('ok')
+      const foodId = req.params.id as string
+      res.json(await this.foodService.foodDelete({ id: foodId }))
     } catch (error) {
       next(error)
     }

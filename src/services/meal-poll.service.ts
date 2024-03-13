@@ -21,6 +21,7 @@ export class MealPollService {
     const mealpollList = await this.mealpolls
       .find()
       .skip((payload.pageNumber - 1) * payload.pageSize)
+      .sort({ createdAt: -1 })
       .exec()
 
     return {

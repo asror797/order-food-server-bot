@@ -13,6 +13,7 @@ export interface FoodList {
   cost: number
   img: string
   org: string
+  products?: number
   category?: string
   is_private?: boolean
 }

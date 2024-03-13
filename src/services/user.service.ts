@@ -106,6 +106,7 @@ export class UserService {
       .find(query)
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
+      .sort({ createdAt: -1 })
       .populate('org', 'name_org')
       .select('first_name last_name role balance phone_number org')
       .exec()

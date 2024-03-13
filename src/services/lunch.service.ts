@@ -34,6 +34,7 @@ export class LunchService {
       .find(query)
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
+      .sort({ createdAt: -1 })
       .populate('base', 'name')
       .select('name cost')
       .exec()
@@ -97,15 +98,16 @@ export class LunchService {
     }
 
     if (payload.products) {
-      await Promise.all(payload.products.map(async (e) => {
-        console.log(e)
-        const product = await this.products.findById(e.product)
-        if (!product) throw new HttpException(400, 'Product not found')
-      }))
+      await Promise.all(
+        payload.products.map(async (e) => {
+          console.log(e)
+          const product = await this.products.findById(e.product)
+          if (!product) throw new HttpException(400, 'Product not found')
+        })
+      )
     }
 
     if (payload.is_active) {
-
     }
 
     const updatedProduct = await this.products.findByIdAndUpdate(payload.id, {})

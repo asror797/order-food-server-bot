@@ -25,6 +25,7 @@ export class PollVoteService {
     const pollVoteList = await this.pollvotes
       .find()
       .skip(payload.pageNumber)
+      .sort({ createdAt: -1 })
       .exec()
 
     const count = await this.pollvotes.countDocuments().exec()

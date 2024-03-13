@@ -1,7 +1,7 @@
 export interface ProductRetrieveAllRequest {
   pageSize: number
   pageNumber: number
-  searh: string
+  search?: string
 }
 
 export interface ProductList {
@@ -9,6 +9,7 @@ export interface ProductList {
   name: string
   amount: number
   cost: number
+  org: string
   unit: string
 }
 

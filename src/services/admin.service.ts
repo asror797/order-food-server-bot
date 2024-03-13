@@ -13,7 +13,7 @@ import {
 import { adminModel, orgModel, roleModel } from '@models'
 import { HttpException } from '@exceptions'
 import { hash, compare } from 'bcrypt'
-import { validationServiceInstance } from '@services'
+import { ValidationService } from '@services'
 import { AdminCreateDto } from '@dtos'
 import { id } from 'date-fns/locale'
 
@@ -21,6 +21,7 @@ export class AdminService {
   private admins = adminModel
   private role = roleModel
   private org = orgModel
+  private validationService = new ValidationService()
 
   public async adminRetrieveAll(
     payload: AdminRetrieveAllRequest
@@ -29,6 +30,7 @@ export class AdminService {
       .find()
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
+      .sort({ createdAt: -1 })
       .populate('org', 'name_org')
       .populate('role', 'title')
       .select('fullname phone_number password createdAt')
@@ -76,8 +78,7 @@ export class AdminService {
   public async adminCreate(
     payload: AdminCreateRequest
   ): Promise<AdminCreateResponse> {
-
-    await validationServiceInstance.validateDto(AdminCreateDto)
+    await this.validationService.validateDto(AdminCreateDto)
     const org = await this.org
       .findOne({
         _id: payload.org,
@@ -86,9 +87,9 @@ export class AdminService {
       .select('name_org')
       .exec()
 
-    if (!org) throw new HttpException(404,' Org not found')
+    if (!org) throw new HttpException(404, ' Org not found')
     const password = await hash(payload.password, 10)
-  
+
     const admin = await this.admins.create({
       fullname: payload.fullname,
       phone_number: payload.phone_number,
@@ -103,7 +104,7 @@ export class AdminService {
       password: '*****',
       phone_number: admin.phone_number,
       org: org.name_org,
-      role: admin.role,
+      role: admin.role
     }
   }
 
@@ -112,7 +113,7 @@ export class AdminService {
   ): Promise<AdminUpdateResponse> {
     await this.adminRetrieveOne({ id: payload.id })
 
-    const updateObj:any = {}
+    const updateObj: any = {}
     if (payload.role) {
       const role = await this.role.findById(payload.role)
       if (!role) throw new HttpException(404, 'Role not found')
@@ -127,6 +128,10 @@ export class AdminService {
 
     if (payload.password) {
       updateObj.password = await hash(payload.password, 10)
+    }
+
+    if (payload.fullname) {
+      updateObj.fullName = payload.fullname
     }
 
     const admin = await this.admins
@@ -144,7 +149,7 @@ export class AdminService {
       password: '*****',
       phone_number: admin.phone_number,
       org: admin.org,
-      role: admin.role,
+      role: admin.role
     }
   }
 
@@ -158,7 +163,9 @@ export class AdminService {
     }
   }
 
-  async #_adminCheckPhoneNumber(payload: { phoneNumber: string }):Promise<void> {
+  async #_adminCheckPhoneNumber(payload: {
+    phoneNumber: string
+  }): Promise<void> {
     const admin = await this.admins.findOne({
       phone_number: payload.phoneNumber
     })

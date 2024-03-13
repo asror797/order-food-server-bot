@@ -18,6 +18,9 @@ export class CreateProduct implements ProductCreateRequest {
 
   @IsString()
   org: string
+
+  @IsNumber()
+  cost: number
 }
 
 export class UpdateAmount {

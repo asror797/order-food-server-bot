@@ -1,6 +1,8 @@
 export interface ProductCreateRequest {
   name: string
   org: string
+  cost: number
+  unit: string
 }
 
 export interface ProductCreateResponse {

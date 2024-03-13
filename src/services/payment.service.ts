@@ -8,16 +8,15 @@ export class PaymentService {
   private payments = paymentModel
 
   public async paymentRetrieveAll(payload: any): Promise<any> {
-
     const paymentList = await this.payments
       .find()
       .populate('client', 'first_name last_name')
+      .sort({ createdAt: -1 })
       .populate('org', 'name_org')
       .select('amount client org type')
       .exec()
 
     const count = await this.payments.countDocuments()
-
 
     return {
       count: count,
@@ -28,7 +27,6 @@ export class PaymentService {
     }
   }
   public async paymentRetrieveOne(payload: any): Promise<any> {
-
     const payment = await this.payments.create({
       client: '',
       org: payload.org,

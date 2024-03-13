@@ -14,7 +14,8 @@ const authMiddleware = async (
     if (url == '/docs' || url == '/auth/login') {
       return next()
     }
-    const Authorization = req.header('Authorization')?.split('Bearer ')[1] || null
+    const Authorization =
+      req.header('Authorization')?.split('Bearer ')[1] || null
     if (!Authorization) throw new HttpException(401, 'unauthorized')
 
     if (Authorization) {

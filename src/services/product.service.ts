@@ -1,4 +1,4 @@
-import { CreateProduct, UpdateAmount } from '../dtos/product.dto'
+import { CreateProduct, UpdateAmount } from '@dtos'
 import { HttpException } from '@exceptions'
 import { productModel } from '@models'
 import {
@@ -22,6 +22,7 @@ export class ProductService {
       .find()
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
+      .sort({ createdAt: -1 })
       .populate('org', 'name_org')
       .exec()
 
@@ -32,14 +33,24 @@ export class ProductService {
       pageCount: 4,
       pageNumber: 1,
       pageSize: 10,
-      productList: productList
+      productList: productList.map((e: any) => ({
+        _id: e['_id'],
+        name: e.name,
+        cost: e.cost,
+        org: e.org.name_org,
+        amount: e.amount,
+        unit: e.unit,
+        min_amount: e.min_amount
+      }))
     }
   }
 
   public async productRetrieveOne(
     payload: ProductRetrieveOneRequest
   ): Promise<ProductRetrieveOneResponse> {
-    const product = await this.products.findById(payload.id)
+    const product = await this.products
+      .findById(payload.id)
+      .select('name cost amount org')
     if (!product) throw new HttpException(400, 'notFoundprod')
 
     return product
@@ -52,14 +63,15 @@ export class ProductService {
 
     const product = await this.products.create({
       name: payload.name,
-      org: payload.name,
-      cost: ''
+      org: payload.org,
+      cost: payload.cost,
+      unit: payload.unit
     })
     return product
   }
 
   public async productUpdate(payload: ProductUpdateRequest) {
-    await this.productRetrieveOne({id: payload.id})
+    await this.productRetrieveOne({ id: payload.id })
 
     const updatedProduct = await this.products.findByIdAndUpdate(payload.id, {})
 
@@ -77,140 +89,28 @@ export class ProductService {
   async #_checkProductName(payload: {
     name: string
     org: string
-  }): Promise<any> {
-    console.log(payload)
-    return true
+  }): Promise<void> {
+    const product = await this.products
+      .findOne({
+        name: payload.name,
+        org: payload.org
+      })
+      .select('name')
+      .exec()
+
+    if (product) throw new HttpException(400, 'Product name already used')
   }
 
-  public async checkProductAmount(payload: { product: string; amount: number}): Promise<boolean> {
+  public async checkProductAmount(payload: {
+    product: string
+    amount: number
+  }): Promise<boolean> {
     const product = await this.products.findOne({
       _id: payload.product,
       amount: { $gte: payload.amount }
     })
 
     return !!product
-  }
-
-  public async getProducts(payload: any) {
-    const { page, size, search } = payload
-    const skip = (page - 1) * size
-
-    if (!search || search.trim() === '') {
-      const products = await this.products
-        .find()
-        .populate('org', 'name_org')
-        .skip((page - 1) * size)
-        .limit(size)
-        .exec()
-
-      const totalProducts = await this.products.countDocuments().exec()
-      const totalPages = Math.ceil(totalProducts / size)
-      return {
-        data: products,
-        currentPage: page,
-        totalPages,
-        totalProducts,
-        productsOnPage: products.length
-      }
-    }
-
-    const re = new RegExp(search, 'i')
-    const products = await this.products
-      .find({
-        $or: [{ name: { $regex: re } }]
-      })
-      .populate('org', 'name_org')
-      .skip(skip)
-      .limit(size)
-      .exec()
-
-    const totalProducts = await this.products.countDocuments().exec()
-    const totalPages = Math.ceil(totalProducts / size)
-    return {
-      data: products,
-      currentPage: page,
-      totalPages,
-      totalProducts,
-      productsOnPage: products.length
-    }
-  }
-
-  public async createNew(productData: CreateProduct) {
-    console.log(productData)
-    const newProduct = await this.products.create(productData)
-
-    return newProduct
-  }
-
-  public async increaseAmount(productData: UpdateAmount) {
-    const { product, amount, cost } = productData
-
-    const isExist = await this.products.findById(product)
-
-    if (!isExist) throw new HttpException(200, 'product not found')
-
-    const updatedproduct = await this.products.findByIdAndUpdate(
-      product,
-      {
-        amount: Number(isExist.amount) + Number(amount),
-        cost: cost
-      },
-      { new: true }
-    )
-
-    return updatedproduct
-  }
-
-  public async checkAmountProduct(payload: any) {
-    const { product, amount } = payload
-
-    const Product = await this.products.findById(product)
-
-    if (!Product) {
-      return false
-    }
-
-    if (Product.amount >= amount) {
-      return true
-    }
-
-    if (Product.amount < amount) {
-      return false
-    }
-  }
-
-  public async updateProduct(payload: any) {
-    const newUpdate = await this.products
-      .findByIdAndUpdate(
-        payload.product,
-        {
-          name: payload.name,
-          unit: payload.unit
-        },
-        { new: true }
-      )
-      .exec()
-
-    return newUpdate
-  }
-
-  public async decreaseAmount(productData: UpdateAmount) {
-    const { product, amount } = productData
-
-    const isExist = await this.products.findById(product)
-
-    if (!isExist) throw new HttpException(200, 'product not found')
-
-    if (Number(isExist.amount < Number(amount)))
-      throw new HttpException(200, 'amount dont decrease')
-
-    const updatedProduct = await this.products.findByIdAndUpdate(
-      product,
-      { amount: Number(isExist.amount) - Number(amount) },
-      { new: true }
-    )
-
-    return updatedProduct
   }
 }
 

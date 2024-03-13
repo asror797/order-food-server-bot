@@ -14,11 +14,13 @@ export class AuthService {
 
   public async decodeRefreshToken(payload: {}) {}
 
-
   public async genereateAccessToken() {}
   public async decodeAccessToken(token: string) {}
 
-  public async adminAuthSignIn(payload: {phoneNumber: string; password: string}) {
+  public async adminAuthSignIn(payload: {
+    phoneNumber: string
+    password: string
+  }) {
     const admin = await this.admins
       .findOne({
         phone_number: payload.phoneNumber
@@ -29,7 +31,8 @@ export class AuthService {
     if (!admin) throw new HttpException(400, 'PhoneNumber or Password is wrong')
 
     const isPasswordCorrect = await compare(admin.password, payload.password)
-    if (!isPasswordCorrect) throw new HttpException(400, 'PhoneNumber or Password is wrong')
+    if (!isPasswordCorrect)
+      throw new HttpException(400, 'PhoneNumber or Password is wrong')
 
     return {
       accessToken: await this.genereateAccessToken(),
@@ -38,6 +41,4 @@ export class AuthService {
   }
 
   public async adminAuthSignOut() {}
-
-  
 }

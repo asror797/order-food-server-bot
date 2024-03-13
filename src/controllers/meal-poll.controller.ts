@@ -27,7 +27,9 @@ export class MealPollController {
     next: NextFunction
   ) => {
     try {
-      res.json(await this.mealpollService.mealPollRetrieveOne({ id: '', search: '' }))
+      res.json(
+        await this.mealpollService.mealPollRetrieveOne({ id: '', search: '' })
+      )
     } catch (error) {
       next(error)
     }

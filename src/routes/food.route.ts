@@ -20,7 +20,7 @@ export class FoodRoute {
     )
 
     this.router.get(
-      `${this.path}`,
+      `${this.path}/:id`,
       checkPermission(FoodPermissions.FOOD_RETRIEVE_ONE),
       this.foodController.foodRetrieveOne
     )
@@ -38,18 +38,9 @@ export class FoodRoute {
     )
 
     this.router.delete(
-      `${this.path}`,
+      `${this.path}/:id`,
       checkPermission(FoodPermissions.FOOD_DELETE),
       this.foodController.foodDelete
     )
-
-    // this.router.get(`${this.path}`, this.foodController.getFoods)
-    // this.router.post(`${this.path}`, this.foodController.createFood)
-    // this.router.patch(`${this.path}`, this.foodController.updateFoodPic)
-    // this.router.patch(
-    //   `${this.path}/update/:food`,
-    //   this.foodController.updateFood
-    // )
-    // this.router.patch(`${this.path}/:food`, this.foodController.changeStatus)
   }
 }

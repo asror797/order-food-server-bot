@@ -762,12 +762,17 @@ class TelegramBotApi {
 
       // check foods of order and collect valid foods
       const validFoods: any = []
-      await Promise.all(store.map(async(e) => {
-        const isValid = await this.foodService.checkFoodProducts({ food: e.id, amount: e.amount })
-        if (isValid) {
-          validFoods.push(e)
-        }
-      }))
+      await Promise.all(
+        store.map(async (e) => {
+          const isValid = await this.foodService.checkFoodProducts({
+            food: e.id,
+            amount: e.amount
+          })
+          if (isValid) {
+            validFoods.push(e)
+          }
+        })
+      )
       // end
 
       // check balance of user
@@ -776,7 +781,10 @@ class TelegramBotApi {
       // create order depend on validated foods of cart
       const order = await this.orderService.orderCreate({
         client: payload.user,
-        foods: validFoods.map((e: any) => ({ food: e.food.id, amount: e.amount })),
+        foods: validFoods.map((e: any) => ({
+          food: e.food.id,
+          amount: e.amount
+        })),
         org: org['_id']
       })
       // end

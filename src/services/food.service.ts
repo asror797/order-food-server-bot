@@ -1,13 +1,13 @@
 import { HttpException } from '@exceptions'
-import { 
+import {
   FoodCreateRequest,
   FoodCreateResponse,
-  FoodDeleteRequest, 
-  FoodDeleteResponse, 
-  FoodRetrieveOneRequest, 
+  FoodDeleteRequest,
+  FoodDeleteResponse,
+  FoodRetrieveOneRequest,
   FoodRetrieveOneResponse,
   FoodRetrieveAllRequest,
-  FoodUpdateRequest, 
+  FoodUpdateRequest,
   FoodUpdateResponse,
   FoodRetrieveAllResponse
 } from '@interfaces'
@@ -23,7 +23,9 @@ export class FoodService {
   private validateService = new ValidationService()
   public org = orgModel
 
-  public async foodRetrieveAll(payload: FoodRetrieveAllRequest): Promise<FoodRetrieveAllResponse> {
+  public async foodRetrieveAll(
+    payload: FoodRetrieveAllRequest
+  ): Promise<FoodRetrieveAllResponse> {
     const categoryEnum = ['drinks', 'snacks', 'dessert']
     const query: any = {}
 
@@ -45,8 +47,13 @@ export class FoodService {
       .find(query)
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
+      .sort({ createdAt: -1 })
       .populate('org', 'name_org')
-      .select(payload.isDashboard ? 'name cost img category is_deleted' : 'name cost img')
+      .select(
+        payload.isDashboard
+          ? 'name cost img category is_deleted products'
+          : 'name cost img'
+      )
       .exec()
 
     const count = await this.foods.countDocuments(query).exec()
@@ -63,20 +70,28 @@ export class FoodService {
         img: e.img,
         org: e.org.name_org,
         category: e.category,
+        products: e.products.length,
         is_private: e.is_deleted
       }))
     }
   }
 
-  public async foodRetrieveOne(payload: FoodRetrieveOneRequest): Promise<FoodRetrieveOneResponse> {
-    const food = await this.foods.findById(payload.id).select('name cost img org')
+  public async foodRetrieveOne(
+    payload: FoodRetrieveOneRequest
+  ): Promise<FoodRetrieveOneResponse> {
+    const food = await this.foods
+      .findById(payload.id)
+      .populate('org', 'name_org')
+      .populate('products.product', 'name cost')
+      .select('name cost img org products')
+      .exec()
     if (!food) throw new HttpException(404, 'Food not found')
-    
+
     return food
   }
 
-  public async foodCreate(payload: FoodCreateRequest):Promise<FoodCreateResponse> {
-    await this.validateService.validateDto(FoodCreateDto)
+  public async foodCreate(payload: FoodCreateDto): Promise<FoodCreateResponse> {
+    await this.validateService.validateDto(payload)
     if (payload.org) {
       const org = await this.org.findById(payload.org)
       if (!org) throw new HttpException(404, 'Org not found')
@@ -84,14 +99,19 @@ export class FoodService {
 
     await Promise.all(
       payload.products.map(async (e: any) => {
-        const product = await this.foods
-          .findById(e['_id'])
+        console.log(e)
+        const product = await this.products
+          .findById(e.product)
           .select('org')
           .exec()
-        if (!product || e.amount >= 0) {
+        console.log(product)
+        if (!product) {
+          throw new HttpException(404, `${e.product} product not found`)
+        }
+        if (e.amount <= 0) {
           throw new HttpException(
-            404,
-            'Product not found or Amount not positive'
+            400,
+            `${e.product} product amount not positive`
           )
         }
       })
@@ -108,40 +128,48 @@ export class FoodService {
     return food
   }
 
-  public async foodUpdate(payload: FoodUpdateRequest): Promise<FoodUpdateResponse> {
+  public async foodUpdate(
+    payload: FoodUpdateRequest
+  ): Promise<FoodUpdateResponse> {
     return {
       _id: ''
     }
   }
 
-  public async foodDelete(payload: FoodDeleteRequest): Promise<FoodDeleteResponse> {
+  public async foodDelete(
+    payload: FoodDeleteRequest
+  ): Promise<FoodDeleteResponse> {
     await this.foodRetrieveOne({ id: payload.id })
 
     const food = await this.foods.findByIdAndDelete(payload.id)
 
     return {
-      _id: food ? food['_id'] : payload.id 
+      _id: food ? food['_id'] : payload.id
     }
   }
 
-  public async checkFoodProducts(payload: { food: string; amount: number }): Promise<boolean> {
+  public async checkFoodProducts(payload: {
+    food: string
+    amount: number
+  }): Promise<boolean> {
     const food = await this.foods
       .findById(payload.food)
       .select('products')
       .exec()
-    
+
     if (!food) return false
 
-    await Promise.all(food.products.map(async(e) => {
-      const isValid = await this.productService.checkProductAmount({
-        product: e.product.toString(),
-        amount: e.amount * payload.amount
-      })
+    await Promise.all(
+      food.products.map(async (e) => {
+        const isValid = await this.productService.checkProductAmount({
+          product: e.product.toString(),
+          amount: e.amount * payload.amount
+        })
 
-      if (!isValid) return false
-    }))
+        if (!isValid) return false
+      })
+    )
 
     return true
   }
-
 }

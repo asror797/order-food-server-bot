@@ -33,8 +33,8 @@ export class OrgController {
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
-      res.json('')
+      const orgId = req.params.id as string
+      res.json(await this.orgService.orgRetrieveOne({ id: orgId }))
     } catch (error) {
       next(error)
     }
@@ -46,8 +46,7 @@ export class OrgController {
     next: NextFunction
   ) => {
     try {
-      const orgData = req.body
-      res.json(await this.orgService.orgCreate(orgData))
+      res.json(await this.orgService.orgCreate(req.body))
     } catch (error) {
       next(error)
     }
@@ -59,8 +58,9 @@ export class OrgController {
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
-      res.json('')
+      const orgId = req.params.id as string
+      const orgData = req.body
+      res.json(await this.orgService.orgUpdate({ ...orgData, id: orgId }))
     } catch (error) {
       console.log(error)
       next(error)
@@ -73,8 +73,8 @@ export class OrgController {
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
-      res.json('')
+      const orgId = req.params.id
+      res.json(await this.orgService.orgDelete({ id: orgId }))
     } catch (error) {
       console.log(error)
       next(error)
