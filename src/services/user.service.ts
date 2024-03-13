@@ -108,7 +108,7 @@ export class UserService {
       .limit(payload.pageSize)
       .sort({ createdAt: -1 })
       .populate('org', 'name_org')
-      .select('first_name last_name role balance phone_number org')
+      .select('first_name last_name role balance phone_number org is_active is_verified')
       .exec()
 
     const count = await this.users.countDocuments(query)
@@ -124,8 +124,10 @@ export class UserService {
         last_name: e.last_name,
         phone_number: e.phone_number,
         role: e.role,
-        org: e.org.name_org || null,
-        balance: e.balance
+        org: e.org ? e.org.name_org : null,
+        balance: e.balance,
+        is_verified: e.is_verified,
+        is_active: e.is_active
       }))
     }
   }

@@ -103,7 +103,7 @@ export class OrgService {
     }
 
     const updatedOrg = await this.orgs
-      .findByIdAndUpdate(payload.id, updateObj)
+      .findByIdAndUpdate(payload.id, updateObj, { new: true })
       .select('name_org is_active group_a_id group_b_id trip_timeout')
       .exec()
 
