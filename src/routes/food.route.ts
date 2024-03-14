@@ -37,15 +37,28 @@ export class FoodRoute {
       this.foodController.foodUpdate
     )
 
-    this.router.delete(
-      `${this.path}/:id`,
-      checkPermission(FoodPermissions.FOOD_DELETE),
-      this.foodController.foodDelete
+    this.router.post(
+      `${this.path}/products/:id`,
+      checkPermission(FoodPermissions.FOOD_UPDATE),
+      this.foodController.foodProductAdd
+    )
+
+    this.router.patch(
+      `${this.path}/products/:id`,
+      checkPermission(FoodPermissions.FOOD_UPDATE),
+      this.foodController.foodProductUpdate
     )
 
     this.router.delete(
       `${this.path}/products/:food/:product`,
+      checkPermission(FoodPermissions.FOOD_UPDATE),
       this.foodController.foodProductDelete
+    )
+
+    this.router.delete(
+      `${this.path}/:id`,
+      checkPermission(FoodPermissions.FOOD_DELETE),
+      this.foodController.foodDelete
     )
   }
 }

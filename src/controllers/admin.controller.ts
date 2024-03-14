@@ -64,12 +64,11 @@ export class AdminController {
   ) => {
     try {
       const id = req.params.id as string
-      const adminData = req.body
 
       res.json(
         await this.adminService.adminUpdate({
           id,
-          ...adminData
+          ...req.body
         })
       )
     } catch (error) {

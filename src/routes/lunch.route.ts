@@ -34,7 +34,25 @@ export class LunchRoute {
     this.router.patch(
       `${this.path}/:id`,
       checkPermission(LunchPermissions.LUNCH_UPDATE),
-      this.lunchController.lunchCreate
+      this.lunchController.lunchUpdate
+    )
+
+    this.router.post(
+      `${this.path}/products/:id`,
+      checkPermission(LunchPermissions.LUNCH_UPDATE),
+      this.lunchController.lunchProductAdd
+    )
+
+    this.router.patch(
+      `${this.path}/products/:id`,
+      checkPermission(LunchPermissions.LUNCH_UPDATE),
+      this.lunchController.lunchProductUpdate
+    )
+
+    this.router.patch(
+      `${this.path}/products/:lunch/:product`,
+      checkPermission(LunchPermissions.LUNCH_UPDATE),
+      this.lunchController.lunchProductDelete
     )
 
     this.router.delete(

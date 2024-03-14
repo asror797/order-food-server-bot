@@ -22,7 +22,7 @@ const authMiddleware = async (
       const verificationResponse = verify(Authorization, 'secret_key') as any
 
       if (verificationResponse) {
-        req.user = verificationResponse
+        req.data = verificationResponse
         next()
       } else {
         next(new HttpException(401, 'Wrong authenticaton token'))

@@ -1,7 +1,5 @@
 export interface PollVoteRetrieveOneRequest {
-  pageSize: number
-  pageNumber: number
-  search: string
+  id: string
 }
 
 export interface PollVoteRetrieveOneResponse {

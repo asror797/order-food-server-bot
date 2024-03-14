@@ -93,15 +93,22 @@ export class LunchBaseService {
     return newLunchbase
   }
 
-  public async lunchBaseDelete(): Promise<any> {}
+  public async lunchBaseDelete(payload: { id: string }): Promise<any> {
+    await this.lunchBaseRetrieveOne({ id: payload.id })
+    const deletedLunchBase = await this.lunchbase.findByIdAndDelete(payload.id)
+
+    return {
+      _id: deletedLunchBase ? deletedLunchBase['_id'] : payload.id
+    }
+  }
 
   async #_checkName(payload: { name: string; org: string }) {
-    const lunchbase = await this.lunchbase.find({
+    const lunchbase = await this.lunchbase.findOne({
       name: payload.name,
       org: payload.org,
       is_active: true
     })
-    if (lunchbase) throw new HttpException(400, 'Already name used')
+    if (lunchbase) throw new HttpException(400, 'Name of lunch-base already used')
   }
 
   async retrieveAllLunchBases(payload: any) {
@@ -151,4 +158,5 @@ export class LunchBaseService {
 
     return updatedBase
   }
+
 }

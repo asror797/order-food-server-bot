@@ -30,7 +30,17 @@ export class LunchController {
     }
   }
 
-  public lunchRetrieveOne = () => {}
+  public lunchRetrieveOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      res.json(await this.lunchService.lunchRetrieveOne({ id: req.params.id }))
+    } catch (error) {
+      next(error)
+    }
+  }
 
   public lunchCreate = async (
     req: Request,
@@ -48,5 +58,74 @@ export class LunchController {
       next(error)
     }
   }
-  public lunchDelete = () => {}
+
+  public lunchProductAdd = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const lunch = req.params.id
+
+      res.json(
+        await this.lunchService.lunchProductAdd({ id: lunch, ...req.body })
+      )
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public lunchProductUpdate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const data = req.params.id
+      res.json()
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public lunchProductDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const lunch = req.params.lunch
+      const product = req.params.product
+
+      res.json(await this.lunchService.lunchProductDelete({ lunch, product }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public lunchUpdate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const lunchId = req.params.id
+      res.json(await this.lunchService.lunchUpdate({ ...req.body, id: lunchId }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public lunchDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const lunchId = req.params.id
+      res.json(await this.lunchService.lunchDelete({ id: lunchId }))
+    } catch (error) {
+      next(error)
+    }
+  }
 }

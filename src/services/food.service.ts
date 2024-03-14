@@ -134,7 +134,7 @@ export class FoodService {
     await this.foodRetrieveOne({ id: payload.id })
     const updateObj: any = {}
 
-    if (payload.img) { 
+    if (payload.img) {
       updateObj.img = payload.img
     }
 
@@ -150,20 +150,55 @@ export class FoodService {
       updateObj.name = payload.name
     }
 
-    const updatedFood = await this.foods.findByIdAndUpdate(payload.id, updateObj, { new: true }).select('-created -updatedAt -products').exec()
+    const updatedFood = await this.foods
+      .findByIdAndUpdate(payload.id, updateObj, { new: true })
+      .select('-created -updatedAt -products')
+      .exec()
     return {
       _id: updatedFood ? updatedFood['_id'] : payload.id
     }
   }
 
-  public async foodProductAdd(payload: any) {}
-  
-  public async foodProductUpdate(payload: { foodId: string, productId: string, amount: number}) {
+  public async foodProductAdd(payload: any) {
+    const food: any = await this.foodRetrieveOne({ id: payload.id })
+    const product = await this.products.findOne({
+      _id: payload.product,
+      org: food.org['_id']
+    })
+    if (!product) throw new HttpException(404, 'Product not found')
+
+    const productIndex = food.products.findIndex(
+      (p: any) => p.product['_id'] === payload.product
+    )
+    if (productIndex !== -1)
+      throw new HttpException(400, 'Product already added')
+    if (payload.amount <= 0)
+      throw new HttpException(400, 'Product amunt should be valid')
+
+    const updatedFood = await this.foods
+      .findByIdAndUpdate(
+        payload.id,
+        {
+          $push: {
+            products: { product: payload.product, amount: payload.amount }
+          }
+        },
+        { new: true }
+      )
+      .select('-createdAt -updatedAt')
+      .exec()
+
+    return updatedFood
+  }
+
+  public async foodProductUpdate(payload: {
+    foodId: string
+    productId: string
+    amount: number
+  }) {
     const updatedFoodProduct = await this.foods.updateOne()
 
-    return {
-
-    }
+    return {}
   }
 
   public async foodProductDelete(payload: {

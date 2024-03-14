@@ -4,6 +4,7 @@ export interface UserRetrieveAllRequest {
   pageSize: number
   pageNumber: number
   search?: string
+  org?: string
 }
 
 export interface UserList {

@@ -21,10 +21,16 @@ export class PollVoteService {
 
   public async pollVoteRetrieveAll(
     payload: PollVoteRetrieveAllRequest
-  ): Promise<PollVoteRetrieveAllResponse> {
+  ): Promise<any> {
+    const query:any = {}
+    if (payload.mealpoll) {
+      query.mealpoll = payload.mealpoll
+    }
+
     const pollVoteList = await this.pollvotes
-      .find()
+      .find(query)
       .skip(payload.pageNumber)
+      .limit(payload.pageSize)
       .sort({ createdAt: -1 })
       .exec()
 
@@ -34,17 +40,20 @@ export class PollVoteService {
       pageNumber: payload.pageNumber,
       pageSize: payload.pageSize,
       pageCount: Math.ceil(pollVoteList.length),
-      pollVoteList: []
+      pollVoteList: pollVoteList
     }
   }
 
   public async pollVoteRetrieveOne(
     payload: PollVoteRetrieveOneRequest
-  ): Promise<PollVoteRetrieveOneResponse> {
-    console.log(payload)
-    return {
-      id: ''
-    }
+  ): Promise<any> {
+    const pollvote = await this.pollvotes
+      .findById(payload.id)
+      .select('-createdAt -updatedAt')
+      .exec()
+    if (!pollvote) throw new HttpException(404, 'pollvote not found')
+    
+    return pollvote
   }
 
   public async pollVoteCreate(

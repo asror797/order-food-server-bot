@@ -107,14 +107,12 @@ export class AdminService {
     }
   }
 
-  public async adminUpdate(
-    payload: AdminUpdateRequest
-  ): Promise<AdminUpdateResponse> {
+  public async adminUpdate(payload: AdminUpdateRequest): Promise<any> {
     await this.adminRetrieveOne({ id: payload.id })
-
     const updateObj: any = {}
+
     if (payload.role) {
-      const role = await this.role.findById(payload.role)
+      const role = await this.role.findById(payload.role).select('title').exec()
       if (!role) throw new HttpException(404, 'Role not found')
       updateObj.role = payload.role
     }
@@ -130,26 +128,17 @@ export class AdminService {
     }
 
     if (payload.fullname) {
-      updateObj.fullName = payload.fullname
+      updateObj.fullname = payload.fullname
     }
 
     const admin = await this.admins
       .findByIdAndUpdate(payload.id, updateObj, { new: true })
-      .select('fullname phone_number org role')
-      .populate('org', 'name_org')
-      .populate('role', 'title')
+      .select('-password -createdAt -updatedAt')
       .exec()
 
-    if (!admin) throw new HttpException(400, ' Admin is not update')
+    if (!admin) throw new HttpException(400, 'Admin is not update')
 
-    return {
-      _id: admin['_id'],
-      fullname: admin.fullname,
-      password: '*****',
-      phone_number: admin.phone_number,
-      org: admin.org,
-      role: admin.role
-    }
+    return admin
   }
 
   public async adminDelete(

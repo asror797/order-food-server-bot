@@ -21,13 +21,8 @@ export class UserRoute {
 
     this.router.get(
       `${this.path}/:id`,
-      checkPermission(UserPermissions.USER_RETRIEVE_ONE)
-    )
-
-    this.router.post(
-      `${this.path}`,
-      checkPermission(UserPermissions.USER_CREATE),
-      this.userController.createUser
+      checkPermission(UserPermissions.USER_RETRIEVE_ONE),
+      this.userController.userRetrieveOne
     )
 
     this.router.patch(
@@ -36,20 +31,9 @@ export class UserRoute {
       this.userController.userUpdate
     )
 
-    this.router.get(
-      `${this.path}/telegram/:telegramid`,
-      this.userController.findUser
+    this.router.delete(
+      `${this.path}/:id`,
+      this.userController.userDelete
     )
-    this.router.put(
-      `${this.path}/status/:user`,
-      this.userController.updateStatus
-    )
-    this.router.put(`${this.path}/`, this.userController.updateInfoUser)
-    this.router.put(`${this.path}/verify/:user`, this.userController.verifyUser)
-    this.router.post(
-      `${this.path}/send-message`,
-      this.userController.sendMessage
-    )
-    this.router.put(`${this.path}/org/:user`, this.userController.updateOrg)
   }
 }

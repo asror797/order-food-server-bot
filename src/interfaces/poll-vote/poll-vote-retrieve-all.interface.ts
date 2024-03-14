@@ -1,7 +1,8 @@
 export interface PollVoteRetrieveAllRequest {
   pageSize: number
   pageNumber: number
-  search: string
+  mealpoll?: string
+  search?: string
 }
 
 export interface PollVoteList {

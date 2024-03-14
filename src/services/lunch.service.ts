@@ -36,7 +36,7 @@ export class LunchService {
       .limit(payload.pageSize)
       .sort({ createdAt: -1 })
       .populate('base', 'name')
-      .select('name cost')
+      .select('name cost is_active')
       .exec()
 
     const count = await this.lunches.countDocuments().exec()
@@ -46,21 +46,30 @@ export class LunchService {
       pageNumber: payload.pageNumber,
       pageSize: 10,
       pageCount: Math.ceil(count / payload.pageSize),
-      lunchList: lunchList
+      lunchList: lunchList.map((e: any) => ({
+        _id: e['_id'],
+        name: e.name,
+        cost: e.cost,
+        base: e.base.name,
+        is_active: e.is_active
+      }))
     }
   }
 
   public async lunchRetrieveOne(payload: { id: string }): Promise<any> {
-    const lunch = await this.lunches.findById(payload.id)
+    const lunch = await this.lunches
+      .findById(payload.id)
+      .populate('products.product', 'name cost')
+      .populate('org', 'name_org')
+      .select('-createdAt -updatedAt')
 
-    if (!lunch) throw new HttpException(404, 'Not Found Lunch')
+    if (!lunch) throw new HttpException(404, 'Lunch not found')
 
-    return {
-      name: lunch?.name
-    }
+    return lunch
   }
 
   public async lunchCreate(payload: any): Promise<any> {
+    console.log(payload)
     const lunchbase = await this.bases.findById(payload.lunchbase)
     if (!lunchbase) throw new HttpException(404, 'Lunchbase not found')
 
@@ -91,29 +100,67 @@ export class LunchService {
 
   public async lunchUpdate(payload: LunchUpdateRequest): Promise<any> {
     await this.lunchRetrieveOne({ id: payload.id })
+    const updateObj:any = {}
 
-    if (payload.base) {
-      const base = await this.bases.findById(payload.id)
-      if (!base) throw new HttpException(400, 'Base Not Found')
+    if (payload.persent_cook) {
+      updateObj.percent_cook = payload.persent_cook
     }
 
-    if (payload.products) {
-      await Promise.all(
-        payload.products.map(async (e) => {
-          console.log(e)
-          const product = await this.products.findById(e.product)
-          if (!product) throw new HttpException(400, 'Product not found')
-        })
-      )
+    if (payload.name) {
+      updateObj.name = payload.name
     }
 
     if (payload.is_active) {
+      updateObj.is_active = payload.is_active
     }
-
-    const updatedProduct = await this.products.findByIdAndUpdate(payload.id, {})
+    
+    if (payload.cost) {
+      updateObj.cost = payload.cost
+    }
+    const updatedProduct = await this.lunches.findByIdAndUpdate(payload.id, updateObj, { new: true }).select('-createdAt -updatedAt -products').exec()
 
     return updatedProduct
   }
+
+  public async lunchProductAdd(payload: any) {
+    const lunch = await this.lunchRetrieveOne({ id: payload.id })
+
+    const product = await this.products.findOne({
+      _id: payload.product,
+      org: lunch.org['_id']
+    })
+    if (!product) throw new HttpException(404, 'Product not found')
+
+    const productIndex = lunch.products.findIndex(
+      (p: any) => p.product['_id'] === payload.product
+    )
+    if (productIndex !== -1)
+      throw new HttpException(400, 'Product already added')
+    if (payload.amount <= 0)
+      throw new HttpException(400, 'Product amunt should be valid')
+
+    const updatedFood = await this.lunches
+      .findByIdAndUpdate(
+        payload.id,
+        {
+          $push: {
+            products: { product: payload.product, amount: payload.amount }
+          }
+        },
+        { new: true }
+      )
+      .select('-createdAt -updatedAt')
+      .exec()
+
+    return updatedFood
+  }
+
+  public async lunchProductUpdate() {}
+
+  public async lunchProductDelete(payload: {
+    lunch: string
+    product: string
+  }) {}
 
   public async lunchDelete(payload: LunchDeleteRequest): Promise<any> {
     await this.lunchRetrieveOne({ id: payload.id })

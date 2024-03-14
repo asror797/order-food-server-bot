@@ -29,6 +29,13 @@ export class AuthController {
     next: NextFunction
   ) => {
     try {
+      const refreshToken = req.body
+      res.json(
+        await this.authService.adminAuthSignIn({
+          password: '',
+          phoneNumber: ''
+        })
+      )
     } catch (error) {
       next(error)
     }

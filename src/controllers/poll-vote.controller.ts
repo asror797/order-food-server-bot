@@ -9,6 +9,9 @@ export class PollVoteController {
     res: Response,
     next: NextFunction
   ) => {
+    const pageNumber = parseInt(req.query.page as string) || 1
+    const pageSize = parseInt(req.query.size as string) || 10
+    res.json(await this.pollvoteService.pollVoteRetrieveAll({pageNumber, pageSize}))
     try {
     } catch (error) {
       next(error)
@@ -21,6 +24,8 @@ export class PollVoteController {
     next: NextFunction
   ) => {
     try {
+      const pollvoteId = req.params.id
+      res.json(await this.pollvoteService.pollVoteRetrieveOne({ id: pollvoteId }))
     } catch (error) {
       next(error)
     }

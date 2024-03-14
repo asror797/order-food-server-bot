@@ -8,37 +8,39 @@ import { compare } from 'bcrypt'
 export class AuthService {
   public admins = adminModel
 
-  public async generateRefreshToken(payload: { id: string }): Promise<string> {
+  public async generateRefreshToken(payload: any): Promise<string> {
+    const data = {
+      admin: payload.adminId,
+      role: payload.roleId,
+      org: payload.orgId
+    }
     return ''
   }
 
-  public async decodeRefreshToken(payload: {}) {}
+  public async decodeRefreshToken(payload: any) {
+    const decodedToken = jwt.verify(payload.token, 'secret_key')
 
-  public async genereateAccessToken(payload: any) {
-    /**
-     * org
-     * userId
-     * role {
-     *   modules: [
-     *      uri
-     *      permission
-     *      actions: [
-     *        {
-     *          permission
-     *          uri
-     *        }
-     *      ]
-     *   ]
-     * }
-     *
-     *
-     *
-     */
-
-    return jwt.sign(payload.data, 'secret_key', { expiresIn: 500 })
+    return decodedToken
   }
 
-  public async decodeAccessToken(token: string) {}
+  public async genereateAccessToken(payload: any) {
+    const data = {
+      admin: payload.adminId,
+      org: payload.orgId,
+      role: payload.role,
+      modules: payload.role.modules
+    }
+
+    return jwt.sign(data, 'secret_key', { expiresIn: 500 })
+  }
+
+  public async decodeAccessToken(token: string) {
+    const decodedToken = jwt.verify(token, 'secret_key')
+
+    console.log(decodedToken)
+
+    return decodedToken
+  }
 
   public async adminAuthSignIn(payload: {
     phoneNumber: string

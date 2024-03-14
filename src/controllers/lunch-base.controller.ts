@@ -6,20 +6,6 @@ import { HttpException } from '@exceptions'
 export class LunchBaseController {
   readonly lunchbaseService = new LunchBaseService()
 
-  public lunchBaseRetrieveOne = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      res.json(req.body)
-    } catch (error) {
-      console.log(error)
-      next(error)
-    }
-  }
-  public lunchBaseDelete = () => {}
-
   public lunchBaseRetrieveAll = async (
     req: Request<ParsedQs>,
     res: Response,
@@ -36,6 +22,15 @@ export class LunchBaseController {
           search
         })
       )
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public lunchBaseRetrieveOne = async (req:Request,res:Response,next:NextFunction) => {
+    try {
+      const lunchbaseId = req.params.id 
+      res.json(await this.lunchbaseService.lunchBaseRetrieveOne({ id: lunchbaseId }))
     } catch (error) {
       next(error)
     }
@@ -89,7 +84,20 @@ export class LunchBaseController {
   ) => {
     try {
       const lunchbaseId = req.params.id as string
-      res.json(await this.lunchbaseService.lunchBaseUpdate({ ...req.body, id: lunchbaseId }))
+      res.json(
+        await this.lunchbaseService.lunchBaseUpdate({
+          ...req.body,
+          id: lunchbaseId
+        })
+      )
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public lunchBaseDelete = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      res.json(await this.lunchbaseService.lunchBaseDelete({ id: req.params.id }))
     } catch (error) {
       next(error)
     }

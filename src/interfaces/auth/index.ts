@@ -1,10 +1,11 @@
 import { Request } from 'express'
-import { IRole } from './../role'
+import { IRole, Module } from './../role'
 
 export interface DataStoredToken {
-  _id: string
+  id: string
   role: IRole
   org: string
+  modules: Module[]
 }
 
 export interface TokenData {
@@ -13,5 +14,5 @@ export interface TokenData {
 }
 
 export interface RequestWithUser extends Request {
-  user?: DataStoredToken
+  data?: DataStoredToken
 }
