@@ -108,7 +108,8 @@ export class LunchBaseService {
       org: payload.org,
       is_active: true
     })
-    if (lunchbase) throw new HttpException(400, 'Name of lunch-base already used')
+    if (lunchbase)
+      throw new HttpException(400, 'Name of lunch-base already used')
   }
 
   async retrieveAllLunchBases(payload: any) {
@@ -158,5 +159,4 @@ export class LunchBaseService {
 
     return updatedBase
   }
-
 }

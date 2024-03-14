@@ -27,10 +27,16 @@ export class LunchBaseController {
     }
   }
 
-  public lunchBaseRetrieveOne = async (req:Request,res:Response,next:NextFunction) => {
+  public lunchBaseRetrieveOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      const lunchbaseId = req.params.id 
-      res.json(await this.lunchbaseService.lunchBaseRetrieveOne({ id: lunchbaseId }))
+      const lunchbaseId = req.params.id
+      res.json(
+        await this.lunchbaseService.lunchBaseRetrieveOne({ id: lunchbaseId })
+      )
     } catch (error) {
       next(error)
     }
@@ -95,9 +101,15 @@ export class LunchBaseController {
     }
   }
 
-  public lunchBaseDelete = async(req:Request,res:Response,next:NextFunction) => {
+  public lunchBaseDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      res.json(await this.lunchbaseService.lunchBaseDelete({ id: req.params.id }))
+      res.json(
+        await this.lunchbaseService.lunchBaseDelete({ id: req.params.id })
+      )
     } catch (error) {
       next(error)
     }

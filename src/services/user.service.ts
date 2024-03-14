@@ -75,7 +75,10 @@ export class UserService {
   public async userRetrieveAll(payload: UserRetrieveAllRequest): Promise<any> {
     const query: any = {}
     if (payload.org) {
-      const org = await this.orgs.findById(payload.org).select('name_org').exec()
+      const org = await this.orgs
+        .findById(payload.org)
+        .select('name_org')
+        .exec()
       if (!org) throw new HttpException(404, 'Org not found')
       query.org = payload.org
     }
@@ -126,7 +129,9 @@ export class UserService {
     const user = await this.users
       .findById(payload.id)
       .populate('org', 'name_org')
-      .select('first_name last_name role pone_number balance is_active is_verified')
+      .select(
+        'first_name last_name role pone_number balance is_active is_verified'
+      )
       .exec()
 
     if (!user) throw new HttpException(404, 'user not found')

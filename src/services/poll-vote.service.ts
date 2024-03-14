@@ -22,7 +22,7 @@ export class PollVoteService {
   public async pollVoteRetrieveAll(
     payload: PollVoteRetrieveAllRequest
   ): Promise<any> {
-    const query:any = {}
+    const query: any = {}
     if (payload.mealpoll) {
       query.mealpoll = payload.mealpoll
     }
@@ -52,7 +52,7 @@ export class PollVoteService {
       .select('-createdAt -updatedAt')
       .exec()
     if (!pollvote) throw new HttpException(404, 'pollvote not found')
-    
+
     return pollvote
   }
 

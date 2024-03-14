@@ -110,7 +110,9 @@ export class LunchController {
   ) => {
     try {
       const lunchId = req.params.id
-      res.json(await this.lunchService.lunchUpdate({ ...req.body, id: lunchId }))
+      res.json(
+        await this.lunchService.lunchUpdate({ ...req.body, id: lunchId })
+      )
     } catch (error) {
       next(error)
     }

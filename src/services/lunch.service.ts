@@ -100,7 +100,7 @@ export class LunchService {
 
   public async lunchUpdate(payload: LunchUpdateRequest): Promise<any> {
     await this.lunchRetrieveOne({ id: payload.id })
-    const updateObj:any = {}
+    const updateObj: any = {}
 
     if (payload.persent_cook) {
       updateObj.percent_cook = payload.persent_cook
@@ -113,11 +113,14 @@ export class LunchService {
     if (payload.is_active) {
       updateObj.is_active = payload.is_active
     }
-    
+
     if (payload.cost) {
       updateObj.cost = payload.cost
     }
-    const updatedProduct = await this.lunches.findByIdAndUpdate(payload.id, updateObj, { new: true }).select('-createdAt -updatedAt -products').exec()
+    const updatedProduct = await this.lunches
+      .findByIdAndUpdate(payload.id, updateObj, { new: true })
+      .select('-createdAt -updatedAt -products')
+      .exec()
 
     return updatedProduct
   }

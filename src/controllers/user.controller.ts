@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { UserService } from '@services'
-import {
-  EditUserDto,
-  SendMessae,
-} from '../dtos/user.dto'
+import { EditUserDto, SendMessae } from '../dtos/user.dto'
 import { ParsedQs } from 'qs'
 
 export class UserController {
@@ -33,9 +30,13 @@ export class UserController {
     }
   }
 
-  public userRetrieveOne = async (req: Request, res:Response, next: NextFunction) => {
+  public userRetrieveOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      const userId = req.params.id 
+      const userId = req.params.id
       res.json(await this.userService.userRetrieveOne({ id: userId }))
     } catch (error) {
       next(error)
@@ -60,7 +61,11 @@ export class UserController {
     }
   }
 
-  public userDelete = async(req:Request,res:Response,next:NextFunction) => {
+  public userDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       res.json(await this.userService.userDelete({ id: req.params.id }))
     } catch (error) {
