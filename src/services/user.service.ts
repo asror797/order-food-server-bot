@@ -148,6 +148,8 @@ export class UserService {
       first_name?: string
       last_name?: string
       role?: string
+      is_verified?: boolean
+      is_active?: boolean
     } = {}
 
     if (org) {
@@ -166,6 +168,14 @@ export class UserService {
 
     if (role && (role == 'user' || 'cook')) {
       updateData.role = payload.role
+    }
+
+    if (payload.is_verified) {
+      updateData.is_verified = payload.is_verified
+    }
+
+    if (payload.is_active) {
+      updateData.is_active = payload.is_active
     }
 
     const updateduser = await this.users

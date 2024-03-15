@@ -10,14 +10,14 @@ export class AuthController {
     res: Response,
     next: NextFunction
   ) => {
-    const { phoneNumber, password } = req.body
-    res.json(
-      await this.authService.adminAuthSignIn({
-        phoneNumber: phoneNumber,
-        password: password
-      })
-    )
     try {
+      const { phoneNumber, password } = req.body
+      res.json(
+        await this.authService.adminAuthSignIn({
+          phoneNumber: phoneNumber,
+          password: password
+        })
+      )
     } catch (error) {
       next(error)
     }

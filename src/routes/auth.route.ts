@@ -12,7 +12,7 @@ export class AuthRoute {
   }
 
   private initializeRoutes() {
-    // this.router.post(`${this.path}`, this.authController.)
+    this.router.post(`${this.path}/login`, this.authController.adminAuthSignIn)
     // this.router.post(`${this.path}/login`, this.authController.loginAdmin)
     // this.router.get(`/analit`, this.analiticsController.getPdf)
   }

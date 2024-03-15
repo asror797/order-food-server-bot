@@ -8,13 +8,17 @@ import { compare } from 'bcrypt'
 export class AuthService {
   public admins = adminModel
 
-  public async generateRefreshToken(payload: any): Promise<string> {
+  public async generateRefreshToken(payload: {
+    adminId: string
+    orgId: string
+    roleId: any
+  }): Promise<string> {
     const data = {
       admin: payload.adminId,
       role: payload.roleId,
       org: payload.orgId
     }
-    return ''
+    return jwt.sign(data, 'secret_key')
   }
 
   public async decodeRefreshToken(payload: any) {
@@ -23,7 +27,11 @@ export class AuthService {
     return decodedToken
   }
 
-  public async genereateAccessToken(payload: any) {
+  public async genereateAccessToken(payload: {
+    adminId: string
+    orgId: string
+    role: any
+  }) {
     const data = {
       admin: payload.adminId,
       org: payload.orgId,
@@ -31,7 +39,7 @@ export class AuthService {
       modules: payload.role.modules
     }
 
-    return jwt.sign(data, 'secret_key', { expiresIn: 500 })
+    return jwt.sign(data, 'secret_key')
   }
 
   public async decodeAccessToken(token: string) {
@@ -46,7 +54,10 @@ export class AuthService {
     phoneNumber: string
     password: string
   }) {
-    const admin = await this.admins
+    console.log(payload)
+    if (!payload.phoneNumber || !payload.password)
+      throw new HttpException(400, 'PhoneNumber and Password is required')
+    const admin: any = await this.admins
       .findOne({
         phone_number: payload.phoneNumber
       })
@@ -54,16 +65,27 @@ export class AuthService {
       .select('phone_number password role org')
       .exec()
 
+    console.log(admin)
     if (!admin) throw new HttpException(400, 'PhoneNumber or Password is wrong')
 
-    const isPasswordCorrect = await compare(admin.password, payload.password)
+    if (!admin.role) throw new HttpException(400, 'Admin role not found')
+
+    const isPasswordCorrect = await compare(payload.password, admin.password)
     if (!isPasswordCorrect) {
       throw new HttpException(400, 'PhoneNumber or Password is wrong')
     }
 
     return {
-      accessToken: await this.genereateAccessToken({}),
-      refreshToken: await this.generateRefreshToken({ id: '' })
+      accessToken: await this.genereateAccessToken({
+        adminId: admin['_id'],
+        orgId: admin.org,
+        role: admin.role
+      }),
+      refreshToken: await this.generateRefreshToken({
+        adminId: admin['_id'],
+        orgId: admin.org,
+        roleId: admin.role['_id']
+      })
     }
   }
 

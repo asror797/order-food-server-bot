@@ -123,4 +123,12 @@ export class EditUserDto {
   @IsOptional()
   @IsString()
   role?: string
+
+  @IsOptional()
+  @IsBoolean()
+  is_active?: boolean
+
+  @IsOptional()
+  @IsBoolean()
+  is_verified?: boolean
 }
