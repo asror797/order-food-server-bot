@@ -3,7 +3,6 @@ import { orderModel } from '@models'
 export class AnaliticsService {
   public orders = orderModel
 
-
   public async mostPurchaseUser() {}
   public async mostSoldProduct() {}
   public async totalOrders() {}

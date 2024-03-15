@@ -4,7 +4,11 @@ import { NextFunction, Request, Response } from 'express'
 export class AnaliticsController {
   private analiticsService = new AnaliticsService()
 
-  public mostPurchaseUser = async(req:Request,res:Response,next:NextFunction) => {
+  public mostPurchaseUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       res.json(await this.analiticsService.mostPurchaseUser())
     } catch (error) {
@@ -12,7 +16,11 @@ export class AnaliticsController {
     }
   }
 
-  public mostSoldProduct = async(req:Request,res:Response,next:NextFunction) => {
+  public mostSoldProduct = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       res.json(await this.analiticsService.mostSoldProduct())
     } catch (error) {
@@ -20,7 +28,11 @@ export class AnaliticsController {
     }
   }
 
-  public totalOrders = async(req:Request,res:Response,next:NextFunction) => {
+  public totalOrders = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       res.json(await this.analiticsService.totalOrders())
     } catch (error) {

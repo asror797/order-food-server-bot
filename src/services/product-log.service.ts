@@ -13,7 +13,7 @@ export class ProductLogService {
       count: 1,
       pageSize: 1,
       pageCount: 10,
-      pageNumber:1 ,
+      pageNumber: 1,
       productlogList: productlogList
     }
   }
@@ -25,9 +25,7 @@ export class ProductLogService {
     return productlog
   }
 
-  public async productLogCreate(payload: any): Promise<any> {
-
-  }
+  public async productLogCreate(payload: any): Promise<any> {}
 
   public async productLogUpdate(payload: any): Promise<any> {
     await this.productLogRetrieveOne({ id: payload.id })
