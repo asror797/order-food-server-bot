@@ -4,10 +4,10 @@ export class AnaliticsService {
   public orders = orderModel
 
 
-  public async purcheUser() {}
-  public async soldProduct() {}
-  public async countOrder() {}
-  public async costOrder() {}
+  public async mostPurchaseUser() {}
+  public async mostSoldProduct() {}
+  public async totalOrders() {}
+  public async totalPaidOrders() {}
   /*
     - Top most purchase users     // 10 *daily
     - Top sold products / food    // 10 *daily
