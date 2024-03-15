@@ -13,7 +13,7 @@ export class ProductLogController {
     try {
       const page = parseInt(req.query.page as string) || 1
       const size = parseInt(req.query.size as string) || 10
-      res.json(await this.logs.getLog(page, size))
+      res.json(await this.logs.productLogRetrieveAll({ page, size }))
     } catch (error) {
       next(error)
     }
