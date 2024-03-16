@@ -156,7 +156,7 @@ export class FoodService {
 
     const updatedFood = await this.foods
       .findByIdAndUpdate(payload.id, updateObj, { new: true })
-      .select('-created -updatedAt -products')
+      .select('-createdAt -updatedAt -products')
       .exec()
 
     return updatedFood
