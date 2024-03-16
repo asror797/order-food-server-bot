@@ -63,8 +63,8 @@ export class FoodController {
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
-      res.json('ok')
+      const foodId = req.params.id
+      res.json(await this.foodService.foodUpdate({ ...req.body, id: foodId }))
     } catch (error) {
       next(error)
     }

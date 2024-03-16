@@ -128,9 +128,7 @@ export class FoodService {
     return food
   }
 
-  public async foodUpdate(
-    payload: FoodUpdateRequest
-  ): Promise<FoodUpdateResponse> {
+  public async foodUpdate(payload: FoodUpdateRequest): Promise<any> {
     await this.foodRetrieveOne({ id: payload.id })
     const updateObj: any = {}
 
@@ -150,13 +148,18 @@ export class FoodService {
       updateObj.name = payload.name
     }
 
+    if ('is_private' in payload) {
+      if (typeof payload.is_private === 'boolean') {
+        updateObj.is_deleted = payload.is_private
+      }
+    }
+
     const updatedFood = await this.foods
       .findByIdAndUpdate(payload.id, updateObj, { new: true })
       .select('-created -updatedAt -products')
       .exec()
-    return {
-      _id: updatedFood ? updatedFood['_id'] : payload.id
-    }
+
+    return updatedFood
   }
 
   public async foodProductAdd(payload: any) {

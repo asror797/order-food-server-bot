@@ -32,7 +32,7 @@ export class FoodRoute {
     )
 
     this.router.patch(
-      `${this.path}`,
+      `${this.path}/:id`,
       checkPermission(FoodPermissions.FOOD_UPDATE),
       this.foodController.foodUpdate
     )

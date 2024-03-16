@@ -36,7 +36,7 @@ export class LunchService {
       .limit(payload.pageSize)
       .sort({ createdAt: -1 })
       .populate('base', 'name')
-      .select('name cost is_active')
+      .select('name cost is_active products')
       .exec()
 
     const count = await this.lunches.countDocuments().exec()
@@ -51,7 +51,8 @@ export class LunchService {
         name: e.name,
         cost: e.cost,
         base: e.base.name,
-        is_active: e.is_active
+        is_active: e.is_active,
+        products: e.products.length
       }))
     }
   }

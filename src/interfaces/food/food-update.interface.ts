@@ -10,4 +10,10 @@ export interface FoodUpdateRequest {
 
 export interface FoodUpdateResponse {
   _id: string
+  name: string
+  cost: number
+  img: string
+  org: string
+  category: string
+  is_private: boolean
 }
