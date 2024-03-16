@@ -154,12 +154,23 @@ export class FoodService {
       }
     }
 
-    const updatedFood = await this.foods
+    const updatedFood: any = await this.foods
       .findByIdAndUpdate(payload.id, updateObj, { new: true })
       .select('-createdAt -updatedAt -products')
       .exec()
 
-    return updatedFood
+    if (!updatedFood) throw new HttpException(404, 'Food not found/')
+    
+    return {
+      _id: updatedFood['_id'],
+      name: updatedFood.name,
+      cost: updatedFood.cost,
+      img: updatedFood.img,
+      org: updatedFood.org,
+      category: updatedFood.category,
+      is_private: updatedFood.is_deleted
+    }
+
   }
 
   public async foodProductAdd(payload: any) {
