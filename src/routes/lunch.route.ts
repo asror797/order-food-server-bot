@@ -49,7 +49,7 @@ export class LunchRoute {
       this.lunchController.lunchProductUpdate
     )
 
-    this.router.patch(
+    this.router.delete(
       `${this.path}/products/:lunch/:product`,
       checkPermission(LunchPermissions.LUNCH_UPDATE),
       this.lunchController.lunchProductDelete

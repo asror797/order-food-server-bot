@@ -159,12 +159,29 @@ export class LunchService {
     return updatedFood
   }
 
-  public async lunchProductUpdate() {}
+  public async lunchProductUpdate(payload: any) {
+    await this.lunchRetrieveOne({ id: payload.lunch })
 
-  public async lunchProductDelete(payload: {
-    lunch: string
-    product: string
-  }) {}
+    const updatedLunch = await this.lunches.findOneAndUpdate(
+      { _id: payload.lunch, 'products.product': payload.product },
+      { $set: { 'products.$.amount': payload.amount } },
+      { new: true }
+    )
+
+    return updatedLunch
+  }
+
+  public async lunchProductDelete(payload: { lunch: string; product: string }) {
+    await this.lunchRetrieveOne({ id: payload.lunch })
+
+    const productDeleted = await this.lunches.findByIdAndUpdate(payload.lunch, {
+      $pull: { products: { product: payload.product } }
+    })
+
+    return {
+      _id: productDeleted ? productDeleted['_id'] : payload.product
+    }
+  }
 
   public async lunchDelete(payload: LunchDeleteRequest): Promise<any> {
     await this.lunchRetrieveOne({ id: payload.id })

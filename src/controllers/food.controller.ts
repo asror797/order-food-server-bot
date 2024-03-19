@@ -91,7 +91,7 @@ export class FoodController {
     try {
       const food = req.params.id
       res.json(
-        await this.foodService.foodProductUpdate({ id: food, ...req.body })
+        await this.foodService.foodProductUpdate({ food: food, ...req.body })
       )
     } catch (error) {
       next(error)

@@ -160,7 +160,7 @@ export class FoodService {
       .exec()
 
     if (!updatedFood) throw new HttpException(404, 'Food not found/')
-    
+
     return {
       _id: updatedFood['_id'],
       name: updatedFood.name,
@@ -170,7 +170,6 @@ export class FoodService {
       category: updatedFood.category,
       is_private: updatedFood.is_deleted
     }
-
   }
 
   public async foodProductAdd(payload: any) {
@@ -206,13 +205,19 @@ export class FoodService {
   }
 
   public async foodProductUpdate(payload: {
-    foodId: string
-    productId: string
+    food: string
+    product: string
     amount: number
   }) {
-    const updatedFoodProduct = await this.foods.updateOne()
+    await this.foodRetrieveOne({ id: payload.food })
 
-    return {}
+    const updatedLunch = await this.foods.findOneAndUpdate(
+      { _id: payload.food, 'products.product': payload.product },
+      { $set: { 'products.$.amount': payload.amount } },
+      { new: true }
+    )
+
+    return updatedLunch
   }
 
   public async foodProductDelete(payload: {
@@ -267,9 +272,3 @@ export class FoodService {
     return true
   }
 }
-
-/**
- * Add Product
- * Drop Product
- * Edit Product
- */

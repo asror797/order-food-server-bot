@@ -16,12 +16,14 @@ export class LunchController {
       const pageNumber = parseInt(req.query.page as string) || 1
       const pageSize = parseInt(req.query.size as string) || 10
       const search = req.query.search as string | undefined
+      const lunchbase = req.query.lunchbase
 
       res.json(
         await this.lunchService.lunchRetrieveAll({
           pageNumber,
           pageSize,
-          search
+          search,
+          lunchbase
         })
       )
     } catch (error) {
@@ -81,8 +83,13 @@ export class LunchController {
     next: NextFunction
   ) => {
     try {
-      const data = req.params.id
-      res.json()
+      const lunchId = req.params.id
+      res.json(
+        await this.lunchService.lunchProductUpdate({
+          ...req.body,
+          lunch: lunchId
+        })
+      )
     } catch (error) {
       next(error)
     }
