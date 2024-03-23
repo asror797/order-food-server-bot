@@ -2,6 +2,7 @@ export interface ProductRetrieveAllRequest {
   pageSize: number
   pageNumber: number
   search?: string
+  org?: string
 }
 
 export interface ProductList {

@@ -140,8 +140,7 @@ export class UserService {
   }
 
   public async userUpdate(payload: EditUserDto) {
-    const { id, first_name, last_name, org, role } = payload
-    const User = await this.users.findById(id)
+    const User = await this.users.findById(payload.id)
     if (!User) throw new HttpException(400, 'user not found')
     const updateData: {
       org?: string
@@ -152,34 +151,34 @@ export class UserService {
       is_active?: boolean
     } = {}
 
-    if (org) {
-      const Org = await this.orgs.findById(org)
+    if (payload.org) {
+      const Org = await this.orgs.findById(payload.org)
       if (!Org) throw new HttpException(400, 'org not found')
       updateData.org = payload.org
     }
 
-    if (first_name) {
-      updateData.first_name = first_name
+    if (payload.first_name) {
+      updateData.first_name = payload.first_name
     }
 
-    if (last_name) {
-      updateData.last_name = last_name
+    if (payload.last_name) {
+      updateData.last_name = payload.last_name
     }
 
-    if (role && (role == 'user' || 'cook')) {
+    if (payload.role && (payload.role == 'user' || 'cook')) {
       updateData.role = payload.role
     }
 
-    if (payload.is_verified) {
+    if (payload.is_verified != null) {
       updateData.is_verified = payload.is_verified
     }
 
-    if (payload.is_active) {
+    if (payload.is_active != null) {
       updateData.is_active = payload.is_active
     }
 
     const updateduser = await this.users
-      .findByIdAndUpdate(id, updateData, {
+      .findByIdAndUpdate(payload.id, updateData, {
         new: true
       })
       .select('-createdAt -updatedAt -language_code')

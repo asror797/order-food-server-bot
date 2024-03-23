@@ -1,6 +1,6 @@
 import { CreateProduct, UpdateAmount } from '@dtos'
 import { HttpException } from '@exceptions'
-import { productModel } from '@models'
+import { orgModel, productModel } from '@models'
 import {
   ProductCreateRequest,
   ProductCreateResponse,
@@ -14,12 +14,28 @@ import {
 
 export class ProductService {
   private products = productModel
+  private orgs = orgModel
 
   public async productRetrieveAll(
     payload: ProductRetrieveAllRequest
   ): Promise<ProductRetrieveAllResponse> {
+    const query: any = {}
+
+    if (payload.search) {
+      query.name = { $regex: new RegExp(payload.search, 'i') }
+    }
+
+    if (payload.org) {
+      const org = await this.orgs.findById(payload.org)
+      if (!org) {
+        throw new HttpException(404, 'Org not found')
+      }
+      query.org = payload.org
+    }
+
+
     const productList = await this.products
-      .find()
+      .find(query)
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
       .sort({ createdAt: -1 })
