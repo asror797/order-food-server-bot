@@ -17,11 +17,15 @@ export class ProductController {
     try {
       const pageNumber = parseInt(req.query.page as string) || 1
       const pageSize = parseInt(req.query.size as string) || 10
+      const org = req.query.org as string | undefined
+      const search = req.query.search as string | undefined
 
       res.json(
         await this.productService.productRetrieveAll({
           pageNumber,
-          pageSize
+          pageSize,
+          org,
+          search
         })
       )
     } catch (error) {
