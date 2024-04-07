@@ -13,12 +13,14 @@ import {
   ProductRoute,
   RoleRoute,
   MealPollRoute,
-  PollVoteRoute
+  PollVoteRoute,
+  AnaliticsRoute
 } from '@routes'
 
 const app = new App([
   new UserRoute(),
   new AuthRoute(),
+  new AnaliticsRoute(),
   new OrgRoute(),
   new FoodRoute(),
   new ProductRoute(),

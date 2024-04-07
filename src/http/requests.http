@@ -14,8 +14,13 @@ Content-Type: application/json
 
 
 ### Get
-GET http://localhost:3000/org
+GET http://localhost:3030/food?category=drinks
 Content-Type: application/json
+
+### Delete org
+DELETE http://localhost:3030/org/65f149b3eaa97146738d2db1
+Content-Type: application/json
+
 
 ### update user
 GET http://localhost:3000/user/search?search=asror
@@ -26,7 +31,7 @@ Content-Type: application/json
   "org":"650012d462949f8744859129"
 }
 ### Get 
-GET http://localhost:3000/trip
+GET http://localhost:3030/org
 Content-Type: application/json
 
 

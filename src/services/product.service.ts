@@ -126,6 +126,8 @@ export class ProductService {
       amount: { $gte: payload.amount }
     })
 
+    console.log('ProductService product:', product)
+
     return !!product
   }
 }

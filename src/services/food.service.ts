@@ -68,9 +68,9 @@ export class FoodService {
         name: e.name,
         cost: e.cost,
         img: e.img,
-        org: e.org.name_org,
+        org: e.org?.name_org || null,
         category: e.category,
-        products: e.products.length,
+        products: e.products ? e.products.length : 0,
         is_private: e.is_deleted
       }))
     }
@@ -256,6 +256,7 @@ export class FoodService {
       .select('products')
       .exec()
 
+    console.log('FoodService food:', food)
     if (!food) return false
 
     await Promise.all(
@@ -264,6 +265,8 @@ export class FoodService {
           product: e.product.toString(),
           amount: e.amount * payload.amount
         })
+
+        console.log('FoodService product:', isValid)
 
         if (!isValid) return false
       })

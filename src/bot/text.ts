@@ -1,53 +1,55 @@
 export const botTexts = {
   askContact: {
     uz: `<b>Siz ro'yxatdan o'tmagansiz!</b>\nIltimos telefon raqamingizni yuboring.`,
-    ru: `<b>Siz ro'yxatdan o'tmagansiz!</b>\nIltimos telefon raqamingizni yuboring.`
+    ru: `<b>Вы не зарегистрированы!</b>\nПожалуйста, пришлите свой номер телефона.`,
+    en: `<b>You are not registered!</b>\nPlease send your phone number.`
   },
   noVerified: {
     uz: 'Siz tasdiqlanmagansiz',
-    ru: 'Siz tasdiqlanmagansiz'
+    ru: 'You are not verified.'
   },
   noContact: {
     uz: 'Iltimos telefon raqam yuboring',
-    ru: 'Iltimos telefon raqam yuboring'
+    ru: 'Please send your phone number'
   },
   sendPhoneNumber: {
     uz: 'Telefon raqam yuborish 📞',
-    ru: 'Telefon raqam yuborish 📞'
+    ru: 'Send phone number 📞'
   },
   askOrg: {
     uz: 'Oshxonani tanlang',
-    ru: 'Oshxonani tanlang'
+    ru: 'Select kitchen'
   },
   askCategory: {
     uz: 'Kategoriyani tanlang',
-    ru: 'Kategoriyani tanlang'
+    ru: 'Select category'
   },
   language: {
     uz: {
       uz_text: '🇺🇿 Uzb',
-      ru_text: '🇷🇺 Rus'
+      ru_text: '🇷🇺 Rus',
+      en_text: 'Eng'
     }
   },
   cookMainMenu: {
     uz: '<b>Xush kelibsiz!!!</b>\nSiz oshpaz ro`lidasiz',
-    ru: '<b>Xush kelibsiz!!!</b>\nSiz oshpaz ro`lidasiz'
+    ru: '<b>Добро пожаловать!!!</b>\nВы в роли повара'
   },
   userMainMenu: {
     uz: '<b>Xush kelibsiz!!!</b>',
-    ru: '<b>Xush kelibsiz!!!</b>'
+    ru: '<b>Добро пожаловать!!!</b>'
   },
   backMainMenu: {
     uz: '<b>Buyurtma bering</b>👇',
-    ru: '<b>Buyurtma bering</b>👇'
+    ru: '<b>Разместить заказ</b>👇'
   },
   userNewOrder: {
     uz: '🛍 Buyurtma berish',
-    ru: '🛍 Buyurtma berish'
+    ru: '🛍 Сделать заказ'
   },
   cookNewPoll: {
     uz: `📢 Yangi E'lon`,
-    ru: `📢 Yangi E'lon`
+    ru: `📢 Новое объявление`
   },
   cookViewPoll: {
     uz: `📋 E'lonni ko'rish`,
@@ -135,30 +137,37 @@ export const botTexts = {
   },
   donePollVote: {
     uz: 'Bajarish ✅',
-    ru: 'Bajarish ✅'
+    ru: 'Bajarish ✅',
+    en: 'Accept ✅'
   },
   acceptOrder: {
     uz: 'Bajarish ✅',
-    ru: 'Bajarish ✅'
+    ru: 'Bajarish ✅',
+    en: 'Accept ✅'
   },
   cancelOrder: {
     uz: 'Bekor qilish 🚫',
-    ru: 'Bekor qilish 🚫'
+    ru: 'Bekor qilish 🚫',
+    en: 'Cancel  🚫',
   },
   errorMessage: {
     uz: '<i><b>Error.message unhandle</b></i>',
-    ru: '<i><b>Error.message unhandle</b></i>'
+    ru: '<i><b>Error.message unhandle</b></i>',
+    en: '<i><b>Error.message unhandle</b></i>',
   },
   decreaseBalance: {
     uz: `yechib olindi`,
-    ru: `yechib olindi`
+    ru: `yechib olindi`,
+    en: `withdrawn`
   },
   increaseBalance: {
     uz: `to'ldirildi`,
-    ru: `to'ldirildi`
+    ru: `to'ldirildi`,
+    en: `deposited`
   },
   myOrders: {
     uz: `Buyurtmalar tarixi`,
-    ru: `Buyurtmalar tarixi`
+    ru: `Buyurtmalar tarixi`,
+    en: `History orders`
   }
 }

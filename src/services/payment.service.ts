@@ -47,22 +47,16 @@ export class PaymentService {
     if (!payload.type && user.balance < payload.amount)
       throw new HttpException(400, 'Influnce balance')
 
-    await this.users.findByIdAndUpdate(payload.client, {
-      balance: payload.type
-        ? user.balance + payload.amount
-        : user.balance - payload.amount
-    })
-
-    botInstance.sendMessage({
-      chatId: user.telegram_id,
-      text: `🔺<b>${FormatNumberWithSpaces(payload.amount)}</b> so'm ${payload.type ? botTexts.increaseBalance.uz : botTexts.decreaseBalance.uz}`
-    })
-
     const newPayment = await this.payments.create({
       type: payload.type,
       amount: payload.amount,
       org: payload.org,
       client: user['_id']
+    })
+
+    botInstance.sendMessage({
+      chatId: user.telegram_id,
+      text: `🔺<b>${FormatNumberWithSpaces(payload.amount)}</b> so'm ${payload.type ? botTexts.increaseBalance.uz : botTexts.decreaseBalance.uz}`
     })
 
     return newPayment

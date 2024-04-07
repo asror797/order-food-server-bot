@@ -25,7 +25,9 @@ export class ProductLogService {
     return productlog
   }
 
-  public async productLogCreate(payload: any): Promise<any> {}
+  public async productLogCreate(payload: any): Promise<any> {
+    
+  }
 
   public async productLogUpdate(payload: any): Promise<any> {
     await this.productLogRetrieveOne({ id: payload.id })

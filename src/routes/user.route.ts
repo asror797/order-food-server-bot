@@ -26,10 +26,17 @@ export class UserRoute {
     )
 
     this.router.patch(
+      `${this.path}/balance/:id`,
+      checkPermission(UserPermissions.USER_UPDATE),
+      this.userController.userUpdateBalance
+    )
+
+    this.router.patch(
       `${this.path}/:id`,
       checkPermission(UserPermissions.USER_UPDATE),
       this.userController.userUpdate
     )
+
 
     this.router.delete(`${this.path}/:id`, this.userController.userDelete)
   }

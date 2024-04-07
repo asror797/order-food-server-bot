@@ -57,18 +57,23 @@ export class OrderService {
     }
   }
 
-  public async orderRetrieveOne(): Promise<any> {
-    const orderList = await this.orders.find().exec()
-    console.log(orderList)
+  public async orderRetrieveOne(payload: { id: string }): Promise<any> {
+    const order = await this.orders.findById(payload.id).exec()
+
+    if (!order) throw new HttpException(404, 'Order not found')
+
+    return order
   }
+
   public async orderCreate(payload: OrderCreateRequest): Promise<any> {
-    const user = await this.users.findById(payload.client)
+    const user = await this.users.findById(payload.client).select('-createdAt -updatedAt')
     if (!user) throw new HttpException(404, 'User not found')
 
     const org = await this.orgs
       .findById(payload.org, { is_deleted: false })
       .select('name_org')
       .exec()
+
     if (!org) throw new HttpException(404, 'Org not found')
 
     const orderFoods: any = []
@@ -98,32 +103,48 @@ export class OrderService {
       })
     )
 
-    const order: any = await this.orders.create({
-      client: user['_id'],
-      org: org['_id'],
-      foods: orderFoods.map((e: any) => ({ food: e.id, amount: e.amount })),
-      total_cost: total_cost
-    })
-
-    return {
-      _id: order['_id'],
-      client: user['_id'],
-      org: org.name_org,
-      foods: orderFoods.map((e: any) => ({
-        name: e.name,
-        cost: e.cost,
-        amount: e.amount
-      })),
-      is_accepted: false,
-      is_canceled: false,
-      total_cost: total_cost,
-      user: {
-        fullname: `${user.first_name} ${user.last_name}`,
-        phone_number: user.phone_number
-      },
-      createdAt: order.createdAt
+    if (user.balance >= total_cost) {
+      const order: any = await this.orders.create({
+        client: user['_id'],
+        org: org['_id'],
+        foods: orderFoods.map((e: any) => ({ food: e.id, amount: e.amount })),
+        total_cost: total_cost
+      })
+  
+      return {
+        _id: order['_id'],
+        client: user['_id'],
+        org: org.name_org,
+        foods: orderFoods.map((e: any) => ({
+          name: e.name,
+          cost: e.cost,
+          amount: e.amount
+        })),
+        is_accepted: false,
+        is_canceled: false,
+        total_cost: total_cost,
+        user: {
+          fullname: `${user.first_name} ${user.last_name}`,
+          phone_number: user.phone_number
+        },
+        createdAt: order.createdAt
+      }
+    } else {
+      return {
+        isBalanceSufficient: false
+      }
     }
   }
+
+  public async orderAccept(payload: { id: string }) {
+    await this.orderRetrieveOne(payload)
+    /** Order Accept qilganda  mahsulot yechib olsin */
+    /** Order Accept qilganda pul yechib olsin */
+
+    return await this.orders.findByIdAndUpdate(payload.id, { is_accepted: true, is_canceled: false })
+  }
+
+  public async orderCancel() {}
 
   public async orderUpdate(payload: any): Promise<any> {
     const updatedOrder = await this.orders.findByIdAndUpdate(payload.id, {

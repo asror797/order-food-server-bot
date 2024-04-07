@@ -39,4 +39,13 @@ export class AnaliticsController {
       next(error)
     }
   }
+
+  public getUserMonthlyAnalitics = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      if (!req.params.id) throw new Error('Not found user')
+      res.json(await this.analiticsService.getUserMonthlyAnalitics({ user: req.params.id }))
+    } catch (error) {
+      next(error)
+    }
+  }
 }

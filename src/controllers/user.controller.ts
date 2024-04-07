@@ -61,6 +61,18 @@ export class UserController {
     }
   }
 
+  public userUpdateBalance = async(req:Request,res:Response,next:NextFunction) => {
+    try {
+      const user = req.params.id as string
+      res.json(await this.userService.userUpdateBalance({
+        ...req.body,
+        user: user
+      }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public userDelete = async (
     req: Request,
     res: Response,

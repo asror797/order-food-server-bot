@@ -333,7 +333,7 @@ class TelegramBotApi {
           }
         }
 
-        if (step.split('/')[0] == botSteps.cookSelectMeal) {
+        if (step?.split('/')[0] == botSteps.cookSelectMeal) {
           if (msg.text == botTexts.backAction.uz) {
             this.bot.sendMessage(
               msg.chat.id,
@@ -751,79 +751,88 @@ class TelegramBotApi {
     user: string
   }) {
     try {
-      // retrieve food from cart
       const org = await this.orgService.orgRetrieveOne({ id: payload.org })
-
       const store = await this.storeService.getStoreByOrg({
         chatId: payload.msg.from.id,
         org: org['_id']
       })
-      // end
+      // Get Store
 
-      // check foods of order and collect valid foods
+      // Validate Food 
       const validFoods: any = []
       await Promise.all(
-        store.map(async (e) => {
+        store.map(async (e: any) => {
+          console.log('BotService orderProduct:', e)
           const isValid = await this.foodService.checkFoodProducts({
-            food: e.id,
+            food: e.food.id,
             amount: e.amount
           })
+          console.log(isValid)
           if (isValid) {
             validFoods.push(e)
           }
         })
       )
-      // end
+      // Validated
+      console.log('Validated Foods:',validFoods)
 
-      // check balance of user
-      // end
+      if (validFoods.length !== 0 ) {
+        // check balance of user
+        // const isBalanceSufficient = await this.userService.checkBalance({ user: payload.user, amount: 100 })
+        // checked
+        // create order depend on validated foods of cart
+        const order = await this.orderService.orderCreate({
+          client: payload.user,
+          foods: validFoods.map((e: any) => ({
+            food: e.food.id,
+            amount: e.amount
+          })),
+          org: org['_id']
+        })
+        // created
 
-      // create order depend on validated foods of cart
-      const order = await this.orderService.orderCreate({
-        client: payload.user,
-        foods: validFoods.map((e: any) => ({
-          food: e.food.id,
-          amount: e.amount
-        })),
-        org: org['_id']
-      })
-      // end
-
-      /*
-        - decrease amount of product of foods after order creating
-        - if cancel order => retunr product amount
-      */
-
-      const productsCaption = this.#_storedFoodsCaptionGenerator(
-        order.foods.map((e: any) => ({
-          food: { food: e.name, cost: e.cost },
-          amount: e.amount
-        }))
-      )
-      this.bot.sendMessage(payload.msg.from.id, 'order?.org.name_org')
-      this.bot.sendMessage(
-        org.group_a_id,
-        `Buyurtma haqida:\n<b>Buyurtmachi</b>:  ${order.user.fullname}\n<b>Telefon raqami</b>:  ${order.user.phone_number}\n<b>Tanlangan oshxona</b>:  ${order.org}\n<b>Buyurtma sanasi</b>:  ${format(order.createdAt, 'd MMM HH:mm y', { locale: uz })}\n<b>Mahsulotlar</b>:\n${productsCaption}`,
-        {
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text: botTexts.acceptOrder.uz,
-                  callback_data: `${botCallbackData.acceptOrder}/${order['_id']}`
-                }
-              ],
-              [
-                {
-                  text: botTexts.cancelOrder.uz,
-                  callback_data: `${botCallbackData.cancelOrder}/${order['_id']}`
-                }
-              ]
-            ]
-          },
-          parse_mode: 'HTML'
+        if (order.isBalanceSufficient === false) {
+          this.bot.sendMessage(payload.msg.from.id,'Balansda pul yetarli emas!')
+        } else {
+          await this.userService.userUpdateBalance({
+            type: false,
+            amount: order.total_cost,
+            user: payload.user
+          })
+          const productsCaption = this.#_storedFoodsCaptionGenerator(
+            order.foods.map((e: any) => ({
+              food: { food: e.name, cost: e.cost },
+              amount: e.amount
+            }))
+          )
+  
+          this.bot.sendMessage(payload.msg.from.id, `${productsCaption}`,{ parse_mode: 'HTML'})
+          this.bot.sendMessage(
+            org.group_a_id,
+            `Buyurtma haqida:\n<b>Buyurtmachi</b>:  ${order.user.fullname}\n<b>Telefon raqami</b>:  ${order.user.phone_number}\n<b>Tanlangan oshxona</b>:  ${order.org}\n<b>Buyurtma sanasi</b>:  ${format(order.createdAt, 'd MMM HH:mm y', { locale: uz })}\n<b>Mahsulotlar</b>:\n${productsCaption}`,
+            {
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text: botTexts.acceptOrder.uz,
+                      callback_data: `${botCallbackData.acceptOrder}/${order['_id']}`
+                    }
+                  ],
+                  [
+                    {
+                      text: botTexts.cancelOrder.uz,
+                      callback_data: `${botCallbackData.cancelOrder}/${order['_id']}`
+                    }
+                  ]
+                ]
+              },
+              parse_mode: 'HTML'
+            }
+          )
         }
-      )
+      }
+
     } catch (error) {
       console.log(error)
       this.bot.sendMessage(payload.msg.from.id, botTexts.errorMessage.uz, {
