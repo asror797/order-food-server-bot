@@ -542,14 +542,18 @@ class TelegramBotApi {
               org: userStep.split('/')[1]
             })
 
-            this.bot.sendMessage(msg.chat.id, botTexts.selectFoodAction.uz, {
-              reply_markup: KeyboardMaker({ data: foods.foodList })
-            })
+            if (foods.foodList.length > 0) {
+              this.bot.sendMessage(msg.chat.id, botTexts.selectFoodAction.uz, {
+                reply_markup: KeyboardMaker({ data: foods.foodList })
+              })
 
-            await this.storeService.editStep({
-              telegramId: msg.chat.id,
-              step: `${botSteps.selectFood}/${userStep.split('/')[1]}`
-            })
+              await this.storeService.editStep({
+                telegramId: msg.chat.id,
+                step: `${botSteps.selectFood}/${userStep.split('/')[1]}`
+              })
+            } else {
+              this.bot.sendMessage(msg.chat.id, botTexts.emptyFoodList.uz)
+            }
           }
         }
       }

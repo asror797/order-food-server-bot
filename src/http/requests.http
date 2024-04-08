@@ -28,7 +28,7 @@ Content-Type: application/json
 {
   "name": "Milliy Kola",
   "cost": 10000,
-  "category": "drinks",
+  "category": "drinks",t
   "org": "651d126674f9e4e6f18559e9",
   "products": []
 }

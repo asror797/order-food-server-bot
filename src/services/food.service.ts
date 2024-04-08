@@ -43,7 +43,7 @@ export class FoodService {
       query.org = payload.org
     }
 
-    const foodList = await this.foods
+    let foodList = await this.foods
       .find(query)
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
@@ -58,11 +58,20 @@ export class FoodService {
 
     const count = await this.foods.countDocuments(query).exec()
 
+    if (!payload.isDashboard) {
+      await Promise.all(foodList.map(async(e,i) => {
+        const isValid = await this.checkFoodProducts({ food: e['_id'], amount: 1 })
+        if (!isValid) {
+          foodList.slice(i,1)
+        }
+      }))
+    }
+
     return {
       count: count,
       pageSize: payload.pageSize,
       pageNumber: payload.pageNumber,
-      pageCount: 5,
+      pageCount: Math.ceil( count / payload.pageSize),
       foodList: foodList.map((e: any) => ({
         _id: e['_id'],
         name: e.name,

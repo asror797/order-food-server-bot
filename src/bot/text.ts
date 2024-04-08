@@ -95,6 +95,10 @@ export const botTexts = {
     uz: '🛒 Savat',
     ru: '🛒 Savat'
   },
+  emptyFoodList: {
+    uz: 'Mahsulot mavjud emas',
+    ru: 'Mahsulot mavjud emas'
+  },
   storeToCartAction: {
     uz: `Savatga qo'shish 📥`,
     ru: `Savatga qo'shish 📥`
