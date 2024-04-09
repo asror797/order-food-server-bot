@@ -37,6 +37,12 @@ export class ProductRoute {
       this.productController.productUpdate
     )
 
+    this.router.patch(
+      `${this.path}/amount/:id`,
+      checkPermission(ProductPermissions.PRODUCT_UPDATE),
+      this.productController.productChangeAmount
+    )
+
     this.router.delete(
       `${this.path}/:id`,
       checkPermission(ProductPermissions.PRODUCT_DELETE),

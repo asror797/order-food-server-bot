@@ -52,6 +52,19 @@ Content-Type: application/json
 GET http://localhost:3030/product
 Content-Type: application/json
 
+### UPDATE AMOUNT
+PATCH http://localhost:3030/product/amount/66149e64d1f64ff0a94980ad
+Content-Type: application/json
+
+{
+  "type": true,
+  "amount": 5,
+  "cost": 12000
+}
+
+### DELETE PRODUCT
+DELETE http://localhost:3030/product/65f152e6878a09e7ee8136d9
+Content-Type: application/json
 
 
 ### PRODUCT

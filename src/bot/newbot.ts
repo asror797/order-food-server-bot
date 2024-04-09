@@ -275,7 +275,7 @@ class TelegramBotApi {
             id: msg.data.split('/')[1]
           })
           console.log('OrderAccept', orderState)
-          this.bot.sendMessage(msg.from.id, 'Order Accepted')
+          this.bot.sendMessage(msg.message.chat.id, 'Order Accepted')
         }
 
         if (
@@ -285,11 +285,11 @@ class TelegramBotApi {
         ) {
           this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
 
-          const orderState = await this.orderService.orderAccept({
+          const orderState = await this.orderService.orderCancel({
             id: msg.data.split('/')[1]
           })
           console.log('OrderCancel', orderState)
-          this.bot.sendMessage(msg.from.id, 'Order Canceled')
+          this.bot.sendMessage(msg.message.chat.id, 'Order Canceled')
         }
       } else {
         this.bot.sendMessage(msg.from.id, botTexts.noVerified.uz)
@@ -870,6 +870,7 @@ class TelegramBotApi {
           )
         }
       } else {
+        await this.storeService.clearStoreByOrg({ org: org['_id'], chat: payload.msg.from.id })
         this.bot.sendMessage(
           payload.msg.from.id,
           'Mahsulot mavjud emas.\nIltimos qayta sotib oling!'

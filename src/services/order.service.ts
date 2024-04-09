@@ -18,7 +18,7 @@ import {
 //   OrderRetrieveByUserDto,
 //   UpdateOrder
 // } from '../dtos/order.dto'
-import { foodModel, orderModel, orgModel, userModel } from '@models'
+import { foodModel, orderModel, orgModel, productModel, userModel } from '@models'
 import { HttpException } from '@exceptions'
 import { PaymentService, FoodService } from '@services'
 import { uz } from 'date-fns/locale'
@@ -33,6 +33,7 @@ export class OrderService {
   private orgs = orgModel
   private foods = foodModel
   private users = userModel
+  private products = productModel
   public paymentService = new PaymentService()
   public foodService = new FoodService()
 
@@ -160,11 +161,32 @@ export class OrderService {
   }
 
   public async orderCancel(payload: { id: string }) {
-    const order = await this.orderRetrieveOne(payload)
-
-    /** Return taked product */
+    const order = await this.orders.findById(payload.id).populate('foods.food', 'products').select('-createdAt -updatedAt -org').exec()
+    if (!order) throw new HttpException(400, 'Order not found')
+    
     if (order.is_accepted == true && order.is_canceled == false)
-      throw new HttpException(400, 'Order already done')
+    throw new HttpException(400, 'Order already done')
+    /** Return taked product */
+
+    // @ts-ignore
+    console.log('Order', order.foods[0].food.products)
+
+    await Promise.all(order.foods.map(async(e:any) => {
+      await Promise.all(e.food.products.map(async(p: any) => {
+        await this.products.updateOne(
+          { _id: p.product },
+          [
+            {
+              $set: {
+                amount: {
+                  $add: ['$amount', e.amount * p.amount]
+                }
+              }
+            }
+          ]
+        )
+      }))
+    }))
 
     return await this.orders
       .findByIdAndUpdate(payload.id, { is_canceled: true, is_accepted: false })

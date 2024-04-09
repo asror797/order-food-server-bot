@@ -59,6 +59,17 @@ export class ProductController {
     }
   }
 
+  public productChangeAmount = async (req:Request, res:Response, next:NextFunction) => {
+    try {
+      res.json(await this.productService.productChangeAmount({
+        ...req.body,
+        id: req.params.id
+      }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
   public productUpdate = async (
     req: Request,
     res: Response,
