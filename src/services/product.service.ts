@@ -1,6 +1,6 @@
-import { CreateProduct, UpdateAmount } from '@dtos'
-import { HttpException } from '@exceptions'
 import { orgModel, productModel } from '@models'
+import { ProductLogService } from '@services'
+import { HttpException } from '@exceptions'
 import {
   ProductChangeAmountRequest,
   ProductCreateRequest,
@@ -14,6 +14,7 @@ import {
 } from '@interfaces'
 
 export class ProductService {
+  private productlogService = new ProductLogService()
   private products = productModel
   private orgs = orgModel
 
@@ -89,23 +90,29 @@ export class ProductService {
     return product
   }
 
-  public async productChangeAmount(payload: ProductChangeAmountRequest) {
+  public async productChangeAmount(payload: ProductChangeAmountRequest):Promise<void> {
     const product = await this.productRetrieveOne({ id: payload.id })
 
     if (payload.type) {
-      await this.productUpdate({
-        id: payload.id
-      })
+      await this.products.updateOne({ _id: payload.id }, { amount: product.amount + payload.amount }).exec()
 
-      return {}
+      await this.productlogService.productLogCreate({
+        product: payload.id,
+        type: payload.type,
+        amount: payload.amount,
+        cost: payload.cost
+      })
     }
 
     if (!payload.type) {
-      await this.productUpdate({
-        id: payload.id
-      })
+      await this.products.updateOne({ _id: payload.id }, { amount: product.amount - payload.amount }).exec()
 
-      return {}
+      await this.productlogService.productLogCreate({
+        product: payload.id,
+        type: payload.type,
+        amount: payload.amount,
+        cost: payload.cost
+      })
     }
   }
 

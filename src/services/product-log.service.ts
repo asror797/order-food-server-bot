@@ -26,7 +26,16 @@ export class ProductLogService {
   }
 
   public async productLogCreate(payload: any): Promise<any> {
-    
+    const product = await this.products.findById(payload.id).select('org').exec()
+    if (!product) throw new HttpException(404, 'Product not found')
+
+    await this.productLog.create({
+      product: product['_id'],
+      org: product.org,
+      amount: payload.amount,
+      cost: payload.cost,
+      type: payload.type,
+    })
   }
 
   public async productLogUpdate(payload: any): Promise<any> {

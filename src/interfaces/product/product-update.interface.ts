@@ -11,6 +11,7 @@ export interface ProductChangeAmountRequest {
   id: string
   type: boolean
   amount: number
+  cost: number
 }
 
 export interface ProductUpdateResponse {
