@@ -43,7 +43,7 @@ export class FoodService {
       query.org = payload.org
     }
 
-    let foodList = await this.foods
+    const foodList = await this.foods
       .find(query)
       .skip((payload.pageNumber - 1) * payload.pageSize)
       .limit(payload.pageSize)
@@ -57,22 +57,28 @@ export class FoodService {
       .exec()
 
     const count = await this.foods.countDocuments(query).exec()
-
+    const validFoodList: any = []
     if (!payload.isDashboard) {
-      await Promise.all(foodList.map(async(e,i) => {
-        const isValid = await this.checkFoodProducts({ food: e['_id'], amount: 1 })
-        if (!isValid) {
-          foodList.slice(i,1)
-        }
-      }))
+      await Promise.all(
+        foodList.map(async (e) => {
+          const isValid = await this.checkFoodProducts({
+            food: e['_id'],
+            amount: 1
+          })
+          console.log('isValid', isValid)
+          if (isValid) {
+            validFoodList.push(e)
+          }
+        })
+      )
     }
 
     return {
       count: count,
       pageSize: payload.pageSize,
       pageNumber: payload.pageNumber,
-      pageCount: Math.ceil( count / payload.pageSize),
-      foodList: foodList.map((e: any) => ({
+      pageCount: Math.ceil(count / payload.pageSize),
+      foodList: validFoodList.map((e: any) => ({
         _id: e['_id'],
         name: e.name,
         cost: e.cost,
@@ -108,12 +114,10 @@ export class FoodService {
 
     await Promise.all(
       payload.products.map(async (e: any) => {
-        console.log(e)
         const product = await this.products
           .findById(e.product)
           .select('org')
           .exec()
-        console.log(product)
         if (!product) {
           throw new HttpException(404, `${e.product} product not found`)
         }
@@ -265,21 +269,16 @@ export class FoodService {
       .select('products')
       .exec()
 
-    console.log('FoodService food:', food)
     if (!food) return false
 
-    await Promise.all(
-      food.products.map(async (e) => {
-        const isValid = await this.productService.checkProductAmount({
-          product: e.product.toString(),
-          amount: e.amount * payload.amount
-        })
-
-        console.log('FoodService product:', isValid)
-
-        if (!isValid) return false
+    for (const e of food.products) {
+      const isValid = await this.productService.checkProductAmount({
+        product: e.product.toString(),
+        amount: e.amount * payload.amount
       })
-    )
+
+      if (!isValid) return false
+    }
 
     return true
   }

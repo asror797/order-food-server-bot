@@ -35,16 +35,16 @@ Content-Type: application/json
 
 
 ### FOOD PRODUCTS UPDATE
-POST http://localhost:3030/food/products/6613d719df3d4825e4147456
+POST http://localhost:3030/food/products/66149e6dd1f64ff0a94980b0
 Content-Type: application/json
 
 {
-  "product": "6613d7d3df3d4825e4147481",
+  "product": "66149e64d1f64ff0a94980ad",
   "amount": 1
 }
 
 ### FOOD DELETE
-DELETE http://localhost:3030/food/65f157993c27f08bf1ed57a9
+DELETE http://localhost:3030/food/6613d719df3d4825e4147456
 Content-Type: application/json
 
 
@@ -62,7 +62,7 @@ Content-Type: application/json
   "name": "Maxito",
   "cost": 13000,
   "unit": "dona",
-  "org": "65f157993c27f08bf1ed57a9",
+  "org": "651d126674f9e4e6f18559e9",
   "amount": 1
 }
 

@@ -35,7 +35,6 @@ export class ProductService {
       query.org = payload.org
     }
 
-
     const productList = await this.products
       .find(query)
       .skip((payload.pageNumber - 1) * payload.pageSize)
@@ -90,11 +89,18 @@ export class ProductService {
     return product
   }
 
-  public async productChangeAmount(payload: ProductChangeAmountRequest):Promise<void> {
+  public async productChangeAmount(
+    payload: ProductChangeAmountRequest
+  ): Promise<void> {
     const product = await this.productRetrieveOne({ id: payload.id })
 
     if (payload.type) {
-      await this.products.updateOne({ _id: payload.id }, { amount: product.amount + payload.amount }).exec()
+      await this.products
+        .updateOne(
+          { _id: payload.id },
+          { amount: product.amount + payload.amount }
+        )
+        .exec()
 
       await this.productlogService.productLogCreate({
         product: payload.id,
@@ -105,7 +111,12 @@ export class ProductService {
     }
 
     if (!payload.type) {
-      await this.products.updateOne({ _id: payload.id }, { amount: product.amount - payload.amount }).exec()
+      await this.products
+        .updateOne(
+          { _id: payload.id },
+          { amount: product.amount - payload.amount }
+        )
+        .exec()
 
       await this.productlogService.productLogCreate({
         product: payload.id,
@@ -138,7 +149,10 @@ export class ProductService {
       updateObj.min_amount = payload.min_amount
     }
 
-    const updatedProduct = await this.products.findByIdAndUpdate(payload.id, updateObj)
+    const updatedProduct = await this.products.findByIdAndUpdate(
+      payload.id,
+      updateObj
+    )
 
     return updatedProduct
   }
@@ -146,7 +160,9 @@ export class ProductService {
   public async productDelete(payload: ProductDeleteRequest) {
     await this.productRetrieveOne({ id: payload.id })
 
-    const deletedProduct = await this.products.findByIdAndRemove(payload.id).exec()
+    const deletedProduct = await this.products
+      .findByIdAndRemove(payload.id)
+      .exec()
 
     return deletedProduct
   }
@@ -174,7 +190,6 @@ export class ProductService {
       _id: payload.product,
       amount: { $gte: payload.amount }
     })
-
     console.log('ProductService product:', product)
 
     return !!product

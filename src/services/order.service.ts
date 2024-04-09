@@ -50,7 +50,7 @@ export class OrderService {
     const orderCount = await this.orders.countDocuments().exec()
     return {
       count: orderCount,
-      pageCount: Math.ceil( orderCount / payload.pageSize),
+      pageCount: Math.ceil(orderCount / payload.pageSize),
       pageNumber: payload.pageNumber,
       pageSize: payload.pageSize,
       orderList: []
@@ -59,14 +59,16 @@ export class OrderService {
 
   public async orderRetrieveOne(payload: { id: string }): Promise<any> {
     const order = await this.orders.findById(payload.id).exec()
-
     if (!order) throw new HttpException(404, 'Order not found')
 
     return order
   }
 
   public async orderCreate(payload: OrderCreateRequest): Promise<any> {
-    const user = await this.users.findById(payload.client).select('-createdAt -updatedAt')
+    const user = await this.users
+      .findById(payload.client)
+      .select('-createdAt -updatedAt')
+      .exec()
     if (!user) throw new HttpException(404, 'User not found')
 
     const org = await this.orgs
@@ -97,7 +99,8 @@ export class OrderService {
           id: food['_id'],
           name: food.name,
           cost: food.cost,
-          amount: e.amount
+          amount: e.amount,
+          products: food.products
         })
         total_cost += food.cost * e.amount
       })
@@ -110,7 +113,7 @@ export class OrderService {
         foods: orderFoods.map((e: any) => ({ food: e.id, amount: e.amount })),
         total_cost: total_cost
       })
-  
+
       return {
         _id: order['_id'],
         client: user['_id'],
@@ -118,7 +121,8 @@ export class OrderService {
         foods: orderFoods.map((e: any) => ({
           name: e.name,
           cost: e.cost,
-          amount: e.amount
+          amount: e.amount,
+          products: e.products
         })),
         is_accepted: false,
         is_canceled: false,
@@ -137,11 +141,34 @@ export class OrderService {
   }
 
   public async orderAccept(payload: { id: string }) {
-    await this.orderRetrieveOne(payload)
-    /** Order Accept qilganda  mahsulot yechib olsin */
-    /** Order Accept qilganda pul yechib olsin */
+    const order = await this.orderRetrieveOne(payload)
+    if (order.is_accepted == false && order.is_canceled == true)
+      throw new HttpException(400, 'Order already done')
 
-    return await this.orders.findByIdAndUpdate(payload.id, { is_accepted: true, is_canceled: false })
+    const pipeline = [
+      { $match: { _id: order.client } },
+      {
+        $set: {
+          balance: { $subtract: ['$balance', order.total_cost] }
+        }
+      }
+    ]
+    await this.users.aggregate(pipeline)
+    return await this.orders
+      .findByIdAndUpdate(payload.id, { is_accepted: true, is_canceled: false })
+      .exec()
+  }
+
+  public async orderCancel(payload: { id: string }) {
+    const order = await this.orderRetrieveOne(payload)
+
+    /** Return taked product */
+    if (order.is_accepted == true && order.is_canceled == false)
+      throw new HttpException(400, 'Order already done')
+
+    return await this.orders
+      .findByIdAndUpdate(payload.id, { is_canceled: true, is_accepted: false })
+      .exec()
   }
 
   public async orderUpdate(payload: any): Promise<any> {

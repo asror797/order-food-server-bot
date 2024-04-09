@@ -37,7 +37,6 @@ export class UserRoute {
       this.userController.userUpdate
     )
 
-
     this.router.delete(`${this.path}/:id`, this.userController.userDelete)
   }
 }

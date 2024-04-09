@@ -152,12 +152,12 @@ export const botTexts = {
   cancelOrder: {
     uz: 'Bekor qilish 🚫',
     ru: 'Bekor qilish 🚫',
-    en: 'Cancel  🚫',
+    en: 'Cancel  🚫'
   },
   errorMessage: {
     uz: '<i><b>Error.message unhandle</b></i>',
     ru: '<i><b>Error.message unhandle</b></i>',
-    en: '<i><b>Error.message unhandle</b></i>',
+    en: '<i><b>Error.message unhandle</b></i>'
   },
   decreaseBalance: {
     uz: `yechib olindi`,

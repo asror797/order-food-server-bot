@@ -15,11 +15,13 @@ export class OrderController {
       const pageNumber = parseInt(req.query.page as string) || 1
       const pageSize = parseInt(req.query.size as string) || 10
       const search = req.query.search as string | undefined
-      res.json(await this.orderService.orderRetrieveAll({
-        pageNumber,
-        pageSize,
-        search
-      }))
+      res.json(
+        await this.orderService.orderRetrieveAll({
+          pageNumber,
+          pageSize,
+          search
+        })
+      )
     } catch (error) {
       next(error)
     }

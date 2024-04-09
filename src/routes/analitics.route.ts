@@ -11,6 +11,9 @@ export class AnaliticsRoute {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}/user/:id`,this.analiticsController.getUserMonthlyAnalitics)
+    this.router.get(
+      `${this.path}/user/:id`,
+      this.analiticsController.getUserMonthlyAnalitics
+    )
   }
 }

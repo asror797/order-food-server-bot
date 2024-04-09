@@ -25,22 +25,32 @@ export class AnaliticsService {
     })
     console.log(days)
 
-    await Promise.all(days.map(async(e) => {
-      const daysOrder: any = []
-      const ordersOfUser = await this.orders.find({
-        is_accepted: true,
-        createdAt: {
-          $gte: startOfDay(e),
-          $lte: endOfDay(e)
-        }
-      }).select('client total_cost').exec()
-      ordersOfUser.map((e) => {
-        if (e.client == payload.user) {
-          daysOrder.push(e)
-        }
+    await Promise.all(
+      days.map(async (e) => {
+        const daysOrder: any = []
+        const ordersOfUser = await this.orders
+          .find({
+            is_accepted: true,
+            createdAt: {
+              $gte: startOfDay(e),
+              $lte: endOfDay(e)
+            }
+          })
+          .select('client total_cost')
+          .exec()
+        ordersOfUser.map((e) => {
+          if (e.client == payload.user) {
+            daysOrder.push(e)
+          }
+        })
+        orders.push({
+          totalSum: daysOrder.reduce(
+            (accumlator: any, current: any) => accumlator + current.total_cost,
+            0
+          )
+        })
       })
-      orders.push({ totalSum: daysOrder.reduce((accumlator: any,current: any) => accumlator + current.total_cost,0) })
-    }))
+    )
 
     return {
       user: {

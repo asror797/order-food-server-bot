@@ -1,11 +1,7 @@
 import { userModel, orgModel } from '@models'
 import { formatPhoneNumber } from '@utils'
 import { HttpException } from '@exceptions'
-import {
-  CreateUserDto,
-  EditUserDto,
-  SendMessae,
-} from '../dtos/user.dto'
+import { CreateUserDto, EditUserDto, SendMessae } from '../dtos/user.dto'
 import {
   UserRegisterPayload,
   UserCheckResponse,
@@ -45,7 +41,10 @@ export class UserService {
     }
   }
 
-  public async checkBalance(payload: { user: string, amount: number }):Promise<Boolean> {
+  public async checkBalance(payload: {
+    user: string
+    amount: number
+  }): Promise<boolean> {
     const user = await this.userRetrieveOne({ id: payload.user })
 
     if (user.balance >= payload.amount) {
@@ -194,22 +193,41 @@ export class UserService {
     return updateduser
   }
 
-  public async userUpdateBalance(payload: { type: boolean, amount: number, user: string }) {
+  public async userUpdateBalance(payload: {
+    type: boolean
+    amount: number
+    user: string
+  }) {
     const user = await this.userRetrieveOne({ id: payload.user })
-    if (payload.amount < 0) throw new HttpException(400, 'Amount should be positive')
+    if (payload.amount < 0)
+      throw new HttpException(400, 'Amount should be positive')
 
-    if (payload.type === true ) {
-      const depositeUser = await this.users.findByIdAndUpdate(payload.user, {
-        balance: user.balance + payload.amount
-      }, { new: true }).select('phone_number balance').exec()
+    if (payload.type === true) {
+      const depositeUser = await this.users
+        .findByIdAndUpdate(
+          payload.user,
+          {
+            balance: user.balance + payload.amount
+          },
+          { new: true }
+        )
+        .select('phone_number balance')
+        .exec()
 
       return depositeUser
     }
 
     if (payload.type == false && user.balance > payload.amount) {
-      const withdrawUser = await this.users.findByIdAndUpdate(payload.user, {
-        balance: user.balance - payload.amount
-      }, { new: true }).select('phone_number balance').exec()
+      const withdrawUser = await this.users
+        .findByIdAndUpdate(
+          payload.user,
+          {
+            balance: user.balance - payload.amount
+          },
+          { new: true }
+        )
+        .select('phone_number balance')
+        .exec()
 
       return withdrawUser
     }

@@ -17,7 +17,8 @@ import {
   UserService,
   MealPollService,
   PollVoteService,
-  PaymentService
+  PaymentService,
+  ProductService
 } from '@services'
 import {
   MainMenuKeyboard,
@@ -37,6 +38,7 @@ class TelegramBotApi {
   private userService = new UserService()
   private orgService = new OrgService()
   private foodService = new FoodService()
+  private productService = new ProductService()
   private orderService = new OrderService()
   private storeService = new StoreService()
   private lunchService = new LunchService()
@@ -268,13 +270,12 @@ class TelegramBotApi {
           msg.message
         ) {
           this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
-          const orderState: any = await this.orderService.orderAccept({ id: msg.data.split('/')[1] })
-          
-          if (orderState.status) {
-            this.bot.sendMessage(msg.from.id, 'Ok')
-          } else {
-            this.bot.sendMessage(msg.from.id, 'Not ok')
-          }
+
+          const orderState = await this.orderService.orderAccept({
+            id: msg.data.split('/')[1]
+          })
+          console.log('OrderAccept', orderState)
+          this.bot.sendMessage(msg.from.id, 'Order Accepted')
         }
 
         if (
@@ -284,13 +285,11 @@ class TelegramBotApi {
         ) {
           this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
 
-          const orderState: any = await this.orderService.orderAccept({ id: msg.data.split('/')[1] })
-
-          if(orderState.status) {
-            this.bot.sendMessage(msg.from.id, 'okay')
-          } else {
-            this.bot.sendMessage(msg.from.id, 'not okay')
-          }
+          const orderState = await this.orderService.orderAccept({
+            id: msg.data.split('/')[1]
+          })
+          console.log('OrderCancel', orderState)
+          this.bot.sendMessage(msg.from.id, 'Order Canceled')
         }
       } else {
         this.bot.sendMessage(msg.from.id, botTexts.noVerified.uz)
@@ -777,7 +776,7 @@ class TelegramBotApi {
       })
       // Get Store
 
-      // Validate Food 
+      // Validate Food
       const validFoods: any = []
       await Promise.all(
         store.map(async (e: any) => {
@@ -792,9 +791,9 @@ class TelegramBotApi {
         })
       )
       // Validated
-      console.log('Validated Foods:',validFoods)
+      console.log('Validated Foods:', validFoods)
 
-      if (validFoods.length !== 0 ) {
+      if (validFoods.length !== 0) {
         const order = await this.orderService.orderCreate({
           client: payload.user,
           foods: validFoods.map((e: any) => ({
@@ -805,8 +804,26 @@ class TelegramBotApi {
         })
 
         if (order.isBalanceSufficient === false) {
-          this.bot.sendMessage(payload.msg.from.id,'Balansda pul yetarli emas!')
+          this.bot.sendMessage(
+            payload.msg.from.id,
+            'Balansda pul yetarli emas!'
+          )
         } else {
+          await Promise.all(
+            order.foods.map(async (e: any) => {
+              for (let i = 0; i < e.products.length; i++) {
+                const product = e.products[i]
+                const amount = e.amount * product.amount
+                await this.productService.productChangeAmount({
+                  amount: amount,
+                  id: product.product,
+                  type: false,
+                  cost: 0
+                })
+              }
+            })
+          )
+
           await this.userService.userUpdateBalance({
             type: false,
             amount: order.total_cost,
@@ -820,10 +837,14 @@ class TelegramBotApi {
             }))
           )
 
+          await this.storeService.clearStoreByOrg({
+            chat: payload.msg.from.id,
+            org: org['_id']
+          })
 
-          await this.storeService.clearStoreByOrg({ chat: payload.msg.from.id, org: org['_id'] })
-
-          this.bot.sendMessage(payload.msg.from.id, `${productsCaption}`,{ parse_mode: 'HTML'})
+          this.bot.sendMessage(payload.msg.from.id, `${productsCaption}`, {
+            parse_mode: 'HTML'
+          })
           this.bot.sendMessage(
             org.group_a_id,
             `<b>Buyurtmachi</b>:  ${order.user.fullname}\n<b>Telefon raqami</b>:  ${order.user.phone_number}\n<b>Tanlangan oshxona</b>:  ${order.org}\n<b>Buyurtma sanasi</b>:  ${format(order.createdAt, 'd MMM HH:mm y', { locale: uz })}\n\n${productsCaption}`,
@@ -849,9 +870,11 @@ class TelegramBotApi {
           )
         }
       } else {
-        this.bot.sendMessage(payload.msg.from.id, 'Mahsulot mavjud emas.\nIltimos qayta sotib oling!')
+        this.bot.sendMessage(
+          payload.msg.from.id,
+          'Mahsulot mavjud emas.\nIltimos qayta sotib oling!'
+        )
       }
-
     } catch (error) {
       console.log(error)
       this.bot.sendMessage(payload.msg.from.id, botTexts.errorMessage.uz, {
