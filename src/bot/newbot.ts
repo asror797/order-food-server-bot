@@ -142,6 +142,7 @@ class TelegramBotApi {
         reply_markup: { remove_keyboard: true }
       })
     } catch (error) {
+      console.log(error)
       this.bot.sendMessage(msg.chat.id, botTexts.noContact.uz)
     }
   }
@@ -267,7 +268,13 @@ class TelegramBotApi {
           msg.message
         ) {
           this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
-          // this.bot.sendMessage()
+          const orderState: any = await this.orderService.orderAccept({ id: msg.data.split('/')[1] })
+          
+          if (orderState.status) {
+            this.bot.sendMessage(msg.from.id, 'Ok')
+          } else {
+            this.bot.sendMessage(msg.from.id, 'Not ok')
+          }
         }
 
         if (
@@ -276,6 +283,14 @@ class TelegramBotApi {
           msg.message
         ) {
           this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
+
+          const orderState: any = await this.orderService.orderAccept({ id: msg.data.split('/')[1] })
+
+          if(orderState.status) {
+            this.bot.sendMessage(msg.from.id, 'okay')
+          } else {
+            this.bot.sendMessage(msg.from.id, 'not okay')
+          }
         }
       } else {
         this.bot.sendMessage(msg.from.id, botTexts.noVerified.uz)
@@ -665,9 +680,9 @@ class TelegramBotApi {
     const caption: string[] = []
     console.log(data)
     let totalCost = 0
-    data.map((e, i) => {
+    data.map((e) => {
       caption.push(
-        `${i + 1}. <b>${e.food.food}</b> - ${e.amount} dona\n${FormatNumberWithSpaces(Number(e.food.cost))} so'm * ${e.amount} dona = <b>${FormatNumberWithSpaces(Number(e.food.cost) * Number(e.amount))} so'm</b>\n\n`
+        `<b>${e.food.food}</b> x ${e.amount} = <b>${FormatNumberWithSpaces(Number(e.food.cost) * Number(e.amount))} so'm</b>\n\n`
       )
       totalCost += e.food.cost * e.amount
     })
@@ -771,7 +786,6 @@ class TelegramBotApi {
             food: e.food.id,
             amount: e.amount
           })
-          console.log(isValid)
           if (isValid) {
             validFoods.push(e)
           }
@@ -781,10 +795,6 @@ class TelegramBotApi {
       console.log('Validated Foods:',validFoods)
 
       if (validFoods.length !== 0 ) {
-        // check balance of user
-        // const isBalanceSufficient = await this.userService.checkBalance({ user: payload.user, amount: 100 })
-        // checked
-        // create order depend on validated foods of cart
         const order = await this.orderService.orderCreate({
           client: payload.user,
           foods: validFoods.map((e: any) => ({
@@ -793,7 +803,6 @@ class TelegramBotApi {
           })),
           org: org['_id']
         })
-        // created
 
         if (order.isBalanceSufficient === false) {
           this.bot.sendMessage(payload.msg.from.id,'Balansda pul yetarli emas!')
@@ -803,17 +812,21 @@ class TelegramBotApi {
             amount: order.total_cost,
             user: payload.user
           })
+
           const productsCaption = this.#_storedFoodsCaptionGenerator(
             order.foods.map((e: any) => ({
               food: { food: e.name, cost: e.cost },
               amount: e.amount
             }))
           )
-  
+
+
+          await this.storeService.clearStoreByOrg({ chat: payload.msg.from.id, org: org['_id'] })
+
           this.bot.sendMessage(payload.msg.from.id, `${productsCaption}`,{ parse_mode: 'HTML'})
           this.bot.sendMessage(
             org.group_a_id,
-            `Buyurtma haqida:\n<b>Buyurtmachi</b>:  ${order.user.fullname}\n<b>Telefon raqami</b>:  ${order.user.phone_number}\n<b>Tanlangan oshxona</b>:  ${order.org}\n<b>Buyurtma sanasi</b>:  ${format(order.createdAt, 'd MMM HH:mm y', { locale: uz })}\n<b>Mahsulotlar</b>:\n${productsCaption}`,
+            `<b>Buyurtmachi</b>:  ${order.user.fullname}\n<b>Telefon raqami</b>:  ${order.user.phone_number}\n<b>Tanlangan oshxona</b>:  ${order.org}\n<b>Buyurtma sanasi</b>:  ${format(order.createdAt, 'd MMM HH:mm y', { locale: uz })}\n\n${productsCaption}`,
             {
               reply_markup: {
                 inline_keyboard: [
@@ -835,6 +848,8 @@ class TelegramBotApi {
             }
           )
         }
+      } else {
+        this.bot.sendMessage(payload.msg.from.id, 'Mahsulot mavjud emas.\nIltimos qayta sotib oling!')
       }
 
     } catch (error) {

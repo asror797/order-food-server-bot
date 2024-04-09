@@ -14,37 +14,35 @@ export class OrderRoute {
 
   public initializeRoutes() {
     this.router.get(
-      'order-retrieve-all',
+      `${this.path}`,
       checkPermission(OrderPermissions.ORDER_RETRIEVE_ALL),
       this.orderController.orderRetrieveAll
     )
 
     this.router.get(
-      'order-retrieve-all',
+      `${this.path}`,
       checkPermission(OrderPermissions.ORDER_RETRIEVE_ONE),
       this.orderController.orderRetrieveOne
     )
 
     this.router.post(
-      'order-retrieve-one',
+      `${this.path}`,
       checkPermission(OrderPermissions.ORDER_CREATE),
       this.orderController.orderCreate
     )
 
     this.router.patch(
-      'order-retrieve',
+      `${this.path}`,
       checkPermission(OrderPermissions.ORDER_UPDATE),
       this.orderController.orderUpdate
     )
 
     this.router.delete(
-      'order-retrievel',
+      `${this.path}`,
       checkPermission(OrderPermissions.ORDER_DELETE),
       this.orderController.orderDelete
     )
 
-    this.router.get(`${this.path}`, this.orderController.getWithPagination)
-    this.router.post(`${this.path}`, this.orderController.createOrder)
     this.router.get(
       `${this.path}/user/:user`,
       this.orderController.getOrderByUser

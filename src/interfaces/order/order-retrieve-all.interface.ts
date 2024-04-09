@@ -6,7 +6,7 @@ export interface FoodWithamountDefinition {
 export interface OrderRetrieveAllRequest {
   pageSize: number
   pageNumber: number
-  org: string
+  search?: string
 }
 
 export interface OrderList {

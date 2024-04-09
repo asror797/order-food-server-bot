@@ -2,6 +2,7 @@ import { CreateProduct, UpdateAmount } from '@dtos'
 import { HttpException } from '@exceptions'
 import { orgModel, productModel } from '@models'
 import {
+  ProductChangeAmountRequest,
   ProductCreateRequest,
   ProductCreateResponse,
   ProductDeleteRequest,
@@ -53,7 +54,7 @@ export class ProductService {
         _id: e['_id'],
         name: e.name,
         cost: e.cost,
-        org: e.org.name_org,
+        org: e.org ? e.org.name_org : null,
         amount: e.amount,
         unit: e.unit,
         min_amount: e.min_amount
@@ -67,7 +68,7 @@ export class ProductService {
     const product = await this.products
       .findById(payload.id)
       .select('name cost amount org')
-    if (!product) throw new HttpException(400, 'notFoundprod')
+    if (!product) throw new HttpException(400, 'Not found product')
 
     return product
   }
@@ -76,6 +77,8 @@ export class ProductService {
     payload: ProductCreateRequest
   ): Promise<ProductCreateResponse> {
     await this.#_checkProductName({ name: payload.name, org: payload.org })
+    const org = await this.orgs.findById(payload.org)
+    if (!org) throw new HttpException(404, 'Product not found')
 
     const product = await this.products.create({
       name: payload.name,
@@ -86,10 +89,49 @@ export class ProductService {
     return product
   }
 
+  public async productChangeAmount(payload: ProductChangeAmountRequest) {
+    const product = await this.productRetrieveOne({ id: payload.id })
+
+    if (payload.type) {
+      await this.productUpdate({
+        id: payload.id
+      })
+
+      return {}
+    }
+
+    if (!payload.type) {
+      await this.productUpdate({
+        id: payload.id
+      })
+
+      return {}
+    }
+  }
+
   public async productUpdate(payload: ProductUpdateRequest) {
     await this.productRetrieveOne({ id: payload.id })
+    const updateObj: any = {}
 
-    const updatedProduct = await this.products.findByIdAndUpdate(payload.id, {})
+    if (payload.org) {
+      const org = await this.orgs.findById(payload.org)
+      if (!org) throw new HttpException(404, 'Org not found')
+      updateObj.org = payload.org
+    }
+
+    if (payload.name) {
+      updateObj.name = payload.name
+    }
+
+    if (payload.cost) {
+      updateObj.cost = payload.cost
+    }
+
+    if (payload.min_amount) {
+      updateObj.min_amount = payload.min_amount
+    }
+
+    const updatedProduct = await this.products.findByIdAndUpdate(payload.id, updateObj)
 
     return updatedProduct
   }
@@ -97,7 +139,7 @@ export class ProductService {
   public async productDelete(payload: ProductDeleteRequest) {
     await this.productRetrieveOne({ id: payload.id })
 
-    const deletedProduct = await this.products.findByIdAndRemove(payload.id)
+    const deletedProduct = await this.products.findByIdAndRemove(payload.id).exec()
 
     return deletedProduct
   }

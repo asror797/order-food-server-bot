@@ -1,20 +1,25 @@
 import { NextFunction, Request, Response } from 'express'
-import OrderService from '../services/order.service'
+import { OrderService } from '@services'
 import { ParsedQs } from 'qs'
-// import { CreateOrderDto } from '../dtos/order.dto'
 import { HttpException } from '@exceptions'
 
 export class OrderController {
   public orderService = new OrderService()
 
   public orderRetrieveAll = async (
-    req: Request,
+    req: Request<ParsedQs>,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      console.log(req.body)
-      res.json('ok')
+      const pageNumber = parseInt(req.query.page as string) || 1
+      const pageSize = parseInt(req.query.size as string) || 10
+      const search = req.query.search as string | undefined
+      res.json(await this.orderService.orderRetrieveAll({
+        pageNumber,
+        pageSize,
+        search
+      }))
     } catch (error) {
       next(error)
     }

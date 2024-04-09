@@ -7,12 +7,12 @@ Content-Type: application/json
 
 
 ### UPDATE ORG
-PATCH http://localhost:3030/org/651d125b74f9e4e6f18559e3
+PATCH http://localhost:3030/org/651d126674f9e4e6f18559e9
 Content-Type: application/json
 
 {
-  "group_a_id": -4049001674,
-  "group_b_id": -4049001674
+  "group_a_id": -4066202780,
+  "group_b_id": -4066202780
 }
 
 
@@ -26,14 +26,47 @@ POST http://localhost:3030/food
 Content-Type: application/json
 
 {
-  "name": "Milliy Kola",
-  "cost": 10000,
-  "category": "drinks",t
+  "name": "Maxito",
+  "cost": 15000,
+  "category": "drinks",
   "org": "651d126674f9e4e6f18559e9",
   "products": []
 }
 
 
+### FOOD PRODUCTS UPDATE
+POST http://localhost:3030/food/products/6613d719df3d4825e4147456
+Content-Type: application/json
+
+{
+  "product": "6613d7d3df3d4825e4147481",
+  "amount": 1
+}
+
 ### FOOD DELETE
 DELETE http://localhost:3030/food/65f157993c27f08bf1ed57a9
+Content-Type: application/json
+
+
+### GET PRODUCT
+GET http://localhost:3030/product
+Content-Type: application/json
+
+
+
+### PRODUCT
+POST http://localhost:3030/product
+Content-Type: application/json
+
+{
+  "name": "Maxito",
+  "cost": 13000,
+  "unit": "dona",
+  "org": "65f157993c27f08bf1ed57a9",
+  "amount": 1
+}
+
+
+### USERS
+GET http://localhost:3030/user?search="as"
 Content-Type: application/json

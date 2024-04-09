@@ -50,9 +50,9 @@ export class OrderService {
     const orderCount = await this.orders.countDocuments().exec()
     return {
       count: orderCount,
-      pageCount: 5,
-      pageNumber: 5,
-      pageSize: orderList.length,
+      pageCount: Math.ceil( orderCount / payload.pageSize),
+      pageNumber: payload.pageNumber,
+      pageSize: payload.pageSize,
       orderList: []
     }
   }
@@ -143,8 +143,6 @@ export class OrderService {
 
     return await this.orders.findByIdAndUpdate(payload.id, { is_accepted: true, is_canceled: false })
   }
-
-  public async orderCancel() {}
 
   public async orderUpdate(payload: any): Promise<any> {
     const updatedOrder = await this.orders.findByIdAndUpdate(payload.id, {
