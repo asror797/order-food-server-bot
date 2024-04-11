@@ -82,7 +82,7 @@ class App {
   }
 
   private async autoCancel() {
-    setInterval(autoCancelOrder, 20 * 60 * 1000)
+    // setInterval(autoCancelOrder, 20 * 60 * 1000)
   }
 }
 
