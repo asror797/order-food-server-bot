@@ -18,7 +18,13 @@ import {
 //   OrderRetrieveByUserDto,
 //   UpdateOrder
 // } from '../dtos/order.dto'
-import { foodModel, orderModel, orgModel, productModel, userModel } from '@models'
+import {
+  foodModel,
+  orderModel,
+  orgModel,
+  productModel,
+  userModel
+} from '@models'
 import { HttpException } from '@exceptions'
 import { PaymentService, FoodService } from '@services'
 import { uz } from 'date-fns/locale'
@@ -156,40 +162,53 @@ export class OrderService {
     ]
     await this.users.aggregate(pipeline)
     return await this.orders
-      .findByIdAndUpdate(payload.id, { is_accepted: true, is_canceled: false })
+      .findByIdAndUpdate(
+        payload.id,
+        { is_accepted: true, is_canceled: false },
+        { new: true }
+      )
+      .populate('foods.food', 'name cost')
+      .populate('client', 'first_name last_name phone_number')
       .exec()
   }
 
   public async orderCancel(payload: { id: string }) {
-    const order = await this.orders.findById(payload.id).populate('foods.food', 'products').select('-createdAt -updatedAt -org').exec()
+    const order = await this.orders
+      .findById(payload.id)
+      .populate('foods.food', 'products')
+      .select('-createdAt -updatedAt -org')
+      .exec()
     if (!order) throw new HttpException(400, 'Order not found')
-    
+
     if (order.is_accepted == true && order.is_canceled == false)
-    throw new HttpException(400, 'Order already done')
-    /** Return taked product */
+      throw new HttpException(400, 'Order already done')
 
-    // @ts-ignore
-    console.log('Order', order.foods[0].food.products)
-
-    await Promise.all(order.foods.map(async(e:any) => {
-      await Promise.all(e.food.products.map(async(p: any) => {
-        await this.products.updateOne(
-          { _id: p.product },
-          [
-            {
-              $set: {
-                amount: {
-                  $add: ['$amount', e.amount * p.amount]
+    await Promise.all(
+      order.foods.map(async (e: any) => {
+        await Promise.all(
+          e.food.products.map(async (p: any) => {
+            await this.products.updateOne({ _id: p.product }, [
+              {
+                $set: {
+                  amount: {
+                    $add: ['$amount', e.amount * p.amount]
+                  }
                 }
               }
-            }
-          ]
+            ])
+          })
         )
-      }))
-    }))
+      })
+    )
 
     return await this.orders
-      .findByIdAndUpdate(payload.id, { is_canceled: true, is_accepted: false })
+      .findByIdAndUpdate(
+        payload.id,
+        { is_canceled: true, is_accepted: false },
+        { new: true }
+      )
+      .populate('foods.food', 'name cost')
+      .populate('client', 'first_name last_name phone_number')
       .exec()
   }
 

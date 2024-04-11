@@ -271,11 +271,24 @@ class TelegramBotApi {
         ) {
           this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
 
-          const orderState = await this.orderService.orderAccept({
+          const order = await this.orderService.orderAccept({
             id: msg.data.split('/')[1]
           })
-          console.log('OrderAccept', orderState)
-          this.bot.sendMessage(msg.message.chat.id, 'Order Accepted')
+
+          //@ts-ignore
+          const productsCaption = this.#_storedFoodsCaptionGenerator(
+            // @ts-ignore
+            order.foods.map((e: any) => ({
+              food: { food: e.food.name, cost: e.food.cost },
+              amount: e.amount
+            }))
+          )
+          this.bot.sendMessage(
+            msg.message.chat.id,
+            // @ts-ignore
+            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n\n${productsCaption}\n\n<b>Bajarildi ✅</b>`,
+            { parse_mode: 'HTML' }
+          )
         }
 
         if (
@@ -285,11 +298,24 @@ class TelegramBotApi {
         ) {
           this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
 
-          const orderState = await this.orderService.orderCancel({
+          const order = await this.orderService.orderCancel({
             id: msg.data.split('/')[1]
           })
-          console.log('OrderCancel', orderState)
-          this.bot.sendMessage(msg.message.chat.id, 'Order Canceled')
+
+          const productsCaption = this.#_storedFoodsCaptionGenerator(
+            // @ts-ignore
+            order.foods.map((e: any) => ({
+              food: { food: e.food.name, cost: e.food.cost },
+              amount: e.amount
+            }))
+          )
+
+          this.bot.sendMessage(
+            msg.message.chat.id,
+            // @ts-ignore
+            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n\n${productsCaption}\n\n<b>Bekor qilindi 🚫</b>`,
+            { parse_mode: 'HTML' }
+          )
         }
       } else {
         this.bot.sendMessage(msg.from.id, botTexts.noVerified.uz)
@@ -870,7 +896,10 @@ class TelegramBotApi {
           )
         }
       } else {
-        await this.storeService.clearStoreByOrg({ org: org['_id'], chat: payload.msg.from.id })
+        await this.storeService.clearStoreByOrg({
+          org: org['_id'],
+          chat: payload.msg.from.id
+        })
         this.bot.sendMessage(
           payload.msg.from.id,
           'Mahsulot mavjud emas.\nIltimos qayta sotib oling!'
