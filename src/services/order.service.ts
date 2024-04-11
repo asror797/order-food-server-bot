@@ -338,6 +338,7 @@ export class OrderService {
       const isExist = await this.foods.findById(food)
       if (!isExist) throw new HttpException(400, `This food ${food} not found`)
 
+      // @ts-ignore
       foodObjects.push({ food: isExist['_id'], amount: amount })
       total_cost = total_cost + isExist.cost * amount
     }

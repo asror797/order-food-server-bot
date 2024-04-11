@@ -6,6 +6,7 @@
     "emitDecoratorMetadata": true,
     "moduleResolution": "node",
     "module": "commonjs",
+    "noImplicitAny": false,
     "strictPropertyInitialization": false,
     "resolveJsonModule": true,                        
     "forceConsistentCasingInFileNames": true,           
