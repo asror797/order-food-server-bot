@@ -393,7 +393,6 @@ class TelegramBotApi {
               })
               .select('name org')
               .exec()
-            console.log(lunchbase, step)
 
             if (lunchbase) {
               const lunch = await this.lunchService.lunchRetrieveAll({
@@ -408,8 +407,6 @@ class TelegramBotApi {
                 (e: any) =>
                   `* <b>${e.name}</b> - ${FormatNumberWithSpaces(e.cost)} so'm`
               )
-
-              console.log(lunch)
 
               if (lunch.lunchList.length >= 1) {
                 this.bot.sendMessage(
@@ -703,7 +700,6 @@ class TelegramBotApi {
 
   #_storedFoodsCaptionGenerator(data: any[]): string {
     const caption: string[] = []
-    console.log(data)
     let totalCost = 0
     data.map((e) => {
       caption.push(
@@ -806,7 +802,6 @@ class TelegramBotApi {
       const validFoods: any = []
       await Promise.all(
         store.map(async (e: any) => {
-          console.log('BotService orderProduct:', e)
           const isValid = await this.foodService.checkFoodProducts({
             food: e.food.id,
             amount: e.amount
@@ -816,8 +811,6 @@ class TelegramBotApi {
           }
         })
       )
-      // Validated
-      console.log('Validated Foods:', validFoods)
 
       if (validFoods.length !== 0) {
         const order = await this.orderService.orderCreate({

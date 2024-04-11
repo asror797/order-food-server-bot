@@ -46,7 +46,6 @@ export class OrderService {
   public async orderRetrieveAll(
     payload: OrderRetrieveAllRequest
   ): Promise<OrderRetrieveAllResponse> {
-    console.log(payload)
     const orderList = await this.orders
       .find()
       .skip((payload.pageNumber - 1) * payload.pageSize)
@@ -183,6 +182,8 @@ export class OrderService {
     if (order.is_accepted == true && order.is_canceled == false)
       throw new HttpException(400, 'Order already done')
 
+    await this.users.updateOne({ _id: order.client }, [ { $set: { balance: { $add: ["$balance", order.total_cost ] } } } ])
+
     await Promise.all(
       order.foods.map(async (e: any) => {
         await Promise.all(
@@ -284,7 +285,6 @@ export class OrderService {
       .limit(10)
       .populate('foods.food', 'name cost')
       .exec()
-    console.log(Orders)
 
     return Orders
   }
@@ -417,7 +417,6 @@ export class OrderService {
         //   food: food
         // })
       }
-      console.log('Order', populatedOrder)
       return populatedOrder
     }
   }
@@ -443,7 +442,6 @@ export class OrderService {
       .populate('client', 'first_name last_name telegram_id phone_number')
       .populate('foods.food', 'name cost')
       .populate('org', 'name_org group_a_id group_b_id')
-    console.log('Order', populatedOrder)
     return populatedOrder
   }
 
@@ -505,7 +503,6 @@ export class OrderService {
             })
             .select('total_cost')
 
-          console.log(week)
           response.push({
             label: format(week, 'd MMMM'),
             data: orders.reduce((accumulator, currentValue) => {
@@ -695,7 +692,6 @@ export class OrderService {
             })
             .select('total_cost')
 
-          console.log(week)
           response.push({
             label: format(week, 'd MMMM yyyy'),
             data: orders.reduce((accumulator, currentValue) => {
