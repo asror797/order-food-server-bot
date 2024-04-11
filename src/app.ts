@@ -17,7 +17,7 @@ class App {
 
   constructor(routes: Routes[]) {
     this.app = express()
-    this.port = 3030
+    this.port = PORT ? parseInt(PORT) : 3030
     this.bot = botInstance
 
     this.connectToDatabase()
