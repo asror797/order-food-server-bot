@@ -1,0 +1,6 @@
+export * from './food-retrieve-all.interface'
+export * from './food-retrieve-one.interfaec'
+export * from './food-create.interface'
+export * from './food-update.interface'
+export * from './food-delete.interface'
+export * from './food.schema.interface'

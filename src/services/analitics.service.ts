@@ -1,45 +1,69 @@
-import { orderModel } from '@models'
+import { HttpException } from '@exceptions'
+import { orderModel, userModel } from '@models'
+import { eachDayOfInterval, endOfDay, startOfDay } from 'date-fns'
 
 export class AnaliticsService {
   public orders = orderModel
+  private users = userModel
 
-  public async spend() {}
+  public async mostPurchaseUser() {}
+  public async mostSoldProduct() {}
+  public async totalOrders() {}
+  public async totalPaidOrders() {}
 
-  public async benefit() {}
+  public async getUserMonthlyAnalitics(payload: any) {
+    const startDay = new Date(2024, 2, 1)
+    const endDay = new Date(2024, 2, 31)
+    const orders: any = []
 
-  public async totalMarket() {}
+    const user = await this.users.findById(payload.user)
+    if (!user) throw new HttpException(404, 'User not found')
 
-  public async totalSale(argData: any) {
-    const { type, org, startDate, endDate } = argData
+    const days = eachDayOfInterval({
+      start: new Date(startDay),
+      end: new Date(endDay)
+    })
+    console.log(days)
 
-    if (type == 'all') {
-      if (startDate && endDate) {
-        const allOrders = await this.orders.find({
-          createdat: {
-            $gte: startDate,
-            $lte: endDate,
-          },
+    await Promise.all(
+      days.map(async (e) => {
+        const daysOrder: any = []
+        const ordersOfUser = await this.orders
+          .find({
+            is_accepted: true,
+            createdAt: {
+              $gte: startOfDay(e),
+              $lte: endOfDay(e)
+            }
+          })
+          .select('client total_cost')
+          .exec()
+        ordersOfUser.map((e) => {
+          if (e.client == payload.user) {
+            daysOrder.push(e)
+          }
         })
-
-        return allOrders
-      }
-      const allOrders = await this.orders.find().select('total_cost')
-      return allOrders
-    } else {
-      if (startDate && endDate) {
-        const allOrders = await this.orders.find({
-          createdat: {
-            $gte: startDate,
-            $lte: endDate,
-          },
+        orders.push({
+          totalSum: daysOrder.reduce(
+            (accumlator: any, current: any) => accumlator + current.total_cost,
+            0
+          )
         })
+      })
+    )
 
-        return allOrders
-      }
-      const allOrders = await this.orders
-        .find({ org: org })
-        .select('total_cost')
-      return allOrders
+    return {
+      user: {
+        fullName: `${user.first_name} ${user.last_name}`,
+        phoneNumber: user.phone_number
+      },
+      data: orders
     }
   }
+  /*
+    - Top most purchase users     // 10 *daily
+    - Top sold products / food    // 10 *daily
+    - Total order amount by Org   // *daily
+    - Total sum of orders by org  // *daily
+  */
 }

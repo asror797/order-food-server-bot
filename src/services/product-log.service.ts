@@ -6,27 +6,47 @@ export class ProductLogService {
   public productLog = productLogModel
   public products = productModel
 
-  public async getLog(page: number, size: number) {
-    const skip = (page - 1) * size
-    const products = await this.productLog
-      .find()
-      .skip(skip)
-      .select('-updatedAt')
-      .limit(size)
-      .populate('product', 'unit name')
-      .populate('org', 'name_org')
-      .exec()
-
-    const totalProductLog = await this.productLog.countDocuments().exec()
-    const totalPages = Math.ceil(totalProductLog / size)
+  public async productLogRetrieveAll(payload: any): Promise<any> {
+    const productlogList = await this.productLog.find()
 
     return {
-      data: products,
-      currentPage: page,
-      totalPages,
-      totalProductLog,
-      productLogsOnPage: products.length,
+      count: 1,
+      pageSize: 1,
+      pageCount: 10,
+      pageNumber: 1,
+      productlogList: productlogList
     }
+  }
+
+  public async productLogRetrieveOne(payload: any): Promise<any> {
+    const productlog = await this.productLog.findById(payload.id)
+    if (!productlog) throw new HttpException(404, 'Productlog not found')
+
+    return productlog
+  }
+
+  public async productLogCreate(payload: any): Promise<any> {
+    const product = await this.products
+      .findById(payload.product)
+      .select('org')
+      .exec()
+    if (!product) throw new HttpException(404, 'Product not found')
+
+    await this.productLog.create({
+      product: product['_id'],
+      org: product.org,
+      amount: payload.amount,
+      cost: payload.cost,
+      type: payload.type
+    })
+  }
+
+  public async productLogUpdate(payload: any): Promise<any> {
+    await this.productLogRetrieveOne({ id: payload.id })
+  }
+
+  public async productLogDelete(payload: any): Promise<any> {
+    await this.productLogRetrieveOne({ id: payload.id })
   }
 
   public async createLog(logData: CreateProductLog) {
@@ -38,12 +58,12 @@ export class ProductLogService {
 
     const updateProductAmount = await this.products.findOneAndUpdate(
       {
-        _id: product,
+        _id: product
       },
       {
-        amount: type ? isExist.amount + amount : isExist.amount - amount,
+        amount: type ? isExist.amount + amount : isExist.amount - amount
       },
-      { new: true },
+      { new: true }
     )
 
     console.log(updateProductAmount)
@@ -53,25 +73,7 @@ export class ProductLogService {
       type,
       cost,
       product,
-      org,
-    })
-
-    return newLog
-  }
-
-  public async logCreateForStore(logData: CreateProductLog) {
-    const { amount, cost, type, product, org } = logData
-
-    const isExist = await this.products.findById(product)
-
-    if (!isExist) throw new HttpException(400, 'product not found')
-
-    const newLog = await this.productLog.create({
-      amount,
-      type,
-      cost,
-      product,
-      org,
+      org
     })
 
     return newLog

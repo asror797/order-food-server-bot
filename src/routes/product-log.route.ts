@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import ProductLogController from './../controllers/product-log.controller'
+import { ProductLogController } from '@controllers'
 
 export class ProductLogRoute {
   public path = '/product-log'

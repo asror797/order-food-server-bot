@@ -1,45 +1,54 @@
 import { NextFunction, Request, Response } from 'express'
 import { AuthService } from '@services'
-import { AdminLoginDto } from '../dtos/admin.dto'
 import { HttpException } from '@exceptions'
 
-class AuthController {
+export class AuthController {
   private authService = new AuthService()
 
-  // public sendOtp = (req:Request,res:Response,next:NextFunction) => {
-  //   try {
-  //     const phone_number: string = req.body.phone_number
-  //     res.json(this.authService.loginAdmin(phone_number))
-  //   } catch (error) {
-  //     next(error)
-  //   }
-  // }
-
-  public LoginSuperAdmin = (
+  public adminAuthSignIn = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
-      const adminData: AdminLoginDto = req.body
-      res.json(this.authService.loginAdmin(adminData))
+      const { phoneNumber, password } = req.body
+      res.json(
+        await this.authService.adminAuthSignIn({
+          phoneNumber: phoneNumber,
+          password: password
+        })
+      )
     } catch (error) {
       next(error)
     }
   }
 
-  public loginAdmin = async(req:Request,res:Response,next:NextFunction) => {
+  public adminAuthRefresh = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      const { phoneNumber, password } = req.body
-      console.log(req.body)
-      if(!phoneNumber || !password ) {
-        throw new HttpException(400,'phoneNumber or password is wrong 1')
-      }
-      res.json(await this.authService.login({phoneNumber,password}))
+      const refreshToken = req.body
+      res.json(
+        await this.authService.adminAuthSignIn({
+          password: '',
+          phoneNumber: ''
+        })
+      )
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public adminAuthSignOut = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
     } catch (error) {
       next(error)
     }
   }
 }
-
-export default AuthController

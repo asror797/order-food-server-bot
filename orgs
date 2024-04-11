@@ -1,0 +1,33 @@
+[{
+  "_id": {
+    "$oid": "651d125b74f9e4e6f18559e3"
+  },
+  "name_org": "O'rtasaroy",
+  "is_active": true,
+  "is_deleted": false,
+  "group_a_id": -4046144065,
+  "group_b_id": -4093239402,
+  "trip_timeout": 120,
+  "createdAt": {
+    "$date": "2023-10-04T07:20:59.078Z"
+  },
+  "updatedAt": {
+    "$date": "2024-01-31T14:09:12.581Z"
+  }
+},{
+  "_id": {
+    "$oid": "651d126674f9e4e6f18559e9"
+  },
+  "name_org": "Kola",
+  "is_active": true,
+  "is_deleted": false,
+  "group_a_id": -4074176660,
+  "group_b_id": -4050346052,
+  "trip_timeout": 500,
+  "createdAt": {
+    "$date": "2023-10-04T07:21:10.101Z"
+  },
+  "updatedAt": {
+    "$date": "2024-01-20T07:36:22.335Z"
+  }
+}]

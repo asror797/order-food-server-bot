@@ -1,5 +1,7 @@
 import { Router } from 'express'
-import UserController from '../controllers/user.controller'
+import { UserController } from '@controllers'
+import { checkPermission } from '@middlewares'
+import { UserPermissions } from '@constants'
 
 export class UserRoute {
   public path = '/user'
@@ -11,16 +13,30 @@ export class UserRoute {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}/search-pagination`,this.userController.getUsers)
-    this.router.get(`${this.path}/search`, this.userController.SearchUser)
-    this.router.get(`${this.path}/telegram/:telegramid`,this.userController.findUser)
-    this.router.put(`${this.path}/status/:user`,this.userController.updateStatus)
-    this.router.put(`${this.path}/`,this.userController.updateInfoUser)
-    this.router.put(`${this.path}/verify/:user`,this.userController.verifyUser)
-    this.router.post(`${this.path}/send-message`,this.userController.sendMessage)
-    this.router.put(`${this.path}/org/:user`, this.userController.updateOrg)
-    this.router.patch(`${this.path}/payment`, this.userController.payment)
-    this.router.patch(`${this.path}/role`, this.userController.updateUserRole)
-    this.router.patch(`${this.path}/edit-info`, this.userController.editUser)
+    this.router.get(
+      `${this.path}`,
+      checkPermission(UserPermissions.USER_RETRIEVE_ALL),
+      this.userController.userRetrieveAll
+    )
+
+    this.router.get(
+      `${this.path}/:id`,
+      checkPermission(UserPermissions.USER_RETRIEVE_ONE),
+      this.userController.userRetrieveOne
+    )
+
+    this.router.patch(
+      `${this.path}/balance/:id`,
+      checkPermission(UserPermissions.USER_UPDATE),
+      this.userController.userUpdateBalance
+    )
+
+    this.router.patch(
+      `${this.path}/:id`,
+      checkPermission(UserPermissions.USER_UPDATE),
+      this.userController.userUpdate
+    )
+
+    this.router.delete(`${this.path}/:id`, this.userController.userDelete)
   }
 }

@@ -1,0 +1,7 @@
+export * from './admin.schema.interface'
+export * from './admin-auth.interface'
+export * from './admin-create.interface'
+export * from './admin-update.interface'
+export * from './admin-delete.interface'
+export * from './admin-retrieve-all.interface'
+export * from './admin-retrieve-one.interface'

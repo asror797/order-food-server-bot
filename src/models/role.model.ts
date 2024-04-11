@@ -1,7 +1,7 @@
-import { IRole } from './../interfaces';
-import { Document, Schema, model } from "mongoose";
+import { Document, Schema, model } from 'mongoose'
+import { IRole } from '@interfaces'
 
-const roleSchema: Schema =  new Schema(
+const roleSchema: Schema = new Schema(
   {
     title: {
       type: String,
@@ -33,7 +33,7 @@ const roleSchema: Schema =  new Schema(
             ],
             default: []
           }
-        },
+        }
       ],
       default: []
     }
@@ -44,4 +44,4 @@ const roleSchema: Schema =  new Schema(
   }
 )
 
-export const roleModel = model<IRole & Document>('Role',roleSchema)
+export const roleModel = model<IRole & Document>('Role', roleSchema)

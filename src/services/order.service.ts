@@ -10,25 +10,199 @@ import {
   startOfDay,
   startOfMonth,
   startOfWeek,
-  startOfYear,
+  startOfYear
 } from 'date-fns'
-import {
-  CreateOrderDto,
-  OrderRetrieveAllDto,
-  OrderRetrieveByUserDto,
-  UpdateOrder,
-} from '../dtos/order.dto'
-import { foodModel, orderModel, orgModel, userModel } from '@models'
+// import {
+//   CreateOrderDto,
+//   OrderRetrieveAllDto,
+//   OrderRetrieveByUserDto,
+//   UpdateOrder
+// } from '../dtos/order.dto'
+import { foodModel, orderModel, orgModel, productModel, userModel } from '@models'
 import { HttpException } from '@exceptions'
-import { PaymentService, FoodService, TripService } from '@services'
+import { PaymentService, FoodService } from '@services'
 import { uz } from 'date-fns/locale'
+import {
+  OrderCreateRequest,
+  OrderRetrieveAllRequest,
+  OrderRetrieveAllResponse
+} from '@interfaces'
 
 export class OrderService {
-  public orders = orderModel
-  public foods = foodModel
-  public users = userModel
+  private orders = orderModel
+  private orgs = orgModel
+  private foods = foodModel
+  private users = userModel
+  private products = productModel
   public paymentService = new PaymentService()
   public foodService = new FoodService()
+
+  public async orderRetrieveAll(
+    payload: OrderRetrieveAllRequest
+  ): Promise<OrderRetrieveAllResponse> {
+    console.log(payload)
+    const orderList = await this.orders
+      .find()
+      .skip((payload.pageNumber - 1) * payload.pageSize)
+      .limit(payload.pageSize)
+      .sort({ createdAt: -1 })
+      .exec()
+
+    const orderCount = await this.orders.countDocuments().exec()
+    return {
+      count: orderCount,
+      pageCount: Math.ceil(orderCount / payload.pageSize),
+      pageNumber: payload.pageNumber,
+      pageSize: payload.pageSize,
+      orderList: []
+    }
+  }
+
+  public async orderRetrieveOne(payload: { id: string }): Promise<any> {
+    const order = await this.orders.findById(payload.id).exec()
+    if (!order) throw new HttpException(404, 'Order not found')
+
+    return order
+  }
+
+  public async orderCreate(payload: OrderCreateRequest): Promise<any> {
+    const user = await this.users
+      .findById(payload.client)
+      .select('-createdAt -updatedAt')
+      .exec()
+    if (!user) throw new HttpException(404, 'User not found')
+
+    const org = await this.orgs
+      .findById(payload.org, { is_deleted: false })
+      .select('name_org')
+      .exec()
+
+    if (!org) throw new HttpException(404, 'Org not found')
+
+    const orderFoods: any = []
+    let total_cost: number = 0
+    await Promise.all(
+      payload.foods.map(async (e) => {
+        const food = await this.foods
+          .findById(e.food)
+          .select('name org cost products')
+          .exec()
+
+        if (!food) {
+          throw new HttpException(404, 'Food not found')
+        }
+
+        if (e.amount <= 0) {
+          throw new HttpException(404, 'Food amount not valid')
+        }
+
+        orderFoods.push({
+          id: food['_id'],
+          name: food.name,
+          cost: food.cost,
+          amount: e.amount,
+          products: food.products
+        })
+        total_cost += food.cost * e.amount
+      })
+    )
+
+    if (user.balance >= total_cost) {
+      const order: any = await this.orders.create({
+        client: user['_id'],
+        org: org['_id'],
+        foods: orderFoods.map((e: any) => ({ food: e.id, amount: e.amount })),
+        total_cost: total_cost
+      })
+
+      return {
+        _id: order['_id'],
+        client: user['_id'],
+        org: org.name_org,
+        foods: orderFoods.map((e: any) => ({
+          name: e.name,
+          cost: e.cost,
+          amount: e.amount,
+          products: e.products
+        })),
+        is_accepted: false,
+        is_canceled: false,
+        total_cost: total_cost,
+        user: {
+          fullname: `${user.first_name} ${user.last_name}`,
+          phone_number: user.phone_number
+        },
+        createdAt: order.createdAt
+      }
+    } else {
+      return {
+        isBalanceSufficient: false
+      }
+    }
+  }
+
+  public async orderAccept(payload: { id: string }) {
+    const order = await this.orderRetrieveOne(payload)
+    if (order.is_accepted == false && order.is_canceled == true)
+      throw new HttpException(400, 'Order already done')
+
+    const pipeline = [
+      { $match: { _id: order.client } },
+      {
+        $set: {
+          balance: { $subtract: ['$balance', order.total_cost] }
+        }
+      }
+    ]
+    await this.users.aggregate(pipeline)
+    return await this.orders
+      .findByIdAndUpdate(payload.id, { is_accepted: true, is_canceled: false })
+      .exec()
+  }
+
+  public async orderCancel(payload: { id: string }) {
+    const order = await this.orders.findById(payload.id).populate('foods.food', 'products').select('-createdAt -updatedAt -org').exec()
+    if (!order) throw new HttpException(400, 'Order not found')
+    
+    if (order.is_accepted == true && order.is_canceled == false)
+    throw new HttpException(400, 'Order already done')
+    /** Return taked product */
+
+    // @ts-ignore
+    console.log('Order', order.foods[0].food.products)
+
+    await Promise.all(order.foods.map(async(e:any) => {
+      await Promise.all(e.food.products.map(async(p: any) => {
+        await this.products.updateOne(
+          { _id: p.product },
+          [
+            {
+              $set: {
+                amount: {
+                  $add: ['$amount', e.amount * p.amount]
+                }
+              }
+            }
+          ]
+        )
+      }))
+    }))
+
+    return await this.orders
+      .findByIdAndUpdate(payload.id, { is_canceled: true, is_accepted: false })
+      .exec()
+  }
+
+  public async orderUpdate(payload: any): Promise<any> {
+    const updatedOrder = await this.orders.findByIdAndUpdate(payload.id, {
+      is_accepted: true,
+      is_canceled: false
+    })
+
+    return updatedOrder
+  }
+
+  public async orderDelete(): Promise<any> {}
 
   public async getOrders(page: number, size: number) {
     const skip = (page - 1) * size
@@ -54,19 +228,19 @@ export class OrderService {
       if (e.is_accepted == true && e.is_canceled == false) {
         orderWithStatus.push({
           ...newObj,
-          status: 'accepted',
+          status: 'accepted'
         })
         // canceled
       } else if (e.is_accepted == false && e.is_canceled == true) {
         orderWithStatus.push({
           ...newObj,
-          status: 'canceled',
+          status: 'canceled'
         })
         // pending
       } else {
         orderWithStatus.push({
           ...newObj,
-          status: 'pending',
+          status: 'pending'
         })
       }
     })
@@ -75,7 +249,7 @@ export class OrderService {
       currentPage: page,
       totalPages,
       totalOrders,
-      ordersOnPage: orders.length,
+      ordersOnPage: orders.length
     }
   }
 
@@ -84,7 +258,7 @@ export class OrderService {
     const skip = (page - 1) * 10
     const Orders = await this.orders
       .find({
-        client: client,
+        client: client
       })
       .select('-updatedAt')
       .skip(skip)
@@ -96,7 +270,7 @@ export class OrderService {
     return Orders
   }
 
-  public async getByUser(payload: OrderRetrieveByUserDto) {
+  public async getByUser(payload: any) {
     const { id, size, page } = payload
     const orderWithStatus: any = []
     const skip = (page - 1) * size
@@ -107,7 +281,7 @@ export class OrderService {
 
     const orders = await this.orders
       .find({
-        client: id,
+        client: id
       })
       .select('-updatedAt')
       .sort({ createdAt: -1 })
@@ -127,19 +301,19 @@ export class OrderService {
       if (e.is_accepted == true && e.is_canceled == false) {
         orderWithStatus.push({
           ...newObj,
-          status: 'accepted',
+          status: 'accepted'
         })
         // canceled
       } else if (e.is_accepted == false && e.is_canceled == true) {
         orderWithStatus.push({
           ...newObj,
-          status: 'canceled',
+          status: 'canceled'
         })
         // pending
       } else {
         orderWithStatus.push({
           ...newObj,
-          status: 'pending',
+          status: 'pending'
         })
       }
     })
@@ -149,23 +323,19 @@ export class OrderService {
       currentPage: page,
       totalPages,
       totalOrders,
-      ordersOnPage: orders.length,
+      ordersOnPage: orders.length
     }
   }
 
-  public async createOrder(orderData: CreateOrderDto) {
-    const { foods, client, org } = orderData
-
-    const Client = await this.users.findById(client)
-
+  public async createOrder(payload: any) {
+    const Client = await this.users.findById(payload.client)
     if (!Client) throw new HttpException(400, 'client not found')
 
     const foodObjects = []
     let total_cost: number = 0
 
-    for (const { food, amount } of foods) {
+    for (const { food, amount } of payload.foods) {
       const isExist = await this.foods.findById(food)
-
       if (!isExist) throw new HttpException(400, `This food ${food} not found`)
 
       foodObjects.push({ food: isExist['_id'], amount: amount })
@@ -173,10 +343,10 @@ export class OrderService {
     }
 
     const newOrder = await this.orders.create({
-      client,
-      org,
+      client: payload.client,
+      org: payload.org,
       total_cost,
-      foods: foodObjects,
+      foods: foodObjects
     })
 
     const Order = await this.orders
@@ -186,7 +356,7 @@ export class OrderService {
     return Order
   }
 
-  public async acceptOrder(orderData: UpdateOrder) {
+  public async acceptOrder(orderData: any) {
     const { order } = orderData
 
     const Order = await this.orders.findById(order)
@@ -199,7 +369,7 @@ export class OrderService {
       return {
         message: 'cancelled'
       }
-    } else if(User.balance < Order.total_cost) {
+    } else if (User.balance < Order.total_cost) {
       return {
         message: 'InfluenceBalance'
       }
@@ -207,40 +377,32 @@ export class OrderService {
       const updatedOrder = await this.orders.findByIdAndUpdate(
         order,
         {
-          is_accepted: true,
+          is_accepted: true
         },
-        { new: true },
+        { new: true }
       )
-  
+
       if (!updatedOrder) throw new HttpException(400, 'something went wrong')
-  
-      const updatedUser = await this.paymentService.dicrease({
-        amount: updatedOrder?.total_cost,
-        user: updatedOrder?.client,
-        org: updatedOrder.org
-      })
-  
-      if (!updatedUser) throw new HttpException(400, 'something wnet wrong')
-  
+
       const populatedOrder = (await this.orders
         .findById(updatedOrder['_id'])
         .populate('client', 'first_name last_name telegram_id phone_number')
         .populate('foods.food', 'name cost')
         .populate('org', 'name_org group_a_id group_b_id')) || { foods: [] }
-  
+
       for (let i = 0; i < populatedOrder.foods.length; i++) {
         const { food, amount } = populatedOrder.foods[i]
-        await this.foodService.DecreaseProductsOfFood({
-          amount: amount,
-          food: food,
-        })
+        // await this.foodService.DecreaseProductsOfFood({
+        //   amount: amount,
+        //   food: food
+        // })
       }
       console.log('Order', populatedOrder)
       return populatedOrder
     }
   }
 
-  public async cancelOrder(orderData: UpdateOrder) {
+  public async cancelOrder(orderData: any) {
     const { order } = orderData
 
     const Order = await this.orders.findById(order)
@@ -250,9 +412,9 @@ export class OrderService {
     const updatedOrder = await this.orders.findByIdAndUpdate(
       order,
       {
-        is_canceled: true,
+        is_canceled: true
       },
-      { new: true },
+      { new: true }
     )
 
     if (!updatedOrder) throw new HttpException(200, 'not found')
@@ -265,27 +427,7 @@ export class OrderService {
     return populatedOrder
   }
 
-  // public async getTotalOrderCount() {
-  // const startDate = new Date(
-  //   startOfWeek(new Date(), { weekStartsOn: 1 }).setHours(
-  //     startOfWeek(new Date(), { weekStartsOn: 1 }).getHours() + 5,
-  //   ),
-  // )
-  // const endDate = new Date(
-  //   endOfWeek(new Date(), { weekStartsOn: 1 }).setHours(
-  //     endOfWeek(new Date(), { weekStartsOn: 1 }).getHours() + 5,
-  //   ),
-  // )
-
-  // const WeeklyOrders = await this.orders.find({
-  //   createdAt: {
-  //     $gte: startDate,
-  //     $lt: endDate,
-  //   },
-  // })
-  // }
-
-  public async getTotalSpent(payload: OrderRetrieveAllDto) {
+  public async getTotalSpent(payload: any) {
     const { user, type } = payload
 
     const User = await this.users
@@ -300,7 +442,7 @@ export class OrderService {
     if (type == 'day') {
       const daysOfWeek = eachDayOfInterval({
         start: startOfWeek(new Date(), { weekStartsOn: 1 }),
-        end: endOfWeek(new Date(), { weekStartsOn: 1 }),
+        end: endOfWeek(new Date(), { weekStartsOn: 1 })
       })
       await Promise.all(
         daysOfWeek.map(async (day) => {
@@ -310,24 +452,24 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfDay(day),
-                $lte: endOfDay(day),
-              },
+                $lte: endOfDay(day)
+              }
             })
             .select('total_cost')
           response.push({
             label: format(day, 'eeee', { locale: uz }),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     if (type == 'week') {
       const weekOfMonth = eachWeekOfInterval({
         start: startOfMonth(new Date()),
-        end: endOfMonth(new Date()),
+        end: endOfMonth(new Date())
       })
 
       await Promise.all(
@@ -338,8 +480,8 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfWeek(week),
-                $lte: endOfWeek(week),
-              },
+                $lte: endOfWeek(week)
+              }
             })
             .select('total_cost')
 
@@ -348,16 +490,16 @@ export class OrderService {
             label: format(week, 'd MMMM'),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     if (type == 'month') {
       const monthOfYear = eachMonthOfInterval({
         start: startOfYear(new Date()),
-        end: endOfYear(new Date()),
+        end: endOfYear(new Date())
       })
 
       await Promise.all(
@@ -368,89 +510,114 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfMonth(month),
-                $lte: endOfMonth(month),
-              },
+                $lte: endOfMonth(month)
+              }
             })
             .select('total_cost')
           response.push({
             label: format(month, 'd MMMM'),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     return {
       user: User,
-      data: response,
+      data: response
     }
   }
 
-  public async getSpentMoney(payload: { userId: string, startDate?: string, endDate?: string, org?: string }) {
+  public async getSpentMoney(payload: {
+    userId: string
+    startDate?: string
+    endDate?: string
+    org?: string
+  }) {
     interface IOrg {
       id: string
       name: string
     }
 
-    let options:any = {}
-   
-    const UserOrg:IOrg = { id: '', name: ''}
+    const options: any = {}
+
+    const UserOrg: IOrg = { id: '', name: '' }
     const User = await this.users.findById(payload.userId).exec()
-    if(!User) {
-      throw new HttpException(400,'User not found')
+    if (!User) {
+      throw new HttpException(400, 'User not found')
     }
 
-    if(payload.org) {
+    if (payload.org) {
       const Org = await orgModel.findById(payload.org).exec()
-      if(!Org) throw new HttpException(400,'org not found')
+      if (!Org) throw new HttpException(400, 'org not found')
       UserOrg.id = Org['_id']
       UserOrg.name = Org.name_org
       options.org = Org['_id']
     }
 
-    interface Order { id: number , data: any, label: string}
-    let allOrders:Order[] = []
-    const start = payload.startDate ? new Date(payload.startDate) : startOfMonth(new Date())
-    const end = payload.endDate ?  new Date(payload.endDate) : endOfMonth(new Date())
+    interface Order {
+      id: number
+      data: any
+      label: string
+    }
+    const allOrders: Order[] = []
+    const start = payload.startDate
+      ? new Date(payload.startDate)
+      : startOfMonth(new Date())
+    const end = payload.endDate
+      ? new Date(payload.endDate)
+      : endOfMonth(new Date())
 
     const daysOfTimeSequance = eachDayOfInterval({
       start: new Date(start),
       end: new Date(end)
     })
 
-    if(daysOfTimeSequance.length > 62) {
-      throw new HttpException(200,'too long date')
+    if (daysOfTimeSequance.length > 62) {
+      throw new HttpException(200, 'too long date')
     } else {
-      await Promise.all(daysOfTimeSequance.map(async(day,i:number) => {
-        const orders = await this.orders.find({
-          ...options,
-          client: payload.userId,
-          is_accepted: true,
-          createdAt: {
-            $gte: startOfDay(day),
-            $lte: endOfDay(day)
-          }
-        }).select('total_cost')
-        allOrders.push({
-          id: i,
-          data: orders.reduce((accumulator, currentValue) => accumulator + currentValue.total_cost ,0),
-          label: format(day, 'MMMM d', { locale: uz })
+      await Promise.all(
+        daysOfTimeSequance.map(async (day, i: number) => {
+          const orders = await this.orders
+            .find({
+              ...options,
+              client: payload.userId,
+              is_accepted: true,
+              createdAt: {
+                $gte: startOfDay(day),
+                $lte: endOfDay(day)
+              }
+            })
+            .select('total_cost')
+          allOrders.push({
+            id: i,
+            data: orders.reduce(
+              (accumulator, currentValue) =>
+                accumulator + currentValue.total_cost,
+              0
+            ),
+            label: format(day, 'MMMM d', { locale: uz })
+          })
         })
-      }))
-  
+      )
+
       allOrders.sort((a, b) => a.id - b.id)
-  
+
       return {
-        user: { id: User['_id'], fullName: `${User.first_name} ${User.last_name}`, phoneNumber: User.phone_number},
+        user: {
+          id: User['_id'],
+          fullName: `${User.first_name} ${User.last_name}`,
+          phoneNumber: User.phone_number
+        },
         org: UserOrg,
         data: allOrders
       }
     }
   }
 
-  public async getOldAnaltics(payload: OrderRetrieveAllDto) {
+  public async getOldAnaltics(payload: any) {
     const { user, type } = payload
 
     const User = await this.users
@@ -465,7 +632,7 @@ export class OrderService {
     if (type == 'day') {
       const daysOfWeek = eachDayOfInterval({
         start: startOfWeek(new Date(2023, 11, 29), { weekStartsOn: 1 }),
-        end: endOfWeek(new Date(2023, 11, 29), { weekStartsOn: 1 }),
+        end: endOfWeek(new Date(2023, 11, 29), { weekStartsOn: 1 })
       })
       await Promise.all(
         daysOfWeek.map(async (day) => {
@@ -475,24 +642,24 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfDay(day),
-                $lte: endOfDay(day),
-              },
+                $lte: endOfDay(day)
+              }
             })
             .select('total_cost')
           response.push({
             label: format(day, 'eeee yyyy', { locale: uz }),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     if (type == 'week') {
       const weekOfMonth = eachWeekOfInterval({
         start: startOfMonth(new Date(2023, 11, 29)),
-        end: endOfMonth(new Date(2023, 11, 29)),
+        end: endOfMonth(new Date(2023, 11, 29))
       })
 
       await Promise.all(
@@ -503,8 +670,8 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfWeek(week),
-                $lte: endOfWeek(week),
-              },
+                $lte: endOfWeek(week)
+              }
             })
             .select('total_cost')
 
@@ -513,16 +680,16 @@ export class OrderService {
             label: format(week, 'd MMMM yyyy'),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     if (type == 'month') {
       const monthOfYear = eachMonthOfInterval({
         start: startOfYear(new Date(2023, 11, 29)),
-        end: endOfYear(new Date(2023, 11, 29)),
+        end: endOfYear(new Date(2023, 11, 29))
       })
 
       await Promise.all(
@@ -533,23 +700,23 @@ export class OrderService {
               is_accepted: true,
               createdAt: {
                 $gte: startOfMonth(month),
-                $lte: endOfMonth(month),
-              },
+                $lte: endOfMonth(month)
+              }
             })
             .select('total_cost')
           response.push({
             label: format(month, 'MMMM yyyy'),
             data: orders.reduce((accumulator, currentValue) => {
               return accumulator + currentValue.total_cost
-            }, 0),
+            }, 0)
           })
-        }),
+        })
       )
     }
 
     return {
       user: User,
-      data: response,
+      data: response
     }
   }
 
@@ -557,7 +724,7 @@ export class OrderService {
     const { user } = payload
 
     const orders = await this.orders.find({
-      user: user,
+      user: user
     })
 
     if (!user) throw new HttpException(400, 'user not found')

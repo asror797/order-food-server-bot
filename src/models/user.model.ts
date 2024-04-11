@@ -1,51 +1,52 @@
 import { Schema, model } from 'mongoose'
-import { IUser, UserRole } from '../interfaces/user.interface'
+import { IUser, UserRole } from '@interfaces'
 
 const userSchema: Schema = new Schema(
   {
     first_name: {
-      type: String,
+      type: String
     },
     last_name: {
-      type: String,
+      type: String
     },
     phone_number: {
-      type: String,
+      type: String
     },
     telegram_id: {
       type: Number,
       nullable: false,
+      unique: true
     },
     is_active: {
       type: Boolean,
-      default: false,
+      default: false
     },
     is_verified: {
       type: Boolean,
-      default: false,
+      default: false
     },
     org: {
       type: Schema.Types.ObjectId,
-      ref: 'Org',
+      ref: 'Org'
     },
     role: {
       type: String,
       enum: Object.values(UserRole),
-      default: UserRole.USER, 
+      default: UserRole.USER
     },
     balance: {
       type: Number,
-      default: 0,
+      default: 0
     },
     language_code: {
       type: String,
-      default: 'uz',
-    },
+      default: 'uz'
+    }
   },
   {
     versionKey: false,
-    timestamps: true,
-  },
+    timestamps: true
+  }
 )
 
 export const userModel = model<IUser & Document>('User', userSchema)

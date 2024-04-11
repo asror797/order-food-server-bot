@@ -5,7 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsPositive,
-  IsString,
+  IsString
 } from 'class-validator'
 
 export class CreateUserDto {
@@ -90,7 +90,7 @@ export class EditRole {
   role: string
 }
 
-export class SearchPagination {
+export class SearchPaginationDto {
   @IsString()
   search: string
 
@@ -123,4 +123,12 @@ export class EditUserDto {
   @IsOptional()
   @IsString()
   role?: string
+
+  @IsOptional()
+  @IsBoolean()
+  is_active?: boolean
+
+  @IsOptional()
+  @IsBoolean()
+  is_verified?: boolean
 }

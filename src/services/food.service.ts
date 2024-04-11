@@ -1,290 +1,285 @@
-import { CreateFood, GetFoods, UpdateFoodDto } from '../dtos/food.dto'
 import { HttpException } from '@exceptions'
-import { IFood } from '../interfaces/food.interface'
+import {
+  FoodCreateRequest,
+  FoodCreateResponse,
+  FoodDeleteRequest,
+  FoodDeleteResponse,
+  FoodRetrieveOneRequest,
+  FoodRetrieveOneResponse,
+  FoodRetrieveAllRequest,
+  FoodUpdateRequest,
+  FoodUpdateResponse,
+  FoodRetrieveAllResponse
+} from '@interfaces'
 import { foodModel, productModel, orgModel } from '@models'
-import { ProductService, ProductLogService } from '@services'
+import { ProductService, ProductLogService, ValidationService } from '@services'
+import { FoodCreateDto } from '@dtos'
 
 export class FoodService {
   public foods = foodModel
   public products = productModel
   public productLog = new ProductLogService()
   public productService = new ProductService()
+  private validateService = new ValidationService()
   public org = orgModel
 
-  public async getFoods(payload: any) {
-    const { page, size, search } = payload
-    const skip = (page - 1) * size
+  public async foodRetrieveAll(
+    payload: FoodRetrieveAllRequest
+  ): Promise<FoodRetrieveAllResponse> {
+    const categoryEnum = ['drinks', 'snacks', 'dessert']
+    const query: any = {}
 
-    if (!search || search.trim() === '') {
-      const foods = await this.foods
-        .find()
-        .populate('org', 'name_org')
-        .populate('products.product', 'name cost')
-        .skip((page - 1) * size)
-        .limit(size)
-        .exec()
-
-      const totalFoods = await this.foods.countDocuments().exec()
-
-      return {
-        data: foods,
-        currentPage: page,
-        totalPages: Math.ceil(totalFoods / size),
-        totalFoods,
-        foodsOnPage: foods.length,
-      }
+    if (payload.category && categoryEnum.includes(payload.category)) {
+      query.category = payload.category
     }
 
-    const re = new RegExp(search, 'i')
-    const foods = await this.foods
-      .find({
-        $or: [{ name: { $regex: re } }],
-      })
+    if (payload.search) {
+      query.name = { $regex: payload.search.trim(), $options: 'i' }
+    }
+
+    if (payload.org) {
+      const org = await this.org.findById(payload.org).exec()
+      if (!org) throw new HttpException(404, 'Org not found')
+      query.org = payload.org
+    }
+
+    const foodList = await this.foods
+      .find(query)
+      .skip((payload.pageNumber - 1) * payload.pageSize)
+      .limit(payload.pageSize)
+      .sort({ createdAt: -1 })
       .populate('org', 'name_org')
-      .populate('products.product', 'name cost')
-      .skip(skip)
-      .limit(size)
+      .select(
+        payload.isDashboard
+          ? 'name cost img category is_deleted products'
+          : 'name cost img'
+      )
       .exec()
 
-    const totalFoods = await this.foods.countDocuments().exec()
-    const totalPages = Math.ceil(totalFoods / size)
+    const count = await this.foods.countDocuments(query).exec()
+    const validFoodList: any = []
+    if (!payload.isDashboard) {
+      await Promise.all(
+        foodList.map(async (e) => {
+          const isValid = await this.checkFoodProducts({
+            food: e['_id'],
+            amount: 1
+          })
+          console.log('isValid', isValid)
+          if (isValid) {
+            validFoodList.push(e)
+          }
+        })
+      )
+    }
 
     return {
-      data: foods,
-      currentPage: page,
-      totalPages,
-      totalFoods,
-      foodsOnPage: foods.length,
+      count: count,
+      pageSize: payload.pageSize,
+      pageNumber: payload.pageNumber,
+      pageCount: Math.ceil(count / payload.pageSize),
+      foodList: validFoodList.map((e: any) => ({
+        _id: e['_id'],
+        name: e.name,
+        cost: e.cost,
+        img: e.img,
+        org: e.org?.name_org || null,
+        category: e.category,
+        products: e.products ? e.products.length : 0,
+        is_private: e.is_deleted
+      }))
     }
   }
 
-  public async getFoodsForBot(getFood: GetFoods) {
-    const { org, category } = getFood
-    const foods = await this.foods
-      .find({
-        org: org,
-        category: category,
-        $or: [{ is_deleted: false }, { is_deleted: { $exists: false } }],
-      })
+  public async foodRetrieveOne(
+    payload: FoodRetrieveOneRequest
+  ): Promise<FoodRetrieveOneResponse> {
+    const food = await this.foods
+      .findById(payload.id)
+      .populate('org', 'name_org')
+      .populate('products.product', 'name cost')
+      .select('name cost img org products')
       .exec()
-
-    const availableFoods = []
-
-    for (let i = 0; i < foods.length; i++) {
-      const food = foods[i]
-
-      if (food.products.length > 0) {
-        for (let j = 0; j < food.products.length; j++) {
-          const product = food.products[j]
-
-          const statusProduct = await this.productService.checkAmountProduct({
-            product: product.product['_id'],
-            amount: product.amount,
-          })
-
-          if (statusProduct) {
-            availableFoods.push(food)
-          }
-        }
-      }
-    }
-
-    return availableFoods
-  }
-
-  public async DecreaseProductsOfFood(payload: any) {
-    const { food, amount } = payload
-
-    const Food = await this.foods
-      .findById(food)
-      .populate('products.product')
-      .exec()
-
-    if (!Food) throw new HttpException(400, 'not found food')
-
-    const products = Food.products
-
-    for (let i = 0; i < products.length; i++) {
-      const orderFood: any = products[i]
-      await this.productLog.createLog({
-        amount: amount * orderFood.amount,
-        product: orderFood.product['_id'].toString(),
-        type: false,
-        cost: orderFood.product.cost,
-        org: Food.org,
-      })
-    }
-    return 'ok'
-  }
-
-  public async creatNew(foodData: CreateFood) {
-    const { name, org, cost, category, products } = foodData
-
-    const productObjects = []
-
-    for (const { product, amount } of products) {
-      const Product = await this.products.findById(product)
-
-      if (!Product)
-        throw new HttpException(400, `Product with ID ${product} not found`)
-
-      productObjects.push({ product: Product['_id'], amount: amount })
-    }
-
-    const newFood = await this.foods.create({
-      name,
-      cost,
-      org,
-      category,
-      products: productObjects,
-    })
-
-    return newFood
-  }
-
-  public async getByCategory(category: string, org: string) {
-    const foods = await this.foods.find({
-      category: category,
-      org: org,
-    })
-    console.log(foods)
-    return foods
-  }
-
-  public async getById(id: string) {
-    const food = await this.foods.findById(id).exec()
-
-    if (!food) throw new HttpException(400, `${id} id  food not found`)
+    if (!food) throw new HttpException(404, 'Food not found')
 
     return food
   }
 
-  public async updatePic(foodData: any) {
-    const { food, image } = foodData
+  public async foodCreate(payload: FoodCreateDto): Promise<FoodCreateResponse> {
+    await this.validateService.validateDto(payload)
+    if (payload.org) {
+      const org = await this.org.findById(payload.org)
+      if (!org) throw new HttpException(404, 'Org not found')
+    }
 
-    const isExist = await this.foods.findById(food)
-
-    if (!isExist) throw new HttpException(400, 'food not found')
-
-    const urlPattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i
-    if (!urlPattern.test(image))
-      throw new HttpException(400, 'image should be link')
-
-    const updatedFood = await this.foods.findByIdAndUpdate(
-      food,
-      {
-        img: image,
-      },
-      { new: true },
+    await Promise.all(
+      payload.products.map(async (e: any) => {
+        const product = await this.products
+          .findById(e.product)
+          .select('org')
+          .exec()
+        if (!product) {
+          throw new HttpException(404, `${e.product} product not found`)
+        }
+        if (e.amount <= 0) {
+          throw new HttpException(
+            400,
+            `${e.product} product amount not positive`
+          )
+        }
+      })
     )
 
-    if (!updatedFood) throw new HttpException(500, 'something went wrong')
+    const food = await this.foods.create({
+      name: payload.name,
+      cost: payload.cost,
+      org: payload.org,
+      category: payload.category,
+      products: payload.products
+    })
+
+    return food
+  }
+
+  public async foodUpdate(payload: FoodUpdateRequest): Promise<any> {
+    await this.foodRetrieveOne({ id: payload.id })
+    const updateObj: any = {}
+
+    if (payload.img) {
+      updateObj.img = payload.img
+    }
+
+    if (payload.cost) {
+      updateObj.cost = payload.cost
+    }
+
+    if (payload.category) {
+      updateObj.category = payload.category
+    }
+
+    if (payload.name) {
+      updateObj.name = payload.name
+    }
+
+    if ('is_private' in payload) {
+      if (typeof payload.is_private === 'boolean') {
+        updateObj.is_deleted = payload.is_private
+      }
+    }
+
+    const updatedFood: any = await this.foods
+      .findByIdAndUpdate(payload.id, updateObj, { new: true })
+      .select('-createdAt -updatedAt -products')
+      .exec()
+
+    if (!updatedFood) throw new HttpException(404, 'Food not found/')
 
     return {
       _id: updatedFood['_id'],
       name: updatedFood.name,
       cost: updatedFood.cost,
+      img: updatedFood.img,
+      org: updatedFood.org,
       category: updatedFood.category,
+      is_private: updatedFood.is_deleted
     }
   }
 
-  public async changeStatus(payload: any) {
-    const { id, status } = payload
-    const food = await this.foods.findById(id)
+  public async foodProductAdd(payload: any) {
+    const food: any = await this.foodRetrieveOne({ id: payload.id })
+    const product = await this.products.findOne({
+      _id: payload.product,
+      org: food.org['_id']
+    })
+    if (!product) throw new HttpException(404, 'Product not found')
 
-    if (!food) throw new HttpException(400, 'not found food')
-
-    const updatedFood = await this.foods.findByIdAndUpdate(
-      id,
-      { is_deleted: status },
-      { new: true },
+    const productIndex = food.products.findIndex(
+      (p: any) => p.product['_id'] === payload.product
     )
-
-    return {
-      _id: updatedFood ? updatedFood['_id'] : '',
-      name: updatedFood?.name,
-    }
-  }
-
-  public async updateFood(payload: UpdateFoodDto) {
-    const { food, cost, name, category, org, is_deleted, img } = payload
-
-    const updateData = {
-      ...(org !== undefined && { org }),
-      ...(cost !== undefined && { cost }),
-      ...(category !== undefined && { category }),
-      ...(is_deleted !== undefined && { is_deleted }),
-      ...(img !== undefined && { img }),
-      ...(name !== undefined && { name }),
-    }
-
-    if (updateData.org) {
-      const isExist = await this.org.findById(org)
-      if (!isExist) throw new HttpException(400, 'org not found')
-    }
+    if (productIndex !== -1)
+      throw new HttpException(400, 'Product already added')
+    if (payload.amount <= 0)
+      throw new HttpException(400, 'Product amunt should be valid')
 
     const updatedFood = await this.foods
-      .findByIdAndUpdate(food, updateData, { new: true })
+      .findByIdAndUpdate(
+        payload.id,
+        {
+          $push: {
+            products: { product: payload.product, amount: payload.amount }
+          }
+        },
+        { new: true }
+      )
+      .select('-createdAt -updatedAt')
       .exec()
-
-    if (!updatedFood) throw new HttpException(500, 'something went wrong')
-
-    // delete updatedFood.products
 
     return updatedFood
   }
 
-  public async updateProductFood(payload: any) {
-    const { food, products } = payload
+  public async foodProductUpdate(payload: {
+    food: string
+    product: string
+    amount: number
+  }) {
+    await this.foodRetrieveOne({ id: payload.food })
 
-    const Food = await this.foods.findById(food)
+    const updatedLunch = await this.foods.findOneAndUpdate(
+      { _id: payload.food, 'products.product': payload.product },
+      { $set: { 'products.$.amount': payload.amount } },
+      { new: true }
+    )
 
-    if (!Food) throw new HttpException(400, 'food not found')
+    return updatedLunch
+  }
 
-    for (let i = 0; i < products.length; i++) {
-      const productWithAmount = products[i]
+  public async foodProductDelete(payload: {
+    foodId: string
+    productId: string
+  }) {
+    await this.foodRetrieveOne({ id: payload.foodId })
 
-      const Product = await this.products.findById(productWithAmount.product)
-      if (!Product) throw new HttpException(400, 'product not found')
-      if (productWithAmount.amount == 0) {
-      } else if (productWithAmount.amount > 0) {
-      } else {
-        throw new HttpException(400, 'amount is not valid')
-      }
+    const productDeleted = await this.foods.findByIdAndUpdate(payload.foodId, {
+      $pull: { products: { product: payload.productId } }
+    })
+
+    return {
+      _id: productDeleted ? productDeleted['_id'] : payload.productId
     }
   }
 
-  // delete
-  public async deleteProduct(payload: any) {
-    const { food, product } = payload
+  public async foodDelete(
+    payload: FoodDeleteRequest
+  ): Promise<FoodDeleteResponse> {
+    await this.foodRetrieveOne({ id: payload.id })
 
-    const Food = await this.getFoodById(food)
+    const food = await this.foods.findByIdAndDelete(payload.id)
 
-    const isProductInArray = Food.products.some(
-      (item) => item.product == product.id,
-    )
-
-    if (!isProductInArray) throw new HttpException(400, 'product not found')
-
-    const updatedFood = await this.foods.findByIdAndUpdate(
-      food,
-      { $pull: { products: { product: product.id } } },
-      { new: true },
-    )
-    return updatedFood
+    return {
+      _id: food ? food['_id'] : payload.id
+    }
   }
-  // update | add or remove amount
-  // public async updateProduct(payload: any) {
-  //   const { food, product } = payload
-  // }
-  // add  new product with amount
-  // public async addProduct(payload: any) {
-  //   const { food, product } = payload
-  // }
 
-  public async getFoodById(id: string): Promise<IFood> {
-    const Food = await this.foods.findById(id)
-    if (!Food) throw new HttpException(400, 'food not found')
-    return Food
+  public async checkFoodProducts(payload: {
+    food: string
+    amount: number
+  }): Promise<boolean> {
+    const food = await this.foods
+      .findById(payload.food)
+      .select('products')
+      .exec()
+
+    if (!food) return false
+
+    for (const e of food.products) {
+      const isValid = await this.productService.checkProductAmount({
+        product: e.product.toString(),
+        amount: e.amount * payload.amount
+      })
+
+      if (!isValid) return false
+    }
+
+    return true
   }
 }

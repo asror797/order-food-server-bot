@@ -1,135 +1,99 @@
-import { foodModel } from '@models'
 import redisService from './redis.service'
-
-interface Food {
-  name: string
-  cost: number
-}
-
-interface FoodWithAmount {
-  id: string
-  food: Food
-  amount: number
-}
-
-interface GetStoreByOrg {
-  chatId: number
-  org: string
-}
-
-interface SaveToStoreByOrg {
-  org: string
-  food: string
-  amount: number
-  chatId: number
-}
+import { foodModel } from '@models'
+import {
+  FoodWithAmountStore,
+  SaveToStoreByOrg,
+  GetStoreByOrg
+} from '@interfaces'
 
 export class StoreService {
   private redisService = redisService
   private foods = foodModel
 
-  public async getStore(id: string) {
+  public async editStep(payload: { telegramId: number; step: string }) {
     try {
-      const store = await this.redisService.getValue(id)
-      if (store == null) {
-        return []
-      } else {
-        return JSON.parse(store)
-      }
+      await this.redisService.setValue(
+        `${payload.telegramId}/steps`,
+        payload.step
+      )
     } catch (error) {
       console.log(error)
     }
   }
 
-  public async getStoreByOrg(payload:GetStoreByOrg) {
+  public async getStep(payload: { telegramId: number }) {
     try {
-      const store = await this.redisService.getValue(`${payload.chatId}/${payload.org}`)
-      console.log(`${payload.chatId}/${payload.org}`)
-      if(store == null) {
-        return []
-      } else {
-        return JSON.parse(store)
-      }
+      const step = await this.redisService.getValue(
+        `${payload.telegramId}/steps`
+      )
+
+      return step
     } catch (error) {
       console.log(error)
     }
   }
 
-  public async saveToStoreByOrg(payload:SaveToStoreByOrg) {
+  public async getStoreByOrg(
+    payload: GetStoreByOrg
+  ): Promise<FoodWithAmountStore[]> {
     try {
-      const Food = await this.foods.findById(payload.food)
-      if(!Food) throw new Error('not found food')
-      const store: any = await this.getStoreByOrg({ chatId: payload.chatId,org: payload.org })
-      console.log(`${payload.chatId}/${payload.org}`,payload.org)
-      console.log(payload,'payload')
-      const stored = await this.redisService.setValue(`${payload.chatId}/${payload.org}`,JSON.stringify([
-        ...store,
-        {
-          food: {
-            id: payload.food,
-            food: Food.name,
-            cost: Food.cost
-          },
-          amount: payload.amount
-        }
-      ]))
+      const store = await this.redisService.getValue(
+        `${payload.chatId}/${payload.org}`
+      )
+      if (store == null) return []
 
-      return stored
+      return JSON.parse(store)
     } catch (error) {
       console.log(error)
+      throw error
     }
   }
 
-  public async saveToStore(id: string, food: string, amount: string) {
+  public async saveToStoreByOrg(payload: SaveToStoreByOrg) {
     try {
-      const Food = await this.foods.findById(food)
-      if (!Food) throw new Error('not found food')
-      const store: FoodWithAmount[] = await this.getStore(id)
+      console.log(payload)
+      const Food = await this.foods
+        .findById(payload.food)
+        .select('name cost org')
+        .exec()
+
+      if (!Food || !Food.org) throw new Error('Food not found')
+      if (!payload.chatId) throw new Error('Chat not found')
+
+      const store: any = await this.getStoreByOrg({
+        chatId: payload.chatId,
+        org: Food.org.toString()
+      })
+
       const stored = await this.redisService.setValue(
-        id,
+        `${payload.chatId}/${Food.org.toString()}`,
         JSON.stringify([
           ...store,
           {
             food: {
-              id: Food['_id'],
+              id: Food['_id'].toString(),
               food: Food.name,
-              cost: Food.cost,
+              cost: Food.cost
             },
-            amount: amount,
-          },
-        ]),
+            amount: payload.amount
+          }
+        ])
       )
-
-      console.log(stored)
 
       return stored
     } catch (error) {
-      console.log(error)
       throw error
     }
   }
 
-
-  public async clearStoreByOrg(payload:{ chat: number, org: string}) {
-    try {
-      const response = await this.redisService.setValue(`${payload.chat}/${payload.org}`,JSON.stringify([]))
-      return response
-    } catch (error) {
-      throw error
-    }
-  }
-
-  public async clear(id: number) {
+  public async clearStoreByOrg(payload: { chat: number; org: string }) {
     try {
       const response = await this.redisService.setValue(
-        `${id}`,
-        JSON.stringify([]),
+        `${payload.chat}/${payload.org}`,
+        JSON.stringify([])
       )
-      console.log(response)
-
       return response
     } catch (error) {
-      console.log(error)
       throw error
     }
   }

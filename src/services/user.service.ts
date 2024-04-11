@@ -1,220 +1,254 @@
 import { userModel, orgModel } from '@models'
 import { formatPhoneNumber } from '@utils'
 import { HttpException } from '@exceptions'
-import { botService } from '@bot'
+import { CreateUserDto, EditUserDto, SendMessae } from '../dtos/user.dto'
 import {
-  ChangeOrg,
-  ChangeStatus,
-  CreateUserDto,
-  EditUserDto,
-  SearchPagination,
-  SendMessae,
-  UpdateUserDto,
-} from '../dtos/user.dto'
-import { IUser, UserRole } from '../interfaces/user.interface'
+  UserRegisterPayload,
+  UserCheckResponse,
+  UserRetrieveAllRequest,
+  ActiveUserList
+} from '@interfaces'
+import { PaymentService } from '@services'
 
 export class UserService {
   private users = userModel
   private orgs = orgModel
-
-  public async isExist(telegramID: number):Promise<any> {
-    const user = await this.users
-      .findOne({
-        telegram_id: telegramID,
-      })
-      .populate('org', 'name_org group_a_id group_b_id')
-
-    if (user) {
-      return {
-        data: user,
-        message: 'user exist',
-      }
-    } else {
-      return {
-        data: null,
-        message: 'user not found',
-      }
-    }
-  }
+  private paymentLogService = new PaymentService()
 
   public async registirNewUser(userData: CreateUserDto) {
     const phone_number = formatPhoneNumber(userData.phone_number)
     const newUser = await this.users.create({
       ...userData,
-      phone_number,
+      phone_number
     })
     return newUser
   }
 
-  public async userRetrieveAll(payload: SearchPagination) {
-    const { search, page, size } = payload
-    if (!search || search.trim() === '') {
-      const users = await this.users
-        .find()
-        .sort({ createdAt: -1 })
-        .populate('org', 'name_org')
-        .skip((page - 1) * size)
-        .limit(size)
-        .exec()
+  public async checkUser(payload: {
+    telegramId: number
+  }): Promise<UserCheckResponse> {
+    const user = await this.users
+      .findOne({
+        telegram_id: payload.telegramId
+      })
+      .populate('org', 'name_org group_a_id group_b_id')
+      .select('-createdAt -updatedAt')
+      .exec()
 
-      const totalUsers = await this.users.countDocuments().exec()
-      const totalPages = Math.ceil(totalUsers / size)
-      return {
-        data: users,
-        currentPage: page,
-        totalPages,
-        totalUsers,
-        usersOnPage: users.length,
-      }
+    return {
+      isExist: !!user,
+      user: user
+    }
+  }
+
+  public async checkBalance(payload: {
+    user: string
+    amount: number
+  }): Promise<boolean> {
+    const user = await this.userRetrieveOne({ id: payload.user })
+
+    if (user.balance >= payload.amount) {
+      return true
     }
 
-    const re = new RegExp(search, 'i')
-    const skip = (page - 1) * size
+    return false
+  }
 
+  public async retrieveActiveUsers(): Promise<ActiveUserList[]> {
     const users = await this.users
       .find({
-        $or: [
-          { phone_number: { $regex: re } },
-          { first_name: { $regex: re } },
-          { last_name: { $regex: re } },
-        ],
+        is_active: true,
+        is_verified: true,
+        role: 'user'
       })
-      .populate('org', 'name_org')
-      .skip(skip)
-      .limit(size)
+      .select('telegram_id')
       .exec()
 
-    const totalUsers = await this.users.countDocuments().exec()
-    const totalPages = Math.ceil(totalUsers / size)
-    return {
-      data: users,
-      currentPage: page,
-      totalPages,
-      totalUsers,
-      usersOnPage: users.length,
-    }
+    return users
   }
 
-  public async getUsers(page: number, size: number) {
-    const skip = (page - 1) * size
-
-    const users = await this.users
-      .find()
-      .select('-updatedAt')
-      .skip(skip)
-      .limit(size)
-      .populate('org', 'name_org')
-      .exec()
-    const totalUsers = await this.users.countDocuments().exec()
-    const totalPages = Math.ceil(totalUsers / size)
-    return {
-      data: users,
-      currentPage: page,
-      totalPages,
-      totalUsers,
-      usersOnPage: users.length,
-    }
-  }
-
-  public async userRetrieveOne(payload: {telegramId: number} ) {
-    const user = await this.users.findOne({ telegram_id: payload.telegramId }).populate('org',' group_a_id').exec()
-
-    return user
-  }
-
-  public async getBalance(telegramID: number): Promise<IUser | null> {
-    const user = await this.users.findOne({
-      telegram_id: telegramID,
+  public async registerUser(payload: UserRegisterPayload): Promise<any> {
+    const user = await this.users.create({
+      telegram_id: payload.telegramId,
+      first_name: payload.firstName,
+      last_name: payload.lastName,
+      phone_number: payload.phoneNumber
     })
+
     return user
   }
 
-  public async updateUser(userData: UpdateUserDto) {
-    const { _id, is_active, type } = userData
+  public async userRetrieveAll(payload: UserRetrieveAllRequest): Promise<any> {
+    const query: any = {}
+    if (payload.org) {
+      const org = await this.orgs
+        .findById(payload.org)
+        .select('name_org')
+        .exec()
+      if (!org) throw new HttpException(404, 'Org not found')
+      query.org = payload.org
+    }
 
-    if (type == 'verify') {
-      const updatedUser = await this.users.findByIdAndUpdate(
-        userData['_id'],
-        { is_verified: true, is_active: true },
-        { new: true },
+    if (payload.search) {
+      query.$or = [
+        { first_name: { $regex: new RegExp(payload.search, 'i') } },
+        { last_name: { $regex: new RegExp(payload.search, 'i') } },
+        { phone_number: { $regex: new RegExp(payload.search, 'i') } }
+      ]
+    }
+
+    console.log(query)
+
+    const userList = await this.users
+      .find(query)
+      .skip((payload.pageNumber - 1) * payload.pageSize)
+      .limit(payload.pageSize)
+      .sort({ createdAt: -1 })
+      .populate('org', 'name_org')
+      .select(
+        'first_name last_name role balance phone_number org is_active is_verified'
       )
+      .exec()
 
-      return updatedUser
-    } else if (type == 'status') {
-      if (is_active == true) {
-        const updateUser = await this.users.findByIdAndUpdate(
-          _id,
-          { is_active: true },
-          { new: true },
-        )
-        return updateUser
-      } else if (is_active == false) {
-        const updateUser = await this.users.findByIdAndUpdate(
-          _id,
-          { is_active: false },
-          { new: true },
-        )
-        return updateUser
-      } else {
-        return {
-          message: 'ok',
-          status: 200,
-        }
-      }
+    const count = await this.users.countDocuments(query)
+
+    return {
+      count: count,
+      pageSize: payload.pageSize,
+      pageNumber: payload.pageNumber,
+      pageCount: Math.ceil(count / payload.pageSize),
+      userList: userList.map((e) => ({
+        _id: e['_id'],
+        first_name: e.first_name,
+        last_name: e.last_name,
+        phone_number: e.phone_number,
+        role: e.role,
+        org: e.org?.name_org || null,
+        balance: e.balance,
+        is_verified: e.is_verified,
+        is_active: e.is_active
+      }))
     }
   }
 
-  public async editUser(payload: EditUserDto) {
-    const { id, first_name, last_name, org, role } = payload
-    const User = await this.users.findById(id)
+  public async userRetrieveOne(payload: { id: string }) {
+    const user = await this.users
+      .findById(payload.id)
+      .populate('org', 'name_org')
+      .select(
+        'first_name last_name role pone_number balance is_active is_verified'
+      )
+      .exec()
+
+    if (!user) throw new HttpException(404, 'user not found')
+
+    return user
+  }
+
+  public async userUpdate(payload: EditUserDto) {
+    const User = await this.users.findById(payload.id)
     if (!User) throw new HttpException(400, 'user not found')
     const updateData: {
       org?: string
       first_name?: string
       last_name?: string
       role?: string
+      is_verified?: boolean
+      is_active?: boolean
     } = {}
 
-    if (org) {
-      const Org = await this.orgs.findById(org)
+    if (payload.org) {
+      const Org = await this.orgs.findById(payload.org)
       if (!Org) throw new HttpException(400, 'org not found')
       updateData.org = payload.org
     }
 
-    if (first_name) {
-      updateData.first_name = first_name
+    if (payload.first_name) {
+      updateData.first_name = payload.first_name
     }
 
-    if (last_name) {
-      updateData.last_name = last_name
+    if (payload.last_name) {
+      updateData.last_name = payload.last_name
     }
 
-    if(role && (role == 'user' || 'cook')) {
+    if (payload.role && (payload.role == 'user' || 'cook')) {
       updateData.role = payload.role
     }
 
-    const updateduser = await this.users.findByIdAndUpdate(id, updateData, {
-      new: true,
-    })
+    if (payload.is_verified != null) {
+      updateData.is_verified = payload.is_verified
+    }
+
+    if (payload.is_active != null) {
+      updateData.is_active = payload.is_active
+    }
+
+    const updateduser = await this.users
+      .findByIdAndUpdate(payload.id, updateData, {
+        new: true
+      })
+      .select('-createdAt -updatedAt -language_code')
+      .exec()
 
     return updateduser
   }
 
+  public async userUpdateBalance(payload: {
+    type: boolean
+    amount: number
+    user: string
+  }) {
+    const user = await this.userRetrieveOne({ id: payload.user })
+    if (payload.amount < 0)
+      throw new HttpException(400, 'Amount should be positive')
+
+    if (payload.type === true) {
+      const depositeUser = await this.users
+        .findByIdAndUpdate(
+          payload.user,
+          {
+            balance: user.balance + payload.amount
+          },
+          { new: true }
+        )
+        .select('phone_number balance')
+        .exec()
+
+      return depositeUser
+    }
+
+    if (payload.type == false && user.balance > payload.amount) {
+      const withdrawUser = await this.users
+        .findByIdAndUpdate(
+          payload.user,
+          {
+            balance: user.balance - payload.amount
+          },
+          { new: true }
+        )
+        .select('phone_number balance')
+        .exec()
+
+      return withdrawUser
+    }
+  }
+
   public async sendMessageToUsers(msgData: SendMessae) {
-    const { org, message } = msgData
+    const { org } = msgData
 
     if (org == 'all' || org == null) {
       const users = await this.users.find({
         is_active: true,
-        is_verified: true,
+        is_verified: true
       })
       users.map((e) => {
-        botService.sendText(e.telegram_id, message)
+        console.log(e)
+        // botService.sendText(e.telegram_id, message)
       })
 
       return {
         message: 'sent',
-        status: 200,
+        status: 200
       }
     } else {
       const Org = await this.orgs.findById(org)
@@ -222,145 +256,24 @@ export class UserService {
       const users = await this.users.find({
         is_active: true,
         is_verified: true,
-        org: org,
+        org: org
       })
       users.map((e) => {
-        botService.sendText(e.telegram_id, message)
+        // botService.sendText(e.telegram_id, message)
       })
       return {
         message: 'ok',
-        status: 'ok',
+        status: 'ok'
       }
     }
   }
 
-  public async changeStatus(userData: ChangeStatus) {
-    const { user, type } = userData
-    const isExist = await this.users.findById(user)
+  public async userDelete(payload: { id: string }) {
+    await this.userRetrieveOne({ id: payload.id })
+    const deletedUser = await this.users.findByIdAndDelete(payload.id)
 
-    if (!isExist) throw new HttpException(400, 'user not exist')
-    if (type == 'verify') {
-      return await this.users.findOneAndUpdate(
-        {
-          _id: user,
-        },
-        {
-          is_active: true,
-          is_verified: true,
-        },
-      )
-    } else {
-      return {}
+    return {
+      _id: deletedUser ? deletedUser['_id'] : payload.id
     }
-  }
-
-  public async ChangeOrg(userData: ChangeOrg) {
-    const { user, org } = userData
-
-    const Org = await this.orgs.findById(org)
-    const User = await this.users.findById(user)
-
-    if (!User) throw new HttpException(400, 'user not found')
-
-    if (!Org) throw new HttpException(400, 'org not found')
-
-    const updatedUser = await this.users.findByIdAndUpdate(
-      user,
-      {
-        org: org,
-      },
-      { new: true },
-    )
-
-    return updatedUser
-  }
-
-  public async transitPayment(userData: any) {
-    const { type, amount, user } = userData
-
-    const User = await this.users.findById(user)
-
-    if (!User) throw new HttpException(400, 'user not found')
-
-    if (type == 'increase') {
-      const updateduser = await this.users.findByIdAndUpdate(
-        user,
-        {
-          balance: User.balance + Number(amount),
-        },
-        { new: true },
-      )
-      return updateduser
-    } else if (type == 'decrease') {
-      if (User.balance < amount) throw new HttpException(200, 'you cant')
-      const updateduser = await this.users.findByIdAndUpdate(
-        user,
-        {
-          balance: User.balance - Number(amount),
-        },
-        { new: true },
-      )
-      return updateduser
-    } else {
-      return {
-        message: 'something is missing',
-        status: 200,
-      }
-    }
-  }
-
-  public async transaction(userData: any) {
-    const { telegram_id, type, amount } = userData
-    const user = await this.users.findOne({
-      telegram_id: telegram_id,
-    })
-    if (!user) throw new Error('user not found')
-    if (user.balance < amount && type == false) throw new Error('')
-    if (type == true) {
-    } else if (type == false) {
-    }
-  }
-
-  public async searchUser(data: string) {
-    const re = new RegExp(data, 'i')
-    console.log(re, data)
-    if (data === undefined && data === '')
-      throw new HttpException(200, 'search word is empty')
-
-    const users = await this.users
-      .find({
-        $or: [
-          { phone_number: { $regex: re } },
-          { first_name: { $regex: re } },
-          { last_name: { $regex: re } },
-        ],
-      })
-      .populate('org', 'name_org')
-      .limit(5)
-      .exec()
-    return users
-  }
-
-  public async getTelegramIDOfClients(org: string) {
-    const clients = await this.users
-      .find({
-        is_active: true,
-        is_verified: true,
-        role: 'user',
-      })
-      .select('telegram_id roles').populate('org','name_org')
-      .exec()
-
-
-      const clientsWithOrg = clients.filter(client => client.org !== null)
-
-    return clientsWithOrg
-  }
-
-  public async revenueOfUser(payload: any) {
-    const { user } = payload
-    const User = await this.users.findById(user)
-
-    if (!User) throw new HttpException(200, 'user not found')
   }
 }

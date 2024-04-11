@@ -10,27 +10,29 @@ import {
   OrgRoute,
   PaymentRoute,
   ProductLogRoute,
-  SettingsRoute,
-  TripRoute,
   ProductRoute,
   RoleRoute,
+  MealPollRoute,
+  PollVoteRoute,
+  AnaliticsRoute
 } from '@routes'
 
 const app = new App([
   new UserRoute(),
   new AuthRoute(),
+  new AnaliticsRoute(),
   new OrgRoute(),
   new FoodRoute(),
-  new SettingsRoute(),
   new ProductRoute(),
   new OrderRoute(),
   new LunchRoute(),
   new AdminRoute(),
-  new TripRoute(),
   new ProductLogRoute(),
   new PaymentRoute(),
   new LunchBaseRoute(),
   new RoleRoute(),
+  new MealPollRoute(),
+  new PollVoteRoute()
 ])
 
 app.listen()

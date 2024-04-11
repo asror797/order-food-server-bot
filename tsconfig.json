@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2017",                                  
+    "target": "ES2018",                                  
     "esModuleInterop": true,    
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -13,20 +13,25 @@
     "skipLibCheck": true,
     "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
+    "baseUrl": "src",
+    "rootDir": "src",
+    "outDir": "dist",
     "paths": {
       "@services": ["./services"],
       "@bot": ["./bot"],
+      "@dtos": ["./dtos"],
       "@config": ["./config"],
+      "@constants": ["./constants"],
+      "@controllers": ["./controllers"],
+      "@interfaces": ["./interfaces"],
       "@models": ["./models"],
+      "@middlewares": ["./middlewares"],
       "@utils": ["./utils"],
       "@exceptions": ["./exceptions"],
       "@routes": ["./routes"],
       "@database": ["./database"]
-    },
-    "baseUrl": "src",
-    "rootDir": "src",
-    "outDir": "dist",
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"],
 }

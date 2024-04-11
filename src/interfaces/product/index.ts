@@ -1,0 +1,6 @@
+export * from './product-retrieve-all.interface'
+export * from './product-retrieve-one.interface'
+export * from './product-create.interface'
+export * from './product-update.interface'
+export * from './product-delete.interface'
+export * from './product.schema.interface'

@@ -1,20 +1,20 @@
 import { Schema, model } from 'mongoose'
-import { IAdmin } from '../interfaces/admin.interface'
+import { IAdmin } from '@interfaces'
 
 const adminSchema: Schema = new Schema(
   {
     fullname: {
       type: String,
-      required: true,
+      required: true
     },
     password: {
       type: String,
-      required: true,
+      required: true
     },
     org: {
       type: Schema.Types.ObjectId,
       ref: 'Org',
-      required: true,
+      required: true
     },
     role: {
       type: Schema.Types.ObjectId,
@@ -22,13 +22,13 @@ const adminSchema: Schema = new Schema(
       required: true
     },
     phone_number: {
-      type: String,
-    },
+      type: String
+    }
   },
   {
     timestamps: true,
-    versionKey: false,
-  },
+    versionKey: false
+  }
 )
 
 export const adminModel = model<IAdmin & Document>('Admin', adminSchema)

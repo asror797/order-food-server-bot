@@ -1,113 +1,128 @@
 import { NextFunction, Request, Response } from 'express'
 import { FoodService } from '@services'
 import { ParsedQs } from 'qs'
-import { CreateFood, UpdateFoodDto } from '../dtos/food.dto'
-import { HttpException } from '@exceptions'
 
-class FoodController {
+export class FoodController {
   public foodService = new FoodService()
 
-  public getFoods = async (
+  public foodRetrieveAll = async (
     req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
-      const page = parseInt(req.query.page as string) || 1
-      const size = parseInt(req.query.size as string) || 10
-      const search = req.query.search as string
+      const pageNumber = parseInt(req.query.page as string) || 1
+      const pageSize = parseInt(req.query.size as string) || 10
+      const search = req.query.search as string | undefined
+      const category = req.query.org as string | undefined
+      const org = req.query.org as string | undefined
 
-      const foods = await this.foodService.getFoods({
-        page,
-        size,
-        search,
-      })
-      res.json(foods)
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  public createFood = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const foodData: CreateFood = req.body
-      res.json(await this.foodService.creatNew(foodData))
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  public updateFoodPic = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const foodData = req.body
-      res.json(await this.foodService.updatePic(foodData))
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  public changeStatus = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const status = req.body.status
-      const id = req.params.food as string
-      if (!id) throw new HttpException(400, 'food on params and is required')
       res.json(
-        await this.foodService.changeStatus({
-          id,
-          status,
-        }),
+        await this.foodService.foodRetrieveAll({
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          category: category,
+          org: org,
+          search: search,
+          isDashboard: true
+        })
       )
     } catch (error) {
       next(error)
     }
   }
 
-  public updateFood = async (
+  public foodRetrieveOne = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
-      const food = req.params.food as string
-      if (!food) throw new HttpException(400, 'id required')
-      const data: Omit<UpdateFoodDto, 'food'> = req.body
+      const foodId = req.params.id as string
+      res.json(await this.foodService.foodRetrieveOne({ id: foodId }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public foodCreate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      res.json(await this.foodService.foodCreate(req.body))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public foodUpdate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const foodId = req.params.id
+      res.json(await this.foodService.foodUpdate({ ...req.body, id: foodId }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public foodProductAdd = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const food = req.params.id
+      res.json(await this.foodService.foodProductAdd({ id: food, ...req.body }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public foodProductUpdate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const food = req.params.id
       res.json(
-        await this.foodService.updateFood({
-          food,
-          ...data,
-        }),
+        await this.foodService.foodProductUpdate({ food: food, ...req.body })
       )
     } catch (error) {
       next(error)
     }
   }
 
-  public deleteProduct = async (
+  public foodProductDelete = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
-      const food = req.params.food as string
-      const payload = req.body
+      const foodId = req.params.food as string
+      const productId = req.params.product as string
 
-      res.json(await this.foodService.deleteProduct({ food, ...payload }))
+      res.json(await this.foodService.foodProductDelete({ foodId, productId }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  public foodDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const foodId = req.params.id as string
+      res.json(await this.foodService.foodDelete({ id: foodId }))
     } catch (error) {
       next(error)
     }
   }
 }
-
-export default FoodController

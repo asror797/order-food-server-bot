@@ -1,15 +1,14 @@
 import express from 'express'
 import cors from 'cors'
-import errorMiddleware from './middlewares/error.middleware'
-import { Routes } from './interfaces/route.interface'
-import { connect } from 'mongoose'
+import { PORT } from '@config'
+import { botInstance } from '@bot'
+import { Routes } from '@interfaces'
 import { dbConnection } from '@database'
-import { botService } from '@bot'
 import { autoCancelOrder } from '@utils'
+import { errorMiddleware } from '@middlewares'
+import { connect } from 'mongoose'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
-import { PORT } from '@config'
-import authMiddleware from './middlewares/auth.middleware'
 
 class App {
   public app: express.Application
@@ -17,10 +16,9 @@ class App {
   public bot: any
 
   constructor(routes: Routes[]) {
-    console.log(PORT)
     this.app = express()
-    this.port = 9070 || PORT
-    this.bot = botService
+    this.port = 3030
+    this.bot = botInstance
 
     this.connectToDatabase()
     this.initializeMiddlewares()
@@ -63,8 +61,8 @@ class App {
     this.app.use(errorMiddleware)
   }
 
-  private initializeBot() {
-    botService.initialize()
+  private async initializeBot() {
+    await this.bot.initializeBot()
   }
 
   private initializeSwagger() {
@@ -73,10 +71,10 @@ class App {
         info: {
           title: 'REST API',
           version: '1.0.0',
-          description: 'Woodline Kitchen Bot REST Api',
-        },
+          description: 'Woodline Kitchen Bot REST Api'
+        }
       },
-      apis: ['swagger.yaml'],
+      apis: ['swagger.yaml']
     }
 
     const specs = swaggerJSDoc(options)
@@ -84,7 +82,7 @@ class App {
   }
 
   private async autoCancel() {
-    setInterval(autoCancelOrder,20 * 60 * 1000)
+    setInterval(autoCancelOrder, 20 * 60 * 1000)
   }
 }
 

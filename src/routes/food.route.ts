@@ -1,5 +1,7 @@
 import { Router } from 'express'
-import FoodController from '../controllers/food.controller'
+import { FoodController } from '@controllers'
+import { checkPermission } from '@middlewares'
+import { FoodPermissions } from '@constants'
 
 export class FoodRoute {
   public path = '/food'
@@ -11,13 +13,52 @@ export class FoodRoute {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}`, this.foodController.getFoods)
-    this.router.post(`${this.path}`, this.foodController.createFood)
-    this.router.patch(`${this.path}`, this.foodController.updateFoodPic)
-    this.router.patch(
-      `${this.path}/update/:food`,
-      this.foodController.updateFood,
+    this.router.get(
+      `${this.path}`,
+      checkPermission(FoodPermissions.FOOD_RETRIEVE_ALL),
+      this.foodController.foodRetrieveAll
     )
-    this.router.patch(`${this.path}/:food`, this.foodController.changeStatus)
+
+    this.router.get(
+      `${this.path}/:id`,
+      checkPermission(FoodPermissions.FOOD_RETRIEVE_ONE),
+      this.foodController.foodRetrieveOne
+    )
+
+    this.router.post(
+      `${this.path}`,
+      checkPermission(FoodPermissions.FOOD_CREATE),
+      this.foodController.foodCreate
+    )
+
+    this.router.patch(
+      `${this.path}/:id`,
+      checkPermission(FoodPermissions.FOOD_UPDATE),
+      this.foodController.foodUpdate
+    )
+
+    this.router.post(
+      `${this.path}/products/:id`,
+      checkPermission(FoodPermissions.FOOD_UPDATE),
+      this.foodController.foodProductAdd
+    )
+
+    this.router.patch(
+      `${this.path}/products/:id`,
+      checkPermission(FoodPermissions.FOOD_UPDATE),
+      this.foodController.foodProductUpdate
+    )
+
+    this.router.delete(
+      `${this.path}/products/:food/:product`,
+      checkPermission(FoodPermissions.FOOD_UPDATE),
+      this.foodController.foodProductDelete
+    )
+
+    this.router.delete(
+      `${this.path}/:id`,
+      checkPermission(FoodPermissions.FOOD_DELETE),
+      this.foodController.foodDelete
+    )
   }
 }

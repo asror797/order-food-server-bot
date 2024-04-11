@@ -1,100 +1,94 @@
 import { NextFunction, Request, Response } from 'express'
-import AdminService from '../services/admin.service'
-import { HttpException } from '@exceptions'
+import { AdminService } from '@services'
+import { ParsedQs } from 'qs'
+// import { HttpException } from '@exceptions'
 
-class AdminController {
+export class AdminController {
   public adminService = new AdminService()
 
-  public getAdmins = async (
-    req: Request,
+  public adminRetrieveAll = async (
+    req: Request<ParsedQs>,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     try {
-      res.json(await this.adminService.getAdmins())
-    } catch (error) {
-      next(error)
-    }
-  }
+      const pageNumber = parseInt(req.query.page as string) || 1
+      const pageSize = parseInt(req.query.size as string) || 10
+      const search = req.query.search as string
 
-  public createAdmin = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      // const adminData = req.body
-      const newAdmin = await this.adminService.createAdmin(req.body)
-      res.json(newAdmin)
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  public create = async(req:Request,res:Response,next:NextFunction) => {
-    try {
-      const newAdmin = await this.adminService.create(req.body)
-      res.json(newAdmin)
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  public loginAdmin = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      res.json(await this.adminService.loginAdmin(req.body))
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  public updateAdmin = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const admin = req.params.admin as string
-      if (!admin) throw new HttpException(400, 'admin is required')
-      const { newPassword, password, fullname } = req.body
       res.json(
-        await this.adminService.updateAdmin({
-          admin: admin,
-          fullname,
-          password,
-          newPassword,
-        }),
+        await this.adminService.adminRetrieveAll({
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          search: search
+        })
       )
     } catch (error) {
+      console.log(error)
       next(error)
     }
   }
 
-
-  public updateAdminRole = async(req:Request,res:Response,next:NextFunction) => {
+  public adminRetrieveOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      const { role } = req.body
       const id = req.params.id as string
 
-      res.json(await this.adminService.updateAdminRole({id, role}))
+      res.json(await this.adminService.adminRetrieveOne({ id }))
     } catch (error) {
-      next(error)      
+      console.log(error)
+      next(error)
     }
   }
 
-  public deleteAdmin = async(req:Request,res:Response,next:NextFunction) => {
+  public adminCreate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
-      const admin_id = req.params.id 
-
-      res.json(await this.adminService.deleteAdmin({ id: admin_id }))
+      res.json(await this.adminService.adminCreate(req.body))
     } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
+  public adminUpdate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const id = req.params.id as string
+
+      res.json(
+        await this.adminService.adminUpdate({
+          id,
+          ...req.body
+        })
+      )
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
+  public adminDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const id = req.params.id as string
+
+      res.json(await this.adminService.adminDelete({ id }))
+    } catch (error) {
+      console.log(error)
       next(error)
     }
   }
 }
-
-export default AdminController

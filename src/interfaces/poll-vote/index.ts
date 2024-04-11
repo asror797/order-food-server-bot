@@ -1,0 +1,6 @@
+export * from './poll-vote-retrieve-all.interface'
+export * from './poll-vote-retrieve-one.interface'
+export * from './poll-vote-create.interface'
+export * from './poll-vote-update.interface'
+export * from './poll-vote-delete.interface'
+export * from './poll-vote.schema.interface'

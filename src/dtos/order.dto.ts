@@ -1,44 +1,45 @@
-import { Type } from 'class-transformer'
-import {
-  IsArray,
-  IsBoolean,
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsPositive,
-  IsString,
-  ValidateNested,
-} from 'class-validator'
+// import { Type } from 'class-transformer'
+// import {
+//   IsArray,
+//   IsBoolean,
+//   IsEnum,
+//   IsInt,
+//   IsNotEmpty,
+//   IsNumber,
+//   IsPositive,
+//   IsString,
+//   ValidateNested
+// } from 'class-validator'
 
-export class GetOrderDto {
-  @IsNumber()
-  page: number
-  @IsNumber()
-  size: number
-}
+import { IsBoolean, IsString } from 'class-validator'
 
-class FoodWithAmount {
-  @IsString()
-  food: string
+// export class GetOrderDto {
+//   @IsNumber()
+//   page: number
+//   @IsNumber()
+//   size: number
+// }
 
-  @IsNumber()
-  amount: number
-}
+// class FoodWithAmount {
+//   @IsString()
+//   food: string
 
-export class CreateOrderDto {
-  @IsString()
-  client: string
+//   @IsNumber()
+//   amount: number
+// }
 
-  @IsString()
-  org: string
+// export class CreateOrderDto {
+//   @IsString()
+//   client: string
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => FoodWithAmount)
-  foods: FoodWithAmount[]
-}
+//   @IsString()
+//   org: string
+
+//   @IsArray()
+//   @ValidateNested({ each: true })
+//   @Type(() => FoodWithAmount)
+//   foods: FoodWithAmount[]
+// }
 
 export class UpdateOrder {
   @IsString()
@@ -48,33 +49,33 @@ export class UpdateOrder {
   type: boolean
 }
 
-export class OrderRetrieveByUserDto {
-  @IsString()
-  @IsNotEmpty()
-  id: string
+// export class OrderRetrieveByUserDto {
+//   @IsString()
+//   @IsNotEmpty()
+//   id: string
 
-  @IsInt()
-  @IsPositive()
-  page: number
+//   @IsInt()
+//   @IsPositive()
+//   page: number
 
-  @IsInt()
-  @IsPositive()
-  size: number
-}
+//   @IsInt()
+//   @IsPositive()
+//   size: number
+// }
 
-enum TypeDate {
-  day = 'day',
-  week = 'week',
-  month = 'month',
-  year = 'year',
-}
+// enum TypeDate {
+//   day = 'day',
+//   week = 'week',
+//   month = 'month',
+//   year = 'year'
+// }
 
-export class OrderRetrieveAllDto {
-  @IsString()
-  @IsNotEmpty()
-  user: string
+// export class OrderRetrieveAllDto {
+//   @IsString()
+//   @IsNotEmpty()
+//   user: string
 
-  @IsEnum(TypeDate)
-  @IsNotEmpty()
-  type: string
-}
+//   @IsEnum(TypeDate)
+//   @IsNotEmpty()
+//   type: string
+// }

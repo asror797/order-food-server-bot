@@ -1,38 +1,38 @@
 import { Document, Schema, model } from 'mongoose'
-import { IProductLog } from '../interfaces/productlog.interface'
+import { IProductLog } from '@interfaces'
 
 const productLog: Schema = new Schema(
   {
     product: {
       type: Schema.Types.ObjectId,
       ref: 'Product',
-      required: true,
+      required: true
     },
     org: {
       type: Schema.Types.ObjectId,
       ref: 'Org',
-      required: true,
+      required: true
     },
     amount: {
       type: Number,
-      required: true,
+      required: true
     },
     cost: {
       type: Number,
-      required: true,
+      required: true
     },
     type: {
       type: Boolean,
-      required: true,
-    },
+      required: true
+    }
   },
   {
     versionKey: false,
-    timestamps: true,
-  },
+    timestamps: true
+  }
 )
 
 export const productLogModel = model<IProductLog & Document>(
   'ProductLog',
-  productLog,
+  productLog
 )
