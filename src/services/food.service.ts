@@ -77,16 +77,23 @@ export class FoodService {
       pageSize: payload.pageSize,
       pageNumber: payload.pageNumber,
       pageCount: Math.ceil(count / payload.pageSize),
-      foodList: payload.isDashboard ? foodList : validFoodList.map((e: any) => ({
-        _id: e['_id'],
-        name: e.name,
-        cost: e.cost,
-        img: e.img,
-        org: e.org?.name_org || null,
-        category: e.category,
-        products: e.products ? e.products.length : 0,
-        is_private: e.is_deleted
-      }))
+      foodList: payload.isDashboard
+        ? foodList.map((e: any) => ({
+            _id: e['_id'],
+            name: e.name,
+            cost: e.cost,
+            img: e.img,
+            org: e.org?.name_org || null,
+            category: e.category,
+            products: e.products.length,
+            is_private: e.is_deleted
+          }))
+        : validFoodList.map((e: any) => ({
+            _id: e['_id'],
+            name: e.name,
+            cost: e.cost,
+            img: e.img,
+          }))
     }
   }
 

@@ -45,7 +45,7 @@ export class OrderService {
 
   public async orderRetrieveAll(
     payload: OrderRetrieveAllRequest
-  ): Promise<OrderRetrieveAllResponse> {
+  ): Promise<any> {
     const orderList = await this.orders
       .find()
       .skip((payload.pageNumber - 1) * payload.pageSize)
@@ -59,7 +59,7 @@ export class OrderService {
       pageCount: Math.ceil(orderCount / payload.pageSize),
       pageNumber: payload.pageNumber,
       pageSize: payload.pageSize,
-      orderList: []
+      orderList: orderList
     }
   }
 
@@ -182,7 +182,9 @@ export class OrderService {
     if (order.is_accepted == true && order.is_canceled == false)
       throw new HttpException(400, 'Order already done')
 
-    await this.users.updateOne({ _id: order.client }, [ { $set: { balance: { $add: ["$balance", order.total_cost ] } } } ])
+    await this.users.updateOne({ _id: order.client }, [
+      { $set: { balance: { $add: ['$balance', order.total_cost] } } }
+    ])
 
     await Promise.all(
       order.foods.map(async (e: any) => {
