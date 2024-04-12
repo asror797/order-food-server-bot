@@ -286,7 +286,7 @@ class TelegramBotApi {
           this.bot.sendMessage(
             msg.message.chat.id,
             // @ts-ignore
-            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n\n${productsCaption}\n\n<b>Bajarildi ✅</b>`,
+            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: ${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bajarildi ✅</b>`,
             { parse_mode: 'HTML' }
           )
         }
@@ -313,7 +313,7 @@ class TelegramBotApi {
           this.bot.sendMessage(
             msg.message.chat.id,
             // @ts-ignore
-            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n\n${productsCaption}\n\n<b>Bekor qilindi 🚫</b>`,
+            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: ${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bekor qilindi 🚫</b>`,
             { parse_mode: 'HTML' }
           )
         }

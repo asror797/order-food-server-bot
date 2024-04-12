@@ -65,7 +65,6 @@ export class FoodService {
             food: e['_id'],
             amount: 1
           })
-          console.log('isValid', isValid)
           if (isValid) {
             validFoodList.push(e)
           }
@@ -78,7 +77,7 @@ export class FoodService {
       pageSize: payload.pageSize,
       pageNumber: payload.pageNumber,
       pageCount: Math.ceil(count / payload.pageSize),
-      foodList: validFoodList.map((e: any) => ({
+      foodList: payload.isDashboard ? foodList : validFoodList.map((e: any) => ({
         _id: e['_id'],
         name: e.name,
         cost: e.cost,
