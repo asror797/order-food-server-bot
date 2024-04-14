@@ -289,6 +289,14 @@ class TelegramBotApi {
             `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: ${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bajarildi ✅</b>`,
             { parse_mode: 'HTML' }
           )
+
+          this.bot.sendMessage(
+            // @ts-ignore
+            order.client.telegram_id,
+            // @ts-ignore
+            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: ${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bajarildi ✅</b>`,
+            { parse_mode: 'HTML' }
+          )
         }
 
         if (
@@ -312,6 +320,14 @@ class TelegramBotApi {
 
           this.bot.sendMessage(
             msg.message.chat.id,
+            // @ts-ignore
+            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: ${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bekor qilindi 🚫</b>`,
+            { parse_mode: 'HTML' }
+          )
+
+          this.bot.sendMessage(
+            // @ts-ignore
+            order.client.telegram_id,
             // @ts-ignore
             `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: ${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bekor qilindi 🚫</b>`,
             { parse_mode: 'HTML' }
@@ -709,7 +725,7 @@ class TelegramBotApi {
     })
 
     caption.push(
-      `<code>--------------------------------</code>\n<i>Jami:</i> ${FormatNumberWithSpaces(totalCost)} so'm`
+      `<code>--------------------------------</code>\n<b>Jami:</b> ${FormatNumberWithSpaces(totalCost)} so'm`
     )
 
     return caption.join('')

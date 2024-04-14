@@ -167,7 +167,7 @@ export class OrderService {
         { new: true }
       )
       .populate('foods.food', 'name cost')
-      .populate('client', 'first_name last_name phone_number')
+      .populate('client', 'first_name last_name phone_number telegram_id')
       .exec()
   }
 
@@ -211,7 +211,7 @@ export class OrderService {
         { new: true }
       )
       .populate('foods.food', 'name cost')
-      .populate('client', 'first_name last_name phone_number')
+      .populate('client', 'first_name last_name phone_number telegram_id')
       .exec()
   }
 
