@@ -162,7 +162,7 @@ export class OrderService {
     ]
     await this.users.aggregate(pipeline)
 
-    botInstance.sendMessage({ text: `Hisobdan ${order.total_cost} yechib olindi`, chatId: 458745 })
+    // botInstance.sendMessage({ text: `Hisobdan ${order.total_cost} yechib olindi`, chatId: 458745 })
 
     return await this.orders
       .findByIdAndUpdate(
