@@ -286,7 +286,7 @@ class TelegramBotApi {
           this.bot.sendMessage(
             msg.message.chat.id,
             // @ts-ignore
-            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: ${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bajarildi ✅</b>`,
+            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: +998${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bajarildi ✅</b>`,
             { parse_mode: 'HTML' }
           )
 
@@ -294,7 +294,7 @@ class TelegramBotApi {
             // @ts-ignore
             order.client.telegram_id,
             // @ts-ignore
-            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: ${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bajarildi ✅</b>`,
+            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: +998${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bajarildi ✅</b>`,
             { parse_mode: 'HTML' }
           )
         }
@@ -321,7 +321,7 @@ class TelegramBotApi {
           this.bot.sendMessage(
             msg.message.chat.id,
             // @ts-ignore
-            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: ${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bekor qilindi 🚫</b>`,
+            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: +998${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bekor qilindi 🚫</b>`,
             { parse_mode: 'HTML' }
           )
 
@@ -329,7 +329,7 @@ class TelegramBotApi {
             // @ts-ignore
             order.client.telegram_id,
             // @ts-ignore
-            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: ${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bekor qilindi 🚫</b>`,
+            `<b>Buyurtmachi</b>:  ${order.client.first_name + ' ' + order.client.last_name}\n<b>Telefon</b>: +998${order.client.phone_number}\n\n${productsCaption}\n\n<b>Bekor qilindi 🚫</b>`,
             { parse_mode: 'HTML' }
           )
         }
@@ -882,7 +882,7 @@ class TelegramBotApi {
           })
           this.bot.sendMessage(
             org.group_a_id,
-            `<b>Buyurtmachi</b>:  ${order.user.fullname}\n<b>Telefon raqami</b>:  ${order.user.phone_number}\n<b>Tanlangan oshxona</b>:  ${order.org}\n<b>Buyurtma sanasi</b>:  ${format(order.createdAt, 'd MMM HH:mm y', { locale: uz })}\n\n${productsCaption}`,
+            `<b>Buyurtmachi</b>:  ${order.user.fullname}\n<b>Telefon raqami</b>:  +998${order.user.phone_number}\n<b>Tanlangan oshxona</b>:  ${order.org}\n<b>Buyurtma sanasi</b>:  ${format(order.createdAt, 'd MMM HH:mm y', { locale: uz })}\n\n${productsCaption}`,
             {
               reply_markup: {
                 inline_keyboard: [
