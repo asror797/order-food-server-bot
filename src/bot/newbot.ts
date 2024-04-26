@@ -70,6 +70,7 @@ class TelegramBotApi {
     const chatType = msg.chat.type
     try {
       const data = await this.userService.checkUser({ telegramId: chatId })
+      console.log(data)
 
       if (
         data.isExist &&
@@ -812,9 +813,7 @@ class TelegramBotApi {
         chatId: payload.msg.from.id,
         org: org['_id']
       })
-      // Get Store
 
-      // Validate Food
       const validFoods: any = []
       await Promise.all(
         store.map(async (e: any) => {
@@ -858,12 +857,6 @@ class TelegramBotApi {
               }
             })
           )
-
-          await this.userService.userUpdateBalance({
-            type: false,
-            amount: order.total_cost,
-            user: payload.user
-          })
 
           const productsCaption = this.#_storedFoodsCaptionGenerator(
             order.foods.map((e: any) => ({

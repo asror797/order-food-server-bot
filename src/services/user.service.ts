@@ -9,6 +9,7 @@ import {
   ActiveUserList
 } from '@interfaces'
 import { PaymentService } from '@services'
+import { botInstance } from '@bot'
 
 export class UserService {
   private users = userModel
@@ -136,7 +137,7 @@ export class UserService {
       .findById(payload.id)
       .populate('org', 'name_org')
       .select(
-        'first_name last_name role pone_number balance is_active is_verified'
+        'first_name last_name role pone_number balance is_active is_verified telegram_id'
       )
       .exec()
 
@@ -199,6 +200,8 @@ export class UserService {
     user: string
   }) {
     const user = await this.userRetrieveOne({ id: payload.user })
+    // console.log('USER SERVICE', user)
+
     if (payload.amount < 0)
       throw new HttpException(400, 'Amount should be positive')
 
@@ -211,9 +214,10 @@ export class UserService {
           },
           { new: true }
         )
-        .select('phone_number balance')
+        .select('phone_number balance telegram_id')
         .exec()
-
+      
+      botInstance.sendMessage({ text: `<b>📥${payload.amount} so'm hisobga tushurildi.</b>`, chatId: user.telegram_id })  
       return depositeUser
     }
 
@@ -229,6 +233,7 @@ export class UserService {
         .select('phone_number balance')
         .exec()
 
+      botInstance.sendMessage({ text: `<b>📤${payload.amount} so'm hisobdan yechib olindi.</b>`, chatId: user.telegram_id })
       return withdrawUser
     }
   }
