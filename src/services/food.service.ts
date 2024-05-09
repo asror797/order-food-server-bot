@@ -27,7 +27,9 @@ export class FoodService {
     payload: FoodRetrieveAllRequest
   ): Promise<FoodRetrieveAllResponse> {
     const categoryEnum = ['drinks', 'snacks', 'dessert']
-    const query: any = {}
+    const query: any = {
+      is_deleted: false
+    }
 
     if (payload.category && categoryEnum.includes(payload.category)) {
       query.category = payload.category

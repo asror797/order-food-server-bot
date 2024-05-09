@@ -4,6 +4,12 @@ import { formatPhoneNumber } from '@utils'
 import { HttpException } from '@exceptions'
 import { AdminAuthRequest, AdminAuthResponse } from '@interfaces'
 import { compare } from 'bcrypt'
+import { 
+  JWT_ACCESS_TOKEN_SECRET_KEY,
+  JWT_ACCESS_TOKEN_EXPIRY,
+  JWT_REFRESH_TOKEN_SECRET_KEY,
+  JWT_REFRESH_TOKEN_EXPIRY
+} from '@config'
 
 export class AuthService {
   public admins = adminModel
@@ -18,11 +24,13 @@ export class AuthService {
       role: payload.roleId,
       org: payload.orgId
     }
-    return jwt.sign(data, 'secret_key')
+    return jwt.sign(data, JWT_REFRESH_TOKEN_SECRET_KEY, {
+      expiresIn: JWT_REFRESH_TOKEN_EXPIRY
+    })
   }
 
   public async decodeRefreshToken(payload: any) {
-    const decodedToken = jwt.verify(payload.token, 'secret_key')
+    const decodedToken = jwt.verify(payload.token, JWT_REFRESH_TOKEN_SECRET_KEY)
 
     return decodedToken
   }
@@ -39,11 +47,13 @@ export class AuthService {
       modules: payload.role.modules
     }
 
-    return jwt.sign(data, 'secret_key')
+    return jwt.sign(data, JWT_ACCESS_TOKEN_SECRET_KEY, {
+      expiresIn: JWT_ACCESS_TOKEN_EXPIRY
+    })
   }
 
   public async decodeAccessToken(token: string) {
-    const decodedToken = jwt.verify(token, 'secret_key')
+    const decodedToken = jwt.verify(token, JWT_ACCESS_TOKEN_SECRET_KEY)
 
     console.log(decodedToken)
 

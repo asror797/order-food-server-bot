@@ -1,10 +1,45 @@
 
 
+### FOOD UPDATE
+PATCH https://bot.woodlines.shop/food/662e4aa1e327cdb3f82b021a
+Content-Type: application/json
+
+{
+  "is_private": true
+}
+
 
 ### GET ORGS
 GET http://localhost:3030/org 
 Content-Type: application/json
 
+
+### Lunch base
+GET http://localhost:3030/lunch-base 
+Content-Type: application/json
+
+
+### GET ORGS
+POST http://localhost:3030/lunch-base
+Content-Type: application/json
+
+{
+  "name": "Osh",
+  "org": "651d125b74f9e4e6f18559e3"
+}
+
+
+### LUNCH
+POST http://localhost:3030/lunch 
+Content-Type: application/json
+
+{
+  "name": "1x osh",
+  "cost": 1000,
+  "lunchbase": "663caff213987dd65456594b",
+  "products": [],
+  "org": "651d126674f9e4e6f18559e9"
+}
 
 ### UPDATE ORG
 PATCH http://localhost:3030/org/651d126674f9e4e6f18559e9
@@ -16,6 +51,7 @@ Content-Type: application/json
 }
 
 
+### 
 
 ### FOODS
 GET http://localhost:3030/food
@@ -83,3 +119,12 @@ Content-Type: application/json
 ### USERS
 GET http://localhost:3030/user?search="as"
 Content-Type: application/json
+
+
+### Create lunchBase
+POST http://localhost:3030/food
+Content-Type: application/json
+
+{
+  ""
+}

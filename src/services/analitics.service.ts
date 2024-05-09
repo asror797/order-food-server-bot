@@ -12,8 +12,8 @@ export class AnaliticsService {
   public async totalPaidOrders() {}
 
   public async getUserMonthlyAnalitics(payload: any) {
-    const startDay = new Date(2024, 2, 1)
-    const endDay = new Date(2024, 2, 31)
+    const startDay = new Date(2024, 3, 1)
+    const endDay = new Date(2024, 3, 30)
     const orders: any = []
 
     const user = await this.users.findById(payload.user)
@@ -23,7 +23,6 @@ export class AnaliticsService {
       start: new Date(startDay),
       end: new Date(endDay)
     })
-    console.log(days)
 
     await Promise.all(
       days.map(async (e) => {
@@ -60,10 +59,4 @@ export class AnaliticsService {
       data: orders
     }
   }
-  /*
-    - Top most purchase users     // 10 *daily
-    - Top sold products / food    // 10 *daily
-    - Total order amount by Org   // *daily
-    - Total sum of orders by org  // *daily
-  */
 }

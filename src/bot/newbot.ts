@@ -372,6 +372,8 @@ class TelegramBotApi {
               is_active: true
             })
 
+            console.log('LunchBases',lunchbases)
+
             this.bot.sendMessage(msg.chat.id, botTexts.cookViewLunchBase.uz, {
               reply_markup: KeyboardMaker({
                 data: lunchbases.map((e) => ({ name: e.name }))
