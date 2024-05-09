@@ -29,10 +29,10 @@ export class AuthService {
     })
   }
 
-  public async decodeRefreshToken(payload: any) {
+  public async decodeRefreshToken(payload: { token: string }) {
     const decodedToken = jwt.verify(payload.token, JWT_REFRESH_TOKEN_SECRET_KEY)
 
-    return decodedToken
+    return decodedToken // adminId,OrgId,roleId
   }
 
   public async genereateAccessToken(payload: {
@@ -96,6 +96,23 @@ export class AuthService {
         orgId: admin.org,
         roleId: admin.role['_id']
       })
+    }
+  }
+
+  public async adminAuthRefresh(payload: { refreshToken: string }) {
+    
+    const decodedToken = await this.decodeRefreshToken({ token: payload.refreshToken }) as any
+    //  adminId,OrgId,roleId
+    const admin = await this.admins.findOne({
+      _id: decodedToken.adminId,
+      refreshToken: ''
+    })
+
+    if (!admin) throw new HttpException(400, "Admin's creditials is wrong")
+
+    return {
+      accessToken: await this.genereateAccessToken({ adminId: admin['_id'], orgId: '', role: ''}),
+      refreshToken: await this.generateRefreshToken({ adminId: admin['_id'], orgId: '', roleId: ''})
     }
   }
 
