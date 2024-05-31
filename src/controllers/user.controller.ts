@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { UserService } from '@services'
-import { EditUserDto, SendMessae } from '../dtos/user.dto'
+import { EditUserDto, sendMessage } from '../dtos/user.dto'
 import { ParsedQs } from 'qs'
 
 export class UserController {
@@ -97,7 +97,7 @@ export class UserController {
     next: NextFunction
   ) => {
     try {
-      const msgData: SendMessae = req.body
+      const msgData: sendMessage = req.body
       res.json(await this.userService.sendMessageToUsers(msgData))
     } catch (error) {
       next(error)

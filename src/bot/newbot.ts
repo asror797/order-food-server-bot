@@ -86,6 +86,21 @@ class TelegramBotApi {
               MainMenuKeyboard
             )
 
+            // this.bot.sendMessage(msg.chat.id,'Main menu', {
+            //   reply_markup: {
+            //     inline_keyboard: [
+            //       [
+            //         {
+            //           text: "Open",
+            //           web_app: {
+            //             url: "https://telegram-mini-app-weld.vercel.app/"
+            //           }
+            //         }
+            //       ]
+            //     ]
+            //   }
+            // })
+
             await this.storeService.editStep({
               telegramId: msg.chat.id,
               step: botSteps.mainMenu
@@ -141,7 +156,7 @@ class TelegramBotApi {
         phoneNumber: msg.contact.phone_number,
         telegramId: msg.chat.id
       })
-      this.bot.sendMessage(msg.chat.id, `Xush kelibsiz!`, {
+      this.bot.sendMessage(msg.chat.id, `Siz ro'yxatdan o'tdingiz\nIltimos Admin tasdiqlashini kuting.`, {
         reply_markup: { remove_keyboard: true }
       })
     } catch (error) {

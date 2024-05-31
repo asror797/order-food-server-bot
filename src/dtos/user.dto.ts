@@ -58,7 +58,7 @@ export class VerifyUser {
   _id: string
 }
 
-export class SendMessae {
+export class sendMessage {
   @IsString()
   org: string
 

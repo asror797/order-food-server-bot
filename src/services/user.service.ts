@@ -1,7 +1,7 @@
 import { userModel, orgModel } from '@models'
 import { formatPhoneNumber } from '@utils'
 import { HttpException } from '@exceptions'
-import { CreateUserDto, EditUserDto, SendMessae } from '../dtos/user.dto'
+import { CreateUserDto, EditUserDto, sendMessage } from '../dtos/user.dto'
 import {
   UserRegisterPayload,
   UserCheckResponse,
@@ -221,7 +221,7 @@ export class UserService {
       return depositeUser
     }
 
-    if (payload.type == false && user.balance > payload.amount) {
+    if (payload.type == false && user.balance >= payload.amount) {
       const withdrawUser = await this.users
         .findByIdAndUpdate(
           payload.user,
@@ -238,7 +238,7 @@ export class UserService {
     }
   }
 
-  public async sendMessageToUsers(msgData: SendMessae) {
+  public async sendMessageToUsers(msgData: sendMessage) {
     const { org } = msgData
 
     if (org == 'all' || org == null) {
@@ -247,8 +247,7 @@ export class UserService {
         is_verified: true
       })
       users.map((e) => {
-        console.log(e)
-        // botService.sendText(e.telegram_id, message)
+        botInstance.sendMessage({ text: msgData.message, chatId: e.telegram_id })
       })
 
       return {
@@ -263,12 +262,12 @@ export class UserService {
         is_verified: true,
         org: org
       })
-      users.map((e) => {
-        // botService.sendText(e.telegram_id, message)
+      users.map((e:any) => {
+        botInstance.sendMessage({ text: msgData.message, chatId: e.telegram_id })
       })
       return {
-        message: 'ok',
-        status: 'ok'
+        message: 'sent',
+        status: 200
       }
     }
   }
