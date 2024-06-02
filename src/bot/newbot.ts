@@ -608,7 +608,7 @@ class TelegramBotApi {
           if (category) {
             const foods = await this.foodService.foodRetrieveAll({
               pageNumber: 1,
-              pageSize: 30,
+              pageSize: 50,
               category: category,
               org: userStep.split('/')[1]
             })
