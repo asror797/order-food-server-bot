@@ -17,8 +17,8 @@ export const MainMenuKeyboard: SendMessageOptions = {
         {
           text: botTexts.myOrders.uz,
           web_app: {
-            url: 'https://telegram-mini-app-weld.vercel.app/'
-          }
+            url: 'https://telegram-mini-app-weld.vercel.app/',
+          },
         }
       ]
     ],
