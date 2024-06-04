@@ -156,9 +156,13 @@ class TelegramBotApi {
         phoneNumber: msg.contact.phone_number,
         telegramId: msg.chat.id
       })
-      this.bot.sendMessage(msg.chat.id, `Siz ro'yxatdan o'tdingiz\nIltimos Admin tasdiqlashini kuting.`, {
-        reply_markup: { remove_keyboard: true }
-      })
+      this.bot.sendMessage(
+        msg.chat.id,
+        `Siz ro'yxatdan o'tdingiz\nIltimos Admin tasdiqlashini kuting.`,
+        {
+          reply_markup: { remove_keyboard: true }
+        }
+      )
     } catch (error) {
       console.log(error)
       this.bot.sendMessage(msg.chat.id, botTexts.noContact.uz)
@@ -285,7 +289,15 @@ class TelegramBotApi {
           msg.data.split('/')[0] == botCallbackData.acceptOrder &&
           msg.message
         ) {
-          this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
+          // this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
+          this.bot.editMessageReplyMarkup(
+            { inline_keyboard: [[{ text: 'test', callback_data: 'end' }]] },
+            {
+              chat_id: msg.message.chat.id,
+              inline_message_id: msg.inline_message_id,
+              message_id: msg.message.message_id
+            }
+          )
 
           const order = await this.orderService.orderAccept({
             id: msg.data.split('/')[1]
@@ -387,7 +399,7 @@ class TelegramBotApi {
               is_active: true
             })
 
-            console.log('LunchBases',lunchbases)
+            console.log('LunchBases', lunchbases)
 
             this.bot.sendMessage(msg.chat.id, botTexts.cookViewLunchBase.uz, {
               reply_markup: KeyboardMaker({

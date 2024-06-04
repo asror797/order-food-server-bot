@@ -13,7 +13,14 @@ export const MainMenuKeyboard: SendMessageOptions = {
         { text: botTexts.feedbackAction.uz },
         { text: botTexts.settingsAction.uz }
       ],
-      [{ text: botTexts.myOrders.uz }]
+      [
+        {
+          text: botTexts.myOrders.uz,
+          web_app: {
+            url: 'https://telegram-mini-app-weld.vercel.app/'
+          }
+        }
+      ]
     ],
     resize_keyboard: true
   },

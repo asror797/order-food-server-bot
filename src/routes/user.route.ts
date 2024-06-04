@@ -25,7 +25,10 @@ export class UserRoute {
       this.userController.userRetrieveOne
     )
 
-    this.router.post(`${this.path}/sendMessage`, this.userController.sendMessage)
+    this.router.post(
+      `${this.path}/sendMessage`,
+      this.userController.sendMessage
+    )
 
     this.router.patch(
       `${this.path}/balance/:id`,

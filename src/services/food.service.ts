@@ -95,7 +95,7 @@ export class FoodService {
             name: e.name,
             cost: e.cost,
             org: e.org?.name_org || null,
-            img: e.img,
+            img: e.img
           }))
     }
   }

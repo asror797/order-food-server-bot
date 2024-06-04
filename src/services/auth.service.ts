@@ -4,7 +4,7 @@ import { formatPhoneNumber } from '@utils'
 import { HttpException } from '@exceptions'
 import { AdminAuthRequest, AdminAuthResponse } from '@interfaces'
 import { compare } from 'bcrypt'
-import { 
+import {
   JWT_ACCESS_TOKEN_SECRET_KEY,
   JWT_ACCESS_TOKEN_EXPIRY,
   JWT_REFRESH_TOKEN_SECRET_KEY,
@@ -100,8 +100,9 @@ export class AuthService {
   }
 
   public async adminAuthRefresh(payload: { refreshToken: string }) {
-    
-    const decodedToken = await this.decodeRefreshToken({ token: payload.refreshToken }) as any
+    const decodedToken = (await this.decodeRefreshToken({
+      token: payload.refreshToken
+    })) as any
     //  adminId,OrgId,roleId
     const admin = await this.admins.findOne({
       _id: decodedToken.adminId,
@@ -111,8 +112,16 @@ export class AuthService {
     if (!admin) throw new HttpException(400, "Admin's creditials is wrong")
 
     return {
-      accessToken: await this.genereateAccessToken({ adminId: admin['_id'], orgId: '', role: ''}),
-      refreshToken: await this.generateRefreshToken({ adminId: admin['_id'], orgId: '', roleId: ''})
+      accessToken: await this.genereateAccessToken({
+        adminId: admin['_id'],
+        orgId: '',
+        role: ''
+      }),
+      refreshToken: await this.generateRefreshToken({
+        adminId: admin['_id'],
+        orgId: '',
+        roleId: ''
+      })
     }
   }
 

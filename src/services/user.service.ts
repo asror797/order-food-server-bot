@@ -216,8 +216,11 @@ export class UserService {
         )
         .select('phone_number balance telegram_id')
         .exec()
-      
-      botInstance.sendMessage({ text: `<b>📥${payload.amount} so'm hisobga tushurildi.</b>`, chatId: user.telegram_id })  
+
+      botInstance.sendMessage({
+        text: `<b>📥${payload.amount} so'm hisobga tushurildi.</b>`,
+        chatId: user.telegram_id
+      })
       return depositeUser
     }
 
@@ -233,7 +236,10 @@ export class UserService {
         .select('phone_number balance')
         .exec()
 
-      botInstance.sendMessage({ text: `<b>📤${payload.amount} so'm hisobdan yechib olindi.</b>`, chatId: user.telegram_id })
+      botInstance.sendMessage({
+        text: `<b>📤${payload.amount} so'm hisobdan yechib olindi.</b>`,
+        chatId: user.telegram_id
+      })
       return withdrawUser
     }
   }
@@ -247,7 +253,10 @@ export class UserService {
         is_verified: true
       })
       users.map((e) => {
-        botInstance.sendMessage({ text: msgData.message, chatId: e.telegram_id })
+        botInstance.sendMessage({
+          text: msgData.message,
+          chatId: e.telegram_id
+        })
       })
 
       return {
@@ -262,8 +271,11 @@ export class UserService {
         is_verified: true,
         org: org
       })
-      users.map((e:any) => {
-        botInstance.sendMessage({ text: msgData.message, chatId: e.telegram_id })
+      users.map((e: any) => {
+        botInstance.sendMessage({
+          text: msgData.message,
+          chatId: e.telegram_id
+        })
       })
       return {
         message: 'sent',

@@ -61,17 +61,19 @@ export class OrderService {
 
   public async orderRetrieveOne(payload: { id: string }): Promise<any> {
     const order = await this.orders
-              .findById(payload.id)
-              .populate('foods.food', 'products')
-              .select('-createdAt -updatedAt -org')
-              .exec()
+      .findById(payload.id)
+      .populate('foods.food', 'products')
+      .select('-createdAt -updatedAt -org')
+      .exec()
     if (!order) throw new HttpException(404, 'Order not found')
 
     return order
   }
 
   public async orderCreate(payload: OrderCreateRequest): Promise<any> {
-    const user = await this.userService.userRetrieveOne({ id: payload.client.toString() })
+    const user = await this.userService.userRetrieveOne({
+      id: payload.client.toString()
+    })
 
     const org = await this.orgs
       .findById(payload.org, { is_deleted: false })
@@ -167,9 +169,14 @@ export class OrderService {
   public async orderCancel(payload: { id: string }) {
     const order = await this.orderRetrieveOne({ id: payload.id })
 
-    if (order.is_accepted == true && order.is_canceled == false) throw new HttpException(400, 'Order already done')
+    if (order.is_accepted == true && order.is_canceled == false)
+      throw new HttpException(400, 'Order already done')
 
-    await this.userService.userUpdateBalance({ type: true, amount: order.total_cost, user: order.client })
+    await this.userService.userUpdateBalance({
+      type: true,
+      amount: order.total_cost,
+      user: order.client
+    })
 
     await Promise.all(
       order.foods.map(async (e: any) => {
