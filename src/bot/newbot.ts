@@ -289,15 +289,15 @@ class TelegramBotApi {
           msg.data.split('/')[0] == botCallbackData.acceptOrder &&
           msg.message
         ) {
-          // this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
-          this.bot.editMessageReplyMarkup(
-            { inline_keyboard: [[{ text: 'test', callback_data: 'end' }]] },
-            {
-              chat_id: msg.message.chat.id,
-              inline_message_id: msg.inline_message_id,
-              message_id: msg.message.message_id
-            }
-          )
+          this.bot.deleteMessage(msg.message.chat.id, msg.message.message_id)
+          // this.bot.editMessageReplyMarkup(
+          //   { inline_keyboard: [[{ text: 'test', callback_data: 'end' }]] },
+          //   {
+          //     chat_id: msg.message.chat.id,
+          //     inline_message_id: msg.inline_message_id,
+          //     message_id: msg.message.message_id
+          //   }
+          // )
 
           const order = await this.orderService.orderAccept({
             id: msg.data.split('/')[1]
